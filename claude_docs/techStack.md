@@ -2,21 +2,25 @@
 
 ## Frontend
 
-### Core Technologies
-- **React 18** - Modern UI library with concurrent features
-- **TypeScript** - Type safety and better developer experience
-- **Chakra UI** - Component library for rapid UI development
-  - Chosen for its accessibility features and customization options
+### Core Technologies (Implemented)
+- **React 18** - Modern UI library ✅
+- **TypeScript** - Type safety across the application ✅
+- **Chakra UI** - Component library with icons ✅
+- **React Router v6** - Client-side routing ✅
 
-### State Management
-- **React Context API** - For global state (initially)
-- **React Query/TanStack Query** - For server state management (future)
+### State Management (Implemented)
+- **React Context API** - Authentication state ✅
+- **React Query/TanStack Query** - Server state management ✅
 
-### Drag and Drop
-- **@dnd-kit/sortable** - Modern, accessible drag-and-drop
-  - Better accessibility than alternatives
-  - Touch-friendly
-  - Performant
+### Forms and Validation (Implemented)
+- **React Hook Form** - Form state management ✅
+- **Built-in validation** - Email, password, username rules ✅
+
+### Drag and Drop (Ready to Implement)
+- **@dnd-kit/sortable** - Installed and ready
+  - @dnd-kit/core
+  - @dnd-kit/sortable
+  - @dnd-kit/utilities
 
 ### Markdown
 - **react-markdown** - Markdown rendering
@@ -36,22 +40,27 @@
 - **TypeScript** - Type safety
 
 ### Database
-- **SQLite** (initial) - Simple, file-based database
+- **SQLite** (current) - Simple, file-based database
   - Easy setup for MVP
   - No additional services required
+  - Using with Knex.js for migrations
 - **PostgreSQL** (future) - Production database
   - Better performance at scale
   - Advanced features
 
 ### ORM/Query Builder
-- **Knex.js** - SQL query builder
+- **Knex.js** - SQL query builder (implemented)
   - Database agnostic
   - Migration support
   - Simple API
+  - Configured for SQLite with easy migration path
 
 ### Authentication
-- **JWT** - Token-based authentication
-- **bcrypt** - Password hashing
+- **JWT** - Token-based authentication (implemented)
+  - Custom middleware for route protection
+  - 7-day token expiry
+- **bcrypt** - Password hashing (implemented)
+  - Secure password storage
 
 ### AI Integration
 - **Anthropic Claude API** - AI assistance
@@ -94,7 +103,10 @@
 - Simplified deployment
 
 ### API Design
-- RESTful API initially
+- RESTful API (implemented)
+  - Standard HTTP methods (GET, POST, PUT, DELETE)
+  - Consistent JSON response format
+  - Proper status codes
 - GraphQL consideration for future
 - WebSocket for real-time updates (future)
 

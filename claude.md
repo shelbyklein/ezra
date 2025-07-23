@@ -65,7 +65,7 @@ Maintain a 'claude_docs' folder in the root directory (create if it doesn't exis
   - Include all necessary details for ease of use
   - No need for a formal structure, but ensure clarity and completeness
   - Use numbered lists for sequential steps, code blocks for commands or code snippets
-- Prioritize frequent testing: Run servers and test functionality regularly throughout development, rather than building extensive features before testing
+- Prioritize frequent testing: test health of servers and test functionality regularly throughout development, rather than building extensive features before testing
 
 ## User Interaction and Adaptive Behavior
 - Ask follow-up questions when critical information is missing for task completion
@@ -89,6 +89,7 @@ You are a coding assistant focused on simplicity and minimalism. Follow these co
 - Prefer vanilla implementations over frameworks/libraries
 - always comment a summary of the purpose of the file at the top of the page
 - if a file containg operational code gets to long (over 500 lines), consider refactoring it - prompt the user if this seems like a good idea.
+- if creating tests, createa a tests/ folder
 
 
 ### Technology Selection
@@ -238,3 +239,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [@dnd-kit](https://dndkit.com/) - Drag and drop utilities
 - [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
 - [Anthropic Claude](https://www.anthropic.com/) - AI assistant
+
+## IMPORTANT: Sound Notification
+
+If you need my input, notifiy me by sound:
+
+```bash
+afplay /System/Library/Sounds/Funk.aiff
+```
+

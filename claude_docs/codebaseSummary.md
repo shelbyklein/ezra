@@ -22,7 +22,30 @@ Ezra/
 │   └── .env.example       # Environment template
 ├── backend/               # Express TypeScript API server
 │   ├── src/
-│   │   └── index.ts       # Server entry point with health check
+│   │   ├── index.ts       # Server entry point with all routes
+│   │   └── db/
+│   │       └── index.ts   # Database connection setup
+│   ├── routes/            # API route handlers
+│   │   ├── auth.routes.ts # Authentication endpoints
+│   │   ├── projects.routes.ts # Project CRUD
+│   │   ├── tasks.routes.ts # Task CRUD + reordering
+│   │   └── notes.routes.ts # Notes CRUD
+│   ├── middleware/
+│   │   └── auth.middleware.ts # JWT authentication
+│   ├── models/            # Database models
+│   │   ├── User.ts        # User model
+│   │   ├── Project.ts     # Project model
+│   │   └── Task.ts        # Task model
+│   ├── utils/
+│   │   └── jwt.ts         # JWT token utilities
+│   ├── migrations/        # Database migrations
+│   │   ├── 20240101_create_users.ts
+│   │   ├── 20240102_create_projects.ts
+│   │   ├── 20240103_create_tasks.ts
+│   │   └── 20240104_create_notes.ts
+│   ├── tests/
+│   │   └── api.test.ts    # API endpoint tests
+│   ├── knexfile.ts        # Database configuration
 │   ├── nodemon.json       # Development server config
 │   ├── tsconfig.json      # TypeScript config
 │   └── package.json       # Backend dependencies
@@ -46,41 +69,56 @@ Ezra/
 
 ## Key Components and Their Interactions
 
-### Frontend Components
-- **Board/** - Kanban board implementation
-  - BoardContainer - Main board layout
-  - Column - Kanban columns (To Do, In Progress, Done)
-  - Card - Draggable task cards
-- **Task/** - Task management
-  - TaskForm - Create/edit tasks
-  - TaskDetail - View task details
-  - TaskList - List view of tasks
-- **AI/** - AI integration components
-  - AIAssistant - Chat interface
-  - TaskEnhancer - AI task improvement
+### Frontend Components (Implemented)
+- **Auth/** - Authentication components
+  - Login - User login form with validation
+  - Register - User registration form
+  - ProtectedRoute - Route guard for authenticated users
 - **Layout/** - Application structure
-  - Header - Navigation and user menu
-  - Sidebar - Project navigation
-  - MainContent - Primary content area
+  - AppLayout - Main layout with navigation bar
+- **Projects/** - Project management
+  - ProjectList - Grid view of all projects
+  - CreateProjectModal - Create/edit project form
+
+### Frontend Components (Planned)
+- **Board/** - Kanban board implementation
+  - Board - Main board container
+  - Column - Kanban columns (Todo, In Progress, Done)
+  - TaskCard - Draggable task cards
+- **Tasks/** - Task management
+  - CreateTaskForm - Add new tasks
+  - TaskDetailModal - View/edit task details
+- **AI/** - AI integration
+  - TaskEnhancer - AI-powered task improvement
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
-  - auth.routes - Authentication endpoints
-  - tasks.routes - Task CRUD operations
-  - projects.routes - Project management
-  - ai.routes - AI integration endpoints
-- **controllers/** - Request handling logic
-- **models/** - Database models
-- **middleware/** - Authentication, error handling
+  - auth.routes.ts - Authentication (register/login)
+  - projects.routes.ts - Project CRUD operations
+  - tasks.routes.ts - Task CRUD + reordering endpoint
+  - notes.routes.ts - Notes CRUD operations
+- **models/** - Database models with TypeScript interfaces
+  - User.ts - User authentication model
+  - Project.ts - Project model
+  - Task.ts - Task model with position tracking
+- **middleware/** - Request processing
+  - auth.middleware.ts - JWT token verification
 - **utils/** - Helper functions
+  - jwt.ts - Token generation and verification
+- **migrations/** - Database schema versioning
+  - Knex.js migrations for all entities
+- **src/db/** - Database configuration
+  - SQLite setup with Knex.js
 
 ## Data Flow
 
 1. **User Interaction** → React Components
-2. **API Calls** → Frontend Services → Axios/Fetch
-3. **Backend Routes** → Controllers → Database Operations
-4. **AI Integration** → Claude API → Response Processing
-5. **State Updates** → React Context → UI Updates
+2. **API Calls** → Frontend Services → Axios with JWT headers
+3. **Backend Routes** → Authentication Middleware → Database Operations
+4. **Database Operations** → Knex.js → SQLite
+5. **Response** → JSON with consistent structure → Frontend
+6. **State Updates** → React Context → UI Updates
+7. **AI Integration** (planned) → Claude API → Task Enhancement
 
 ## External Dependencies
 
@@ -113,6 +151,7 @@ Ezra/
 
 ## Recent Significant Changes
 
+### Initial Setup (Completed)
 - Initial project structure created with npm workspaces
 - Documentation framework established
 - Technology stack decisions finalized
@@ -121,6 +160,26 @@ Ezra/
 - Basic frontend and backend entry points created
 - TypeScript configuration for all workspaces
 - Development scripts for flexible deployment options
+
+### Backend Implementation (Completed)
+- Database setup with Knex.js and SQLite
+- Complete database schema with migrations
+- User authentication system with JWT tokens
+- Full CRUD API endpoints for projects, tasks, and notes
+- Task reordering endpoint for drag-and-drop support
+- Proper error handling and response formatting
+- API endpoint testing suite
+- Authentication middleware with user context
+
+### Frontend Implementation (In Progress)
+- React Router setup with protected routes
+- Authentication system with JWT management
+- Login and register forms with validation
+- Project management UI (list, create, edit, delete)
+- React Query for server state management
+- Chakra UI component integration
+- Fixed @chakra-ui/icons dependency issue
+- Application layout with responsive navigation
 
 ## User Feedback Integration and Its Impact on Development
 
