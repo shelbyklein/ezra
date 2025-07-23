@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ezra follows a layered architecture pattern designed for flexibility, testability, and extensibility. The system is built with a local-first approach while maintaining the ability to sync with cloud services.
+Ezra follows a layered architecture pattern designed for flexibility, testability, and extensibility. The system is built with a local-first approach, core functionality that works independently, and optional AI enhancements.
 
 ## System Architecture
 
@@ -27,28 +27,37 @@ Ezra follows a layered architecture pattern designed for flexibility, testabilit
 └─────────────────────────────┬───────────────────────────────┘
                               │
 ┌─────────────────────────────┴───────────────────────────────┐
-│                        AI Services Layer                     │
+│                     Data Persistence Layer                   │
+│  ┌──────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│  │ Local SQLite │  │ File Storage│  │  Cloud Sync     │   │
+│  └──────────────┘  └─────────────┘  └─────────────────┘   │
+└─────────────────────────────┬───────────────────────────────┘
+                              │
+┌─────────────────────────────┴───────────────────────────────┐
+│                    External Services (Optional)              │
+│  ┌──────────────┐  ┌─────────────┐  ┌─────────────────┐   │
+│  │ Calendar API │  │ GitHub API  │  │ Email Service   │   │
+│  └──────────────┘  └─────────────┘  └─────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+
+                    ┌─── Optional AI Layer ───┐
+                    │ (Added in Phase 4)      │
+┌─────────────────────────────────────────────────────────────┐
+│                   AI Enhancement Layer (Optional)            │
 │  ┌──────────────┐  ┌─────────────┐  ┌─────────────────┐   │
 │  │ NLP Processor│  │ Task Suggest │  │ Intent Analyzer │   │
 │  └──────────────┘  └─────────────┘  └─────────────────┘   │
 └─────────────────────────────┬───────────────────────────────┘
                               │
 ┌─────────────────────────────┴───────────────────────────────┐
-│                      External Services                       │
+│                    LLM Providers (Optional)                  │
 │  ┌──────────────┐  ┌─────────────┐  ┌─────────────────┐   │
-│  │ LLM Provider │  │ Calendar API│  │   GitHub API    │   │
-│  └──────────────┘  └─────────────┘  └─────────────────┘   │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-┌─────────────────────────────┴───────────────────────────────┐
-│                     Data Persistence Layer                   │
-│  ┌──────────────┐  ┌─────────────┐  ┌─────────────────┐   │
-│  │ Local SQLite │  │ File Storage│  │  Cloud Sync     │   │
+│  │    OpenAI    │  │  Anthropic  │  │  Local LLM      │   │
 │  └──────────────┘  └─────────────┘  └─────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Core Components
+## Core Components (AI-Independent)
 
 ### 1. Task Engine
 **Purpose**: Central management of all task-related operations
@@ -57,7 +66,9 @@ Ezra follows a layered architecture pattern designed for flexibility, testabilit
 - Task CRUD operations
 - Task dependency management
 - Status tracking and updates
-- Task template management
+- Priority management
+- Due date handling
+- Task templates
 
 **Interfaces**:
 ```typescript
@@ -67,7 +78,10 @@ interface TaskEngine {
   deleteTask(id: string): Promise<void>
   getTask(id: string): Promise<Task>
   listTasks(filters: TaskFilters): Promise<Task[]>
-  suggestSubtasks(task: Task): Promise<Task[]>
+  getTasksByProject(projectId: string): Promise<Task[]>
+  completeTask(id: string): Promise<Task>
+  // AI methods added later as optional enhancements
+  suggestSubtasks?(task: Task): Promise<Task[]>
 }
 ```
 
@@ -77,8 +91,9 @@ interface TaskEngine {
 **Key Responsibilities**:
 - Project lifecycle management
 - Project templates
-- Progress calculation
-- Resource allocation
+- Progress calculation (based on task completion)
+- Project statistics
+- Archive management
 
 **Interfaces**:
 ```typescript
@@ -87,201 +102,272 @@ interface ProjectManager {
   updateProject(id: string, updates: Partial<Project>): Promise<Project>
   archiveProject(id: string): Promise<void>
   getProjectStats(id: string): Promise<ProjectStats>
-  suggestNextActions(projectId: string): Promise<Action[]>
+  calculateProgress(projectId: string): Promise<number>
+  // AI methods added later as optional
+  suggestNextActions?(projectId: string): Promise<Action[]>
 }
 ```
 
-### 3. AI Services Layer
-**Purpose**: All AI/LLM related functionality
+### 3. Analytics Engine
+**Purpose**: Generate insights without requiring AI
 
-**Components**:
-- **NLP Processor**: Parses natural language commands
-- **Task Suggester**: Generates task breakdowns and suggestions
-- **Intent Analyzer**: Determines user intent from input
-- **Context Manager**: Maintains conversation context
+**Features**:
+- Task completion rates
+- Time-based analytics
+- Progress tracking
+- Productivity trends
+- Custom date ranges
+- Export functionality
 
-**Key Features**:
-- Provider agnostic (OpenAI, Anthropic, local models)
-- Caching layer for repeated queries
-- Fallback mechanisms for offline operation
-- Prompt template management
-
-### 4. Data Persistence Layer
-**Purpose**: Flexible data storage with local-first approach
-
-**Storage Options**:
-1. **Local SQLite**: Primary storage for all data
-2. **File Storage**: Attachments and large objects
-3. **Cloud Sync**: Optional synchronization with cloud services
-
-**Schema Overview**:
-```sql
--- Core tables
-projects (id, name, description, status, created_at, updated_at)
-tasks (id, project_id, title, description, status, priority, due_date)
-task_dependencies (task_id, depends_on_task_id)
-ai_interactions (id, input, output, context, timestamp)
-user_preferences (key, value, updated_at)
-```
-
-### 5. Integration Hub
-**Purpose**: Manage external service integrations
-
-**Supported Integrations**:
-- Calendar systems (Google, Outlook, Apple)
-- Development tools (GitHub, GitLab, Jira)
-- Communication (Slack, Discord)
-- File storage (Dropbox, Google Drive)
-
-**Integration Pattern**:
+**Interfaces**:
 ```typescript
-interface Integration {
-  connect(credentials: Credentials): Promise<void>
-  disconnect(): Promise<void>
-  sync(): Promise<SyncResult>
-  getCapabilities(): IntegrationCapabilities
+interface AnalyticsEngine {
+  getCompletionRate(timeRange: TimeRange): Promise<number>
+  getProductivityTrends(): Promise<TrendData>
+  getProjectProgress(projectId: string): Promise<ProgressData>
+  generateReport(options: ReportOptions): Promise<Report>
 }
 ```
 
-## Data Flow
+### 4. Command Parser
+**Purpose**: Parse structured CLI commands
 
-### Command Processing Flow
-1. User input (natural language or structured)
-2. Input parsing and intent detection
-3. Context enrichment from history
-4. Business logic execution
-5. AI enhancement (if applicable)
-6. Response generation
-7. State persistence
-8. User feedback
+**Features**:
+- Structured command parsing
+- Argument validation
+- Help generation
+- Command aliases
+- No AI dependency
 
-### AI Processing Pipeline
-1. Input sanitization
-2. Context retrieval
-3. Prompt construction
-4. LLM interaction
-5. Response parsing
-6. Validation and safety checks
-7. Response formatting
+**Example Commands**:
+```bash
+ezra project create "Website Redesign"
+ezra task add "Design homepage" --project 123 --priority high
+ezra task list --status in-progress --due-before tomorrow
+```
 
-## Security Architecture
+## Optional AI Enhancement Layer
 
-### Data Security
-- Local data encryption at rest
-- Secure credential storage (OS keychain)
-- API key rotation support
-- Audit logging for sensitive operations
+### When Added (Phase 4)
+The AI layer is added as an optional enhancement that:
+- Never breaks core functionality
+- Can be disabled entirely
+- Provides fallbacks to structured commands
+- Enhances but doesn't replace existing features
 
-### API Security
-- Rate limiting per endpoint
-- JWT-based authentication
-- Role-based access control
-- Input validation and sanitization
+### AI Components
 
-## Performance Considerations
+#### 1. NLP Processor
+**Purpose**: Parse natural language into structured commands
 
-### Optimization Strategies
-1. **Caching**: Multi-level caching for AI responses
-2. **Lazy Loading**: On-demand data fetching
-3. **Batch Operations**: Bulk updates for efficiency
-4. **Indexing**: Strategic database indexing
-5. **Connection Pooling**: Efficient resource utilization
+**Features**:
+- Natural language understanding
+- Intent detection
+- Entity extraction
+- Fallback to structured parsing
 
-### Scalability
-- Horizontal scaling for API servers
-- Queue-based task processing
-- Efficient pagination for large datasets
-- Progressive web app capabilities
+#### 2. Task Suggester
+**Purpose**: Provide intelligent task suggestions
+
+**Features**:
+- Task breakdown suggestions
+- Priority recommendations
+- Time estimates
+- Similar task detection
+
+#### 3. Intent Analyzer
+**Purpose**: Understand user intent from context
+
+**Features**:
+- Context maintenance
+- Multi-turn conversations
+- Ambiguity resolution
+- Command suggestions
+
+### AI Integration Pattern
+```typescript
+// Core functionality works without AI
+class TaskService {
+  private aiEnhancer?: AIEnhancer;
+
+  constructor(options: { enableAI?: boolean }) {
+    if (options.enableAI) {
+      this.aiEnhancer = new AIEnhancer();
+    }
+  }
+
+  async createTask(input: string | CreateTaskParams): Promise<Task> {
+    let params: CreateTaskParams;
+    
+    if (typeof input === 'string' && this.aiEnhancer) {
+      // Try AI parsing
+      try {
+        params = await this.aiEnhancer.parseTaskInput(input);
+      } catch {
+        // Fallback to structured command
+        throw new Error('Please use structured format: task add <title>');
+      }
+    } else {
+      params = input as CreateTaskParams;
+    }
+    
+    // Core logic works the same regardless
+    return this.taskEngine.createTask(params);
+  }
+}
+```
+
+## Data Models
+
+### Core Entities
+```typescript
+interface Project {
+  id: string
+  name: string
+  description?: string
+  status: 'active' | 'archived' | 'completed'
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface Task {
+  id: string
+  projectId: string
+  title: string
+  description?: string
+  status: 'todo' | 'in-progress' | 'done'
+  priority: 'low' | 'medium' | 'high'
+  dueDate?: Date
+  dependencies?: string[]
+  tags?: string[]
+  createdAt: Date
+  updatedAt: Date
+  completedAt?: Date
+}
+```
 
 ## Development Patterns
 
-### Design Patterns Used
-- **Repository Pattern**: Data access abstraction
-- **Strategy Pattern**: Swappable AI providers
-- **Observer Pattern**: Real-time updates
-- **Factory Pattern**: Dynamic component creation
-- **Middleware Pattern**: Request processing pipeline
+### Dependency Injection
+```typescript
+// Core services work without AI
+const taskEngine = new TaskEngine(taskRepository);
+const projectManager = new ProjectManager(projectRepository);
+const analyticsEngine = new AnalyticsEngine(taskRepository, projectRepository);
 
-### Code Organization
+// AI can be injected later
+if (config.enableAI) {
+  const aiService = new AIService(config.aiProvider);
+  taskEngine.setAIEnhancer(aiService);
+}
 ```
-src/
-├── core/               # Business logic
-│   ├── tasks/
-│   ├── projects/
-│   └── analytics/
-├── ai/                 # AI services
-│   ├── providers/
-│   ├── processors/
-│   └── templates/
-├── interfaces/         # User interfaces
-│   ├── cli/
-│   ├── api/
-│   └── web/
-├── integrations/       # External services
-├── data/              # Data layer
-│   ├── repositories/
-│   ├── migrations/
-│   └── models/
-└── shared/            # Shared utilities
+
+### Progressive Enhancement
+1. **Phase 1-3**: Build complete functionality without AI
+2. **Phase 4**: Add AI as optional enhancement
+3. **Always**: Maintain non-AI fallbacks
+
+### Feature Flags
+```typescript
+interface Features {
+  enableAI: boolean
+  enableNaturalLanguage: boolean
+  enableTaskSuggestions: boolean
+  enablePredictiveAnalytics: boolean
+}
 ```
 
 ## Testing Strategy
 
-### Test Levels
-1. **Unit Tests**: Individual component testing
-2. **Integration Tests**: Component interaction testing
-3. **E2E Tests**: Full user workflow testing
-4. **AI Tests**: LLM response quality testing
+### Core Testing (No AI Required)
+```typescript
+describe('TaskEngine', () => {
+  it('creates tasks with structured input', async () => {
+    const task = await taskEngine.createTask({
+      title: 'Test Task',
+      projectId: '123'
+    });
+    expect(task.title).toBe('Test Task');
+  });
+});
+```
 
-### Test Infrastructure
-- Mock LLM responses for consistent testing
-- In-memory database for fast tests
-- Fixture management for test data
-- Performance benchmarking suite
+### AI Testing (When Added)
+```typescript
+describe('TaskEngine with AI', () => {
+  it('creates tasks from natural language', async () => {
+    const task = await taskEngine.createTask(
+      'Create a task to review the budget by Friday'
+    );
+    expect(task.title).toContain('review the budget');
+    expect(task.dueDate).toBeDefined();
+  });
+
+  it('falls back when AI fails', async () => {
+    mockAIService.fail();
+    await expect(
+      taskEngine.createTask('invalid input')
+    ).rejects.toThrow('Please use structured format');
+  });
+});
+```
+
+## Security Architecture
+
+### Core Security
+- Input validation for all commands
+- SQL injection prevention
+- Local data encryption
+- Secure credential storage
+
+### AI Security (When Added)
+- Prompt injection prevention
+- API key management
+- Rate limiting
+- Response validation
+
+## Performance Considerations
+
+### Core Performance
+- SQLite indexes on common queries
+- Efficient pagination
+- Lazy loading
+- < 100ms response time for all operations
+
+### AI Performance (When Added)
+- Response caching
+- Streaming for long operations
+- Timeout handling
+- Graceful degradation
 
 ## Deployment Architecture
 
-### Deployment Options
-1. **Local Only**: Single user, full privacy
-2. **Self-Hosted**: Personal server deployment
-3. **Cloud Hybrid**: Local app with cloud sync
-4. **Full Cloud**: SaaS deployment (future)
-
-### Container Architecture
+### Phase 1-3 Deployment
 ```dockerfile
-# Multi-stage build for optimization
-FROM node:18-alpine AS builder
-# Build stage
-
-FROM node:18-alpine AS runtime
-# Runtime with minimal dependencies
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --production
+COPY . .
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
 ```
 
-## Monitoring and Observability
+### Phase 4+ Deployment
+- Add AI service configuration
+- Optional API key management
+- Feature flag configuration
+- Monitoring for AI usage
 
-### Metrics Collection
-- Performance metrics (response times, throughput)
-- AI metrics (token usage, response quality)
-- Business metrics (task completion, user engagement)
-- System metrics (resource usage, errors)
+## Architecture Principles
 
-### Logging Strategy
-- Structured logging (JSON format)
-- Log levels: ERROR, WARN, INFO, DEBUG
-- Centralized log aggregation
-- Privacy-aware logging (no PII)
+1. **Core Independence**: Every feature must work without AI
+2. **Progressive Enhancement**: AI improves but never replaces
+3. **Graceful Degradation**: System remains functional if AI fails
+4. **User Control**: AI features can be completely disabled
+5. **Local First**: Full functionality without internet (except AI)
+6. **Performance First**: Core operations < 100ms
+7. **Type Safety**: Full TypeScript coverage
+8. **Testability**: All components independently testable
 
-## Future Considerations
-
-### Planned Architectural Improvements
-1. **Plugin System**: User-extensible functionality
-2. **Offline AI**: Local LLM support
-3. **Federation**: Multi-instance collaboration
-4. **Advanced Analytics**: ML-based insights
-5. **Voice Interface**: Natural speech interaction
-
-### Technology Considerations
-- WebAssembly for performance-critical paths
-- Edge computing for distributed processing
-- Blockchain for verifiable task history
-- Federated learning for privacy-preserving AI
+This architecture ensures Ezra is a robust project management tool that works excellently on its own, with AI serving as an optional enhancement layer that can be added when desired.
