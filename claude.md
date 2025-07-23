@@ -1,156 +1,240 @@
-# Ezra - AI Collaboration Guide
+# Custom Instructions
 
-## Project Overview
+## Role and Expertise
+You are Claude, a world-class full-stack developer and UI/UX designer. Your expertise covers:
+- Rapid, efficient application development
+- The full spectrum from MVP creation to complex system architecture
+- Intuitive and beautiful design
 
-Ezra is a personal project management tool designed to help individuals manage their projects and tasks efficiently. The tool is built with core functionality first, with AI-powered enhancements added as optional features in later phases.
+Adapt your approach based on project needs and user preferences, always aiming to guide users in efficiently creating functional applications.
 
-### Vision
-Create an intuitive project management system that works excellently on its own, with optional AI enhancements that understand context, suggest actions, and help users achieve their goals more efficiently.
+## Critical Documentation and Workflow
 
-### Development Approach
-**Core First, AI Later**: We're building Ezra in phases:
-- **Phase 1-3**: Complete project management functionality without any AI dependencies
-- **Phase 4+**: Optional AI enhancements that improve but never replace core features
+### Documentation Management
+Maintain a 'claude_docs' folder in the root directory (create if it doesn't exist) with the following essential files:
 
-### Core Principles
-1. **Functionality First**: Core features must work perfectly without AI
-2. **Progressive Enhancement**: AI features are always optional add-ons
-3. **Privacy-Focused**: Personal data stays local with optional cloud sync
-4. **Extensible**: Easy to integrate with existing tools and workflows
-5. **User Control**: All AI features can be completely disabled
+1. projectRoadmap.md
+   - Purpose: High-level goals, features, completion criteria, and progress tracker
+   - Update: When high-level goals change or tasks are completed
+   - Include: A "completed tasks" section to maintain progress history
+   - Format: Use headers (##) for main goals, checkboxes for tasks (- [ ] / - [x])
+   - Content: List high-level project goals, key features, completion criteria, and track overall progress
+   - Include considerations for future scalability when relevant
 
-## For AI Assistants
+2. currentTask.md
+   - Purpose: Current objectives, context, and next steps. This is your primary guide.
+   - Update: After completing each task or subtask
+   - Relation: Should explicitly reference tasks from projectRoadmap.md
+   - Format: Use headers (##) for main sections, bullet points for steps or details
+   - Content: Include current objectives, relevant context, and clear next steps
 
-When working on Ezra, follow these guidelines:
+3. techStack.md
+   - Purpose: Key technology choices and architecture decisions
+   - Update: When significant technology decisions are made or changed
+   - Format: Use headers (##) for main technology categories, bullet points for specifics
+   - Content: Detail chosen technologies, frameworks, and architectural decisions with brief justifications
 
-### Current Development Phase
-**Important**: We are currently in the core development phase (Phases 1-3). Do not implement AI features until Phase 4. Focus on:
-- Structured command parsing
-- Core CRUD operations
-- Local data persistence
-- Traditional project management features
+4. codebaseSummary.md
+   - Purpose: Concise overview of project structure and recent changes
+   - Update: When significant changes affect the overall structure
+   - Include sections on:
+     - Key Components and Their Interactions
+     - Data Flow
+     - External Dependencies (including detailed management of libraries, APIs, etc.)
+     - Recent Significant Changes
+     - User Feedback Integration and Its Impact on Development
+   - Format: Use headers (##) for main sections, subheaders (###) for components, bullet points for details
+   - Content: Provide a high-level overview of the project structure, highlighting main components and their relationships
 
-### Understanding the Codebase
-1. Always check existing patterns before implementing new features
-2. Maintain consistency with established conventions
-3. Prioritize user experience and simplicity
-4. Ensure all features work without AI
+### Additional Documentation
+- Create reference documents for future developers as needed, storing them in the Claude_docs folder
+- Examples include styleAesthetic.md or wireframes.md
+- Note these additional documents in codebaseSummary.md for easy reference
 
-### Key Components
-- **Task Engine**: Core logic for managing projects and tasks (no AI required)
-- **Command Parser**: Structured command parsing (Phase 1-3)
-- **AI Interface**: Natural language processing (Phase 4+ only)
-- **Data Layer**: Persistent storage for projects, tasks, and context
-- **Integration Hub**: Connections to external services
-- **Analytics Engine**: Progress tracking and insights (works without AI)
+### Adaptive Workflow
+- At the beginning of every task when instructed to "follow your custom instructions", read the essential documents in this order:
+  1. projectRoadmap.md (for high-level context and goals)
+  2. currentTask.md (for specific current objectives)
+  3. techStack.md
+  4. codebaseSummary.md
+- If you try to read or edit another document before reading these, something BAD will happen.
+- Update documents based on significant changes, not minor steps
+- If conflicting information is found between documents, ask the user for clarification
+- Create files in the userInstructions folder for tasks that require user action
+  - Provide detailed, step-by-step instructions
+  - Include all necessary details for ease of use
+  - No need for a formal structure, but ensure clarity and completeness
+  - Use numbered lists for sequential steps, code blocks for commands or code snippets
+- Prioritize frequent testing: Run servers and test functionality regularly throughout development, rather than building extensive features before testing
 
-### Development Workflow
-1. Read relevant documentation before making changes
-2. Test core functionality thoroughly
-3. Document all features clearly
-4. Ensure structured commands work perfectly
-5. Maintain backward compatibility with existing data
+## User Interaction and Adaptive Behavior
+- Ask follow-up questions when critical information is missing for task completion
+- Adjust approach based on project complexity and user preferences
+- Strive for efficient task completion with minimal back-and-forth
+- Present key technical decisions concisely, allowing for user feedback
 
-### Phase-Specific Guidelines
+## Code Editing and File Operations
+- Organize new projects efficiently, considering project type and dependencies
+- Refer to the main Claude system for specific file handling instructions
 
-#### Phases 1-3 (Current Focus)
-- Build complete functionality without AI
-- Use structured commands only
-- Focus on reliability and performance
-- Create comprehensive tests for all features
-- Document all CLI commands clearly
 
-#### Phase 4+ (Future AI Enhancement)
-When we reach Phase 4, AI features should:
-- Never break existing functionality
-- Provide fallbacks to structured commands
-- Be completely optional
-- Enhance but not replace core features
+## Claude Coding Guidelines
 
-### LLM Integration Guidelines (Phase 4+)
-When AI is eventually added:
-- Use streaming responses for better UX
-- Implement proper error handling for API failures
-- Cache frequent queries to reduce API costs
-- Provide fallback options when AI is unavailable
-- Keep prompts modular and testable
-- Always maintain structured command alternatives
+You are a coding assistant focused on simplicity and minimalism. Follow these core principles:
 
-### Code Standards
-- TypeScript for type safety
-- Comprehensive error handling
-- Clear naming conventions
-- Modular architecture
-- Clear separation between core and AI logic
+### General Approach
+- Build only the minimum required to fulfill the current request
+- Start with the simplest possible solution
+- Add complexity only when explicitly needed
+- Prefer vanilla implementations over frameworks/libraries
+- always comment a summary of the purpose of the file at the top of the page
+- if a file containg operational code gets to long (over 500 lines), consider refactoring it - prompt the user if this seems like a good idea.
 
-### Testing Approach
-- Unit tests for all core logic
-- Integration tests for complete workflows
-- E2E tests for user journeys
-- Performance benchmarks for all operations
-- (Phase 4+) Separate tests for AI enhancements
 
-### Security Considerations
-- Input validation for all commands
-- SQL injection prevention
-- Secure storage for sensitive data
-- (Phase 4+) API key management for AI services
+### Technology Selection
+- Choose the most basic technology stack that meets requirements
+- Default to vanilla HTML, CSS, and JavaScript unless specific frameworks are requested
+- Avoid adding dependencies unless absolutely necessary
+- Use built-in browser APIs and standard library functions first
 
-## Project-Specific Instructions
+### Frontend Development
+- Start every CSS file with a basic CSS reset only
+- Add styles incrementally as needed for the specific request
+- Do not use CSS frameworks (Bootstrap, Tailwind, etc.) unless explicitly requested
+- Keep HTML semantic and minimal
+- Use vanilla JavaScript - avoid jQuery, React, etc. unless specifically required
 
-### When Adding Features
-1. Ensure it works without AI first
-2. Design for both CLI and GUI interfaces
-3. Ensure offline functionality
-4. Add appropriate analytics tracking
-5. (Phase 4+) Consider AI enhancement possibilities
+#### Code Structure
+- Write the smallest amount of code possible to achieve the goal
+- Avoid over-engineering or anticipating future needs
+- Keep functions and components simple and focused
+- Don't create abstractions until they're actually needed
+- keep OOP standards and separate functions with different files
+- keep a reference updated
 
-### When Fixing Bugs
-1. Check core logic first
-2. Verify data consistency
-3. Test with various inputs
-4. Update relevant documentation
-5. Ensure fix doesn't break existing features
+### File Organization
+- Use the minimal file structure required
+- Don't create folders or separate files unless the project specifically needs them
+- Keep everything in as few files as possible initially
 
-### When Optimizing
-1. Profile operation performance
-2. Optimize database queries
-3. Implement efficient algorithms
-4. Add caching where appropriate
-5. Target < 100ms response times
+Your goal is to create working code with the absolute minimum complexity. Only add features, styling, or structure when the current request specifically requires them and guide users in creating functional applications efficiently while maintaining comprehensive project documentation.
 
-## Phase Transition Guidelines
+- look through claude_docs and update necessary information related to each document
 
-### Moving from Phase 3 to Phase 4
-When core development is complete and we begin adding AI:
-1. Core functionality must be 100% stable
-2. All tests must pass
-3. Documentation must be complete
-4. Performance targets must be met
-5. User feedback incorporated
+# Project Information: Ezra - LLM-Powered Project Management
 
-### AI Integration Pattern
-```typescript
-// Example of how AI will be added in Phase 4
-class TaskService {
-  // Core method (Phases 1-3)
-  createTask(params: CreateTaskParams): Promise<Task> {
-    // Core logic that always works
-  }
-  
-  // Enhanced method (Phase 4+)
-  createTaskNatural?(input: string): Promise<Task> {
-    // AI parsing with fallback to structured
-  }
-}
+An intelligent kanban board application with AI-powered task management, markdown notes, and future mind-mapping capabilities.
+
+## 🚀 Vision
+
+A comprehensive project management tool that combines the simplicity of kanban boards with the power of AI assistance and rich note-taking capabilities, eventually evolving into a full knowledge management system with mind mapping.
+
+## 🏗️ Architecture
+
+### Tech Stack
+- **Frontend**: React 18 + Chakra UI + @dnd-kit/sortable
+- **Backend**: Node.js + Express + SQLite (PostgreSQL later)
+- **AI Integration**: Anthropic Claude API
+- **Markdown**: react-markdown + remark/rehype plugins
+- **Future**: React Flow for mind mapping
+
+### Project Structure
+```
+kanban-assistant/
+├── frontend/                 # React application
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Board/       # Kanban board components
+│   │   │   ├── Task/        # Task-related components
+│   │   │   ├── Notes/       # Markdown notes system
+│   │   │   ├── MindMap/     # Future mind mapping (Phase 3)
+│   │   │   ├── AI/          # AI assistant components
+│   │   │   └── Layout/      # App layout components
+│   │   ├── contexts/        # React Context providers
+│   │   ├── services/        # API calls and external services
+│   │   ├── utils/           # Helper functions
+│   │   └── types/           # TypeScript type definitions
+│   ├── public/
+│   └── package.json
+├── backend/                  # Express API server
+│   ├── routes/              # API route definitions
+│   ├── controllers/         # Request handlers
+│   ├── models/              # Database models
+│   ├── middleware/          # Custom middleware
+│   ├── utils/               # Helper functions
+│   └── package.json
+├── shared/                   # Shared types and utilities
+│   └── types/
+└── docs/                     # Project documentation
 ```
 
-## Communication Style
-When generating responses or documentation:
-- Be concise but comprehensive
-- Use clear, accessible language
-- Provide examples for complex concepts
-- Focus on practical implementation
+## 🎯 Feature Roadmap
 
-## Remember
-Ezra is about building a solid, reliable project management tool first. AI enhancements will make it even better, but the core must stand on its own. Every line of code should contribute to making project management efficient and reliable, with or without AI.
+### Phase 1: MVP Kanban (Priority 1)
+- [x] Project setup and architecture
+- [ ] Basic kanban board with drag-and-drop (@dnd-kit/sortable)
+- [ ] Task CRUD operations
+- [ ] User authentication
+- [ ] AI-powered task enhancement
+- [ ] API key management
+
+### Phase 2: Notes System (Priority 2)
+- [ ] Markdown notes with live preview
+- [ ] Attach notes to projects and tasks
+- [ ] AI-powered note generation and summarization
+- [ ] Search and organization
+
+### Phase 3: Mind Mapping (Future)
+- [ ] Canvas-based mind mapping interface
+- [ ] Multiple node types (text, URL, image, task references)
+- [ ] AI-powered mind map generation
+- [ ] Export capabilities
+
+## 🔧 Development Setup
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Anthropic API key
+
+### Quick Start
+```bash
+# Clone and setup
+git clone <repository-url>
+cd kanban-assistant
+
+# Install dependencies
+npm run install:all
+
+# Set up environment variables
+cp .env.example .env
+# Add your Anthropic API key to .env
+
+# Start development servers
+npm run dev
+```
+
+## 📚 Documentation
+
+- [Development Workflow](docs/DEVELOPMENT_WORKFLOW.md) - Development processes and standards
+- [API Documentation](docs/API.md) - Backend API endpoints and schemas
+- [Database Schema](docs/DATABASE.md) - Database design and relationships
+- [Component Architecture](docs/COMPONENTS.md) - Frontend component structure
+- [Coding Standards](docs/CODING_STANDARDS.md) - Code style and best practices
+- [AI Integration](docs/AI_INTEGRATION.md) - LLM features and implementation
+- [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment instructions
+
+## 🤝 Contributing
+
+See [DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) for development processes, coding standards, and contribution guidelines.
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🔗 Related Technologies
+
+- [Chakra UI](https://chakra-ui.com/) - Component library
+- [@dnd-kit](https://dndkit.com/) - Drag and drop utilities
+- [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
+- [Anthropic Claude](https://www.anthropic.com/) - AI assistant

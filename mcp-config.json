@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["tsx", "/Users/shelbyklein/npm/context7/src/index.ts", "--transport", "http", "--port", "7001"]
+    }
+  }
+}
