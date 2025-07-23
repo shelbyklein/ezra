@@ -9,7 +9,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:migrate": "knex migrate:latest",
+    "db:migrate:make": "knex migrate:make",
+    "db:migrate:rollback": "knex migrate:rollback",
+    "db:seed": "knex seed:run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.0",
