@@ -160,7 +160,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             <Button
               colorScheme="blue"
               type="submit"
-              isLoading={isSubmitting || createMutation.isLoading}
+              isLoading={isSubmitting || createMutation.isPending}
             >
               {isEditing ? 'Update' : 'Create'}
             </Button>

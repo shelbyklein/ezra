@@ -12,7 +12,23 @@ const PORT = process.env.PORT || 3001
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    // Allow requests with no origin (like Postman or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }))
 app.use(express.json())
@@ -22,6 +38,7 @@ import authRoutes from '../routes/auth.routes'
 import projectRoutes from '../routes/projects.routes'
 import taskRoutes from '../routes/tasks.routes'
 import notesRoutes from '../routes/notes.routes'
+import devRoutes from '../routes/dev.routes'
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -39,6 +56,12 @@ app.use('/api/tasks', taskRoutes)
 
 // Notes routes
 app.use('/api/notes', notesRoutes)
+
+// Development routes (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/dev', devRoutes)
+  console.log('🛠️  Development routes enabled at /api/dev')
+}
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

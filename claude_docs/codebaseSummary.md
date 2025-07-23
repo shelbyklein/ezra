@@ -29,7 +29,8 @@ Ezra/
 │   │   ├── auth.routes.ts # Authentication endpoints
 │   │   ├── projects.routes.ts # Project CRUD
 │   │   ├── tasks.routes.ts # Task CRUD + reordering
-│   │   └── notes.routes.ts # Notes CRUD
+│   │   ├── notes.routes.ts # Notes CRUD
+│   │   └── dev.routes.ts  # Development tools (reset, seed)
 │   ├── middleware/
 │   │   └── auth.middleware.ts # JWT authentication
 │   ├── models/            # Database models
@@ -79,14 +80,16 @@ Ezra/
 - **Projects/** - Project management
   - ProjectList - Grid view of all projects
   - CreateProjectModal - Create/edit project form
+- **Board/** - Kanban board components
+  - Board - Main board with DndContext and drag handlers
+  - BoardColumn - Droppable columns with SortableContext
+  - TaskCard - Draggable cards with priority/date indicators
 
 ### Frontend Components (Planned)
-- **Board/** - Kanban board implementation
-  - Board - Main board container
-  - Column - Kanban columns (Todo, In Progress, Done)
-  - TaskCard - Draggable task cards
+- **Settings/** - Application settings
+  - DeveloperTools - Data reset and testing tools (dev only)
 - **Tasks/** - Task management
-  - CreateTaskForm - Add new tasks
+  - CreateTaskForm - Quick task creation
   - TaskDetailModal - View/edit task details
 - **AI/** - AI integration
   - TaskEnhancer - AI-powered task improvement
@@ -97,6 +100,7 @@ Ezra/
   - projects.routes.ts - Project CRUD operations
   - tasks.routes.ts - Task CRUD + reordering endpoint
   - notes.routes.ts - Notes CRUD operations
+  - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
   - Project.ts - Project model
@@ -171,7 +175,7 @@ Ezra/
 - API endpoint testing suite
 - Authentication middleware with user context
 
-### Frontend Implementation (In Progress)
+### Frontend Implementation (Completed)
 - React Router setup with protected routes
 - Authentication system with JWT management
 - Login and register forms with validation
@@ -180,6 +184,17 @@ Ezra/
 - Chakra UI component integration
 - Fixed @chakra-ui/icons dependency issue
 - Application layout with responsive navigation
+- Kanban board with three-column layout
+- Full drag-and-drop functionality with @dnd-kit
+- Optimistic updates for smooth UX
+- Task cards with priority and due date display
+
+### Development Tools (In Progress)
+- Backend dev routes for data management
+- Sample data seeding capability
+- Database reset functionality
+- User-specific data clearing
+- Environment-based protection (dev only)
 
 ## User Feedback Integration and Its Impact on Development
 

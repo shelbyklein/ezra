@@ -12,13 +12,14 @@ import { Register } from './components/Auth/Register';
 import { AppLayout } from './components/Layout/AppLayout';
 import { ProjectList } from './components/Projects/ProjectList';
 import { Board } from './components/Board/Board';
+import { Settings } from './components/Settings/Settings';
 
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
     },
   },
 });
@@ -46,6 +47,7 @@ function App() {
                 <Route index element={<Navigate to="/projects" replace />} />
                 <Route path="projects" element={<ProjectList />} />
                 <Route path="board/:projectId?" element={<Board />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
               
               {/* Catch all */}

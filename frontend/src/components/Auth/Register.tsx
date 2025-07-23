@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { LoginDevTools } from './LoginDevTools';
 
 interface RegisterFormData {
   email: string;
@@ -71,7 +72,8 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <Container maxW="lg" py={{ base: '12', md: '24' }}>
+    <>
+      <Container maxW="lg" py={{ base: '12', md: '24' }}>
       <VStack spacing="8">
         <VStack spacing="2">
           <Heading size="xl">Create an account</Heading>
@@ -193,5 +195,7 @@ export const Register: React.FC = () => {
         </Text>
       </VStack>
     </Container>
+    <LoginDevTools />
+    </>
   );
 };

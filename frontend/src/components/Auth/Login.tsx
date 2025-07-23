@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { LoginDevTools } from './LoginDevTools';
 
 interface LoginFormData {
   email: string;
@@ -67,8 +68,9 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <Container maxW="lg" py={{ base: '12', md: '24' }}>
-      <VStack spacing="8">
+    <>
+      <Container maxW="lg" py={{ base: '12', md: '24' }}>
+        <VStack spacing="8">
         <VStack spacing="2">
           <Heading size="xl">Welcome back</Heading>
           <Text color="gray.600">Sign in to your account to continue</Text>
@@ -147,5 +149,7 @@ export const Login: React.FC = () => {
         </Text>
       </VStack>
     </Container>
+    <LoginDevTools />
+    </>
   );
 };

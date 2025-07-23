@@ -90,3 +90,70 @@ Navigate to http://localhost:5173 in your browser
 
 ### Fixed Issues
 - ✅ Missing @chakra-ui/icons package - now installed
+- ✅ Drag-and-drop functionality implemented
+- ✅ Development data management tools added
+
+## Development Tools for Testing
+
+### Reset Database During Testing
+The application now includes development-only API endpoints for managing test data:
+
+#### 1. Clear All Data
+```bash
+curl -X DELETE http://localhost:3001/api/dev/reset-all
+```
+This removes all users, projects, tasks, and notes from the database.
+
+#### 2. Clear Your Data Only
+If you're logged in and want to clear just your data:
+```bash
+curl -X DELETE http://localhost:3001/api/dev/reset-user \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### 3. Generate Sample Data
+Create a test user with sample projects and tasks:
+```bash
+curl -X POST http://localhost:3001/api/dev/seed
+```
+This creates:
+- Test user: email: test@example.com, password: testpass123
+- 3 sample projects with 6 tasks each
+- Tasks with various statuses, priorities, and due dates
+
+#### 4. Check Database Statistics
+```bash
+curl http://localhost:3001/api/dev/stats
+```
+Shows counts of users, projects, tasks, and notes.
+
+### Testing the Drag-and-Drop Kanban Board
+1. Log in with your account or the test account
+2. Navigate to a project with tasks
+3. Test drag-and-drop functionality:
+   - Drag tasks within the same column to reorder
+   - Drag tasks between columns to change status
+   - Watch for visual feedback during drag
+   - Changes are automatically saved
+
+### Using the Developer Tools UI
+
+The application now includes a Developer Tools panel in the Settings page:
+
+1. Click on your avatar in the top right corner
+2. Select "Settings" from the dropdown menu
+3. Navigate to the "Developer Tools" tab (only visible in development mode)
+
+From the Developer Tools panel, you can:
+- View database statistics (users, projects, tasks, notes counts)
+- **Reset All Data** - Clears the entire database with confirmation
+- **Reset My Data Only** - Clears only your projects and tasks
+- **Generate Sample Data** - Creates test user with sample projects
+- View API endpoint documentation
+
+All actions require confirmation before executing and will reload the page after completion to ensure the UI is refreshed.
+
+### Coming Soon
+- Database backup/restore functionality
+- Data export/import in JSON format
+- Quick actions in the main navigation
