@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     // Get token from header
     const authHeader = req.headers.authorization;
@@ -55,7 +55,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 }
 
 // Optional auth middleware - doesn't require token but adds user if present
-export function optionalAuthMiddleware(req: Request, res: Response, next: NextFunction) {
+export function optionalAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -72,3 +72,6 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
     next();
   }
 }
+
+// Default export
+export default authenticate;

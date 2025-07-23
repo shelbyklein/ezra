@@ -26,7 +26,10 @@ Phase 1 MVP development in progress:
 - ✅ Authentication endpoints (register/login) created
 - ✅ JWT token generation implemented
 - ✅ Authentication middleware created
-- 🔄 Next: Create project and task CRUD endpoints
+- ✅ Project CRUD endpoints created
+- ✅ Task CRUD endpoints with drag-and-drop support created
+- ✅ Notes CRUD endpoints created
+- 🔄 Next: Test API endpoints and build frontend kanban board
 
 ## Next Steps
 1. Design and implement database schema (users, projects, tasks)

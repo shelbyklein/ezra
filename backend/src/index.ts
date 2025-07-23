@@ -19,6 +19,9 @@ app.use(express.json())
 
 // Import routes
 import authRoutes from '../routes/auth.routes'
+import projectRoutes from '../routes/projects.routes'
+import taskRoutes from '../routes/tasks.routes'
+import notesRoutes from '../routes/notes.routes'
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -27,6 +30,15 @@ app.get('/api/health', (req, res) => {
 
 // Auth routes
 app.use('/api/auth', authRoutes)
+
+// Project routes
+app.use('/api/projects', projectRoutes)
+
+// Task routes
+app.use('/api/tasks', taskRoutes)
+
+// Notes routes
+app.use('/api/notes', notesRoutes)
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

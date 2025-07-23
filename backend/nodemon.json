@@ -1,5 +1,5 @@
 {
-  "watch": ["src"],
+  "watch": ["src", "routes", "middleware", "models", "utils"],
   "ext": "ts",
   "exec": "ts-node src/index.ts",
   "env": {
