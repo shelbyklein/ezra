@@ -1,0 +1,48 @@
+{
+  "name": "ezra",
+  "version": "1.0.0",
+  "description": "LLM-Powered Project Management Tool",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:frontend-only": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:backend-only": "npm run dev --workspace=backend",
+    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:shared": "npm run build --workspace=shared",
+    "install:all": "npm install",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ezra.git"
+  },
+  "keywords": [
+    "kanban",
+    "project-management",
+    "ai",
+    "claude",
+    "task-management"
+  ],
+  "author": "",
+  "license": "MIT"
+}
