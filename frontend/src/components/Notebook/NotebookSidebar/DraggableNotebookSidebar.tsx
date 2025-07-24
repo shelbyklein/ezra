@@ -126,6 +126,26 @@ const SortableItem: React.FC<{
   );
 };
 
+// Droppable Root Zone Component
+const DroppableRootZone: React.FC<{ children: React.ReactNode; isOver?: boolean }> = ({ children, isOver }) => {
+  const { setNodeRef } = useDroppable({
+    id: 'root-drop-zone',
+  });
+
+  return (
+    <Box 
+      ref={setNodeRef} 
+      w="full" 
+      minH="100%"
+      bg={isOver ? 'bg.hover' : undefined}
+      borderRadius="md"
+      transition="background-color 0.2s"
+    >
+      {children}
+    </Box>
+  );
+};
+
 export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> = ({
   notebooks,
   currentNotebook,
@@ -157,6 +177,13 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
     if (!currentNotebook) return [];
     
     const items: DraggableItem[] = [];
+    
+    // Add root drop zone as a special item
+    items.push({
+      id: 'root-drop-zone',
+      type: 'folder' as const,
+      data: { id: -1, name: 'Root', parent_folder_id: null } as any,
+    });
     
     // Add all folders
     currentNotebook.folders.forEach(folder => {
@@ -252,7 +279,7 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
     
     if (!over || !currentNotebook) {
       setActiveId(null);
-    setOverId(null);
+      setOverId(null);
       return;
     }
 
@@ -261,14 +288,39 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
     
     if (!activeItem) {
       setActiveId(null);
-    setOverId(null);
+      setOverId(null);
       return;
     }
 
     // Prepare updates based on drag operation
     const updates: any[] = [];
     
-    if (activeItem.type === 'folder' && overItem?.type === 'folder') {
+    // Check if dropping on root drop zone
+    if (over.id === 'root-drop-zone') {
+      if (activeItem.type === 'page') {
+        const activePage = activeItem.data as Page;
+        // Move page to root if it's not already there
+        if (activePage.folder_id !== null) {
+          updates.push({
+            type: 'page',
+            id: activePage.id,
+            folder_id: null,
+            position: 0,
+          });
+        }
+      } else if (activeItem.type === 'folder') {
+        const activeFolder = activeItem.data as Folder;
+        // Move folder to root if it's not already there
+        if (activeFolder.parent_folder_id !== null) {
+          updates.push({
+            type: 'folder',
+            id: activeFolder.id,
+            parent_folder_id: null,
+            position: 0,
+          });
+        }
+      }
+    } else if (activeItem.type === 'folder' && overItem?.type === 'folder') {
       // Dragging folder to another folder
       const activeFolder = activeItem.data as Folder;
       const overFolder = overItem.data as Folder;
@@ -612,13 +664,20 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
                 </Menu>
               </HStack>
 
-              {/* Render root-level folders */}
-              {currentNotebook.folders
-                .filter((folder) => !folder.parent_folder_id)
-                .map((folder) => renderFolder(folder))}
+              <DroppableRootZone isOver={overId === 'root-drop-zone'}>
+                <VStack align="stretch" spacing={1} p={2}>
+                  {/* Render root-level folders */}
+                  {currentNotebook.folders
+                    .filter((folder) => !folder.parent_folder_id)
+                    .map((folder) => renderFolder(folder))}
 
-              {/* Render root-level pages */}
-              {renderPages(currentNotebook.pages.filter((page) => !page.folder_id))}
+                  {/* Render root-level pages */}
+                  {renderPages(currentNotebook.pages.filter((page) => !page.folder_id))}
+                  
+                  {/* Add some minimum height to make drop zone more accessible */}
+                  <Box minH="50px" />
+                </VStack>
+              </DroppableRootZone>
             </VStack>
           )}
 

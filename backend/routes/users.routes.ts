@@ -33,7 +33,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {
     const user = await db('users')
       .where({ id: req.user!.userId })
-      .select('id', 'email', 'name', 'created_at', 'updated_at')
+      .select('id', 'email', 'username', 'full_name', 'created_at', 'updated_at')
       .first();
 
     if (!user) {
