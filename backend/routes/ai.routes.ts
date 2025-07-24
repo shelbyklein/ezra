@@ -300,6 +300,19 @@ You must respond with:
   }
 }
 
+User: "Add a dragon to the story and highlight it"
+You must respond with:
+{
+  "response": "I'll add a dragon to your story and highlight the new content.",
+  "action": "update_page",
+  "parameters": {
+    "pageId": ${pageContext?.id || 'null'},
+    "append": true,
+    "highlight": true,
+    "content": "\\n\\nSuddenly, a magnificent dragon appeared in the sky, its scales shimmering like emeralds in the sunlight. The dragon circled overhead before landing gracefully nearby, its intelligent eyes studying the scene with ancient wisdom."
+  }
+}
+
 User: "Add a heading 'Introduction' to this page"
 You must respond with:
 {
@@ -325,6 +338,8 @@ You must respond with:
 }
 
 IMPORTANT: When updating a page, ALWAYS include the pageId parameter. The current page ID is: ${pageContext?.id || 'null'}
+
+You can use the "highlight" parameter set to true when adding content to make the newly added text highlighted in yellow. This is useful when the user asks you to highlight what was added or to make new content stand out.
 
 ALWAYS respond with a JSON object when the user requests an action. The response field should be conversational, and the action field should specify what to do.`;
 
@@ -469,7 +484,7 @@ ALWAYS respond with a JSON object when the user requests an action. The response
 });
 
 // Helper function to parse markdown to TipTap JSON format
-function parseMarkdownToTipTap(markdown: string): any[] {
+function parseMarkdownToTipTap(markdown: string, highlight: boolean = false): any[] {
   const lines = markdown.split('\n');
   const nodes: any[] = [];
   
@@ -482,13 +497,17 @@ function parseMarkdownToTipTap(markdown: string): any[] {
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       const level = headingMatch[1].length;
+      const textNode: any = {
+        type: 'text',
+        text: headingMatch[2]
+      };
+      if (highlight) {
+        textNode.marks = [{ type: 'highlight' }];
+      }
       nodes.push({
         type: 'heading',
         attrs: { level },
-        content: [{
-          type: 'text',
-          text: headingMatch[2]
-        }]
+        content: [textNode]
       });
       continue;
     }
@@ -498,12 +517,16 @@ function parseMarkdownToTipTap(markdown: string): any[] {
       const text = line.replace(/^[\*\-]\s+/, '');
       // For simplicity, create as paragraph with bullet prefix
       // In a real implementation, we'd group these into proper list nodes
+      const bulletTextNode: any = {
+        type: 'text',
+        text: '• ' + text
+      };
+      if (highlight) {
+        bulletTextNode.marks = [{ type: 'highlight' }];
+      }
       nodes.push({
         type: 'paragraph',
-        content: [{
-          type: 'text',
-          text: '• ' + text
-        }]
+        content: [bulletTextNode]
       });
       continue;
     }
@@ -514,9 +537,13 @@ function parseMarkdownToTipTap(markdown: string): any[] {
     
     // Handle bold text
     currentText = currentText.replace(/\*\*(.*?)\*\*/g, (match, text) => {
+      const marks: any[] = [{ type: 'bold' }];
+      if (highlight) {
+        marks.push({ type: 'highlight' });
+      }
       content.push({
         type: 'text',
-        marks: [{ type: 'bold' }],
+        marks,
         text: text
       });
       return '\u0000'; // Placeholder
@@ -524,9 +551,13 @@ function parseMarkdownToTipTap(markdown: string): any[] {
     
     // Handle italic text
     currentText = currentText.replace(/\*(.*?)\*/g, (match, text) => {
+      const marks: any[] = [{ type: 'italic' }];
+      if (highlight) {
+        marks.push({ type: 'highlight' });
+      }
       content.push({
         type: 'text',
-        marks: [{ type: 'italic' }],
+        marks,
         text: text
       });
       return '\u0000'; // Placeholder
@@ -539,10 +570,14 @@ function parseMarkdownToTipTap(markdown: string): any[] {
     
     for (const part of parts) {
       if (part) {
-        finalContent.push({
+        const plainTextNode: any = {
           type: 'text',
           text: part
-        });
+        };
+        if (highlight) {
+          plainTextNode.marks = [{ type: 'highlight' }];
+        }
+        finalContent.push(plainTextNode);
       }
       if (contentIndex < content.length) {
         finalContent.push(content[contentIndex]);
@@ -552,7 +587,9 @@ function parseMarkdownToTipTap(markdown: string): any[] {
     
     nodes.push({
       type: 'paragraph',
-      content: finalContent.length > 0 ? finalContent : [{ type: 'text', text: line }]
+      content: finalContent.length > 0 ? finalContent : [
+        highlight ? { type: 'text', text: line, marks: [{ type: 'highlight' }] } : { type: 'text', text: line }
+      ]
     });
   }
   
@@ -714,14 +751,16 @@ async function executeAction(action: string, parameters: any, userId: number, co
         // If append mode, get current content and append
         if (parameters.append) {
           const currentContent = JSON.parse(pageCheck.content);
-          // Parse markdown content into TipTap nodes
-          const contentNodes = parseMarkdownToTipTap(parameters.content);
+          // Parse markdown content into TipTap nodes with optional highlight
+          const contentNodes = parseMarkdownToTipTap(parameters.content, parameters.highlight);
+          
           currentContent.content = currentContent.content || [];
           currentContent.content.push(...contentNodes);
           newContent = JSON.stringify(currentContent);
         } else if (typeof parameters.content === 'string') {
-          // Replace content - parse markdown to TipTap format
-          const contentNodes = parseMarkdownToTipTap(parameters.content);
+          // Replace content - parse markdown to TipTap format with optional highlight
+          const contentNodes = parseMarkdownToTipTap(parameters.content, parameters.highlight);
+          
           newContent = JSON.stringify({
             type: 'doc',
             content: contentNodes

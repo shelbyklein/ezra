@@ -26,10 +26,25 @@
   - @dnd-kit/sortable - Sortable lists
   - @dnd-kit/utilities - Helper functions
 
-### Markdown
-- **react-markdown** - Markdown rendering
-- **remark plugins** - Markdown processing
-- **rehype plugins** - HTML processing
+### Rich Text Editing (Implemented)
+- **TipTap 2** - WYSIWYG editor for notebooks ✅
+  - StarterKit (excluding codeBlock and link to avoid duplicates)
+  - Typography extension
+  - Highlight extension
+  - CodeBlockLowlight with syntax highlighting
+  - Image extension
+  - Link extension
+  - Placeholder extension
+  - Custom slash commands
+- **Lowlight** - Syntax highlighting for code blocks ✅
+  - JavaScript, TypeScript, HTML, CSS, Python support
+
+### Markdown (Implemented)
+- **react-markdown** - Markdown rendering in chat ✅
+- **Custom markdown to TipTap converter** - For AI-generated content ✅
+  - Parses markdown text to TipTap JSON format
+  - Supports paragraphs, headings, lists, code blocks
+  - Enables AI to edit notebook pages
 
 ### UI Components and Utilities (Implemented)
 - **Framer Motion** - Animations for chat bubble ✅
@@ -53,7 +68,7 @@
   - Easy setup for MVP
   - No additional services required
   - Using with Knex.js for migrations
-  - Tables: users, projects, tasks, notes, tags, task_tags, project_tags, attachments
+  - Tables: users, projects, tasks, notes, tags, task_tags, project_tags, attachments, notebooks, folders, pages
 - **PostgreSQL** (future) - Production database
   - Better performance at scale
   - Advanced features
@@ -79,7 +94,10 @@
   - Smart suggestions ✅
   - Natural language task creation ✅
   - Conversational chat interface ✅
+  - Context-aware notebook editing ✅
+  - Markdown to TipTap conversion ✅
   - Model: Claude 3.5 Sonnet (claude-3-5-sonnet-20241022) ✅
+  - Temperature: 0.3 for consistent responses ✅
 
 ## Shared
 

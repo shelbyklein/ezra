@@ -117,6 +117,10 @@ Ezra/
   - CreateFolderModal - New folder creation
 - **AI/** - AI integration components
   - ChatBubble - Floating chat interface in bottom right ✅
+    - Context-aware of current notebook/page location ✅
+    - Supports task CRUD operations ✅
+    - Supports notebook page editing via natural language ✅
+    - Real-time query invalidation after actions ✅
   - ChatInterface - Full-screen chat (replaced by bubble) ✅
   - NaturalLanguageInput - Command bar (Cmd/Ctrl + K) ✅
 - **Dashboard/** - Recent activity display
@@ -133,6 +137,9 @@ Ezra/
   - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint
   - users.routes.ts - User profile + API key management
   - ai.routes.ts - AI chat endpoint (/chat) for conversational interface
+    - Context-aware processing (current notebook/page/project)
+    - Action execution (task CRUD, page updates, navigation)
+    - Markdown to TipTap conversion for page editing
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -143,6 +150,7 @@ Ezra/
 - **utils/** - Helper functions
   - jwt.ts - Token generation and verification
   - anthropic.ts - Claude API integration, task enhancement, and natural language parsing
+  - parseMarkdownToTipTap() - Converts markdown to TipTap JSON format
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
@@ -280,6 +288,10 @@ Ezra/
 - Floating chat bubble interface
 - Backend AI endpoints (/chat, /natural-language)
 - Model updated to Claude 3.5 Sonnet
+- AI-powered notebook page editing
+- Markdown to TipTap conversion
+- Real-time content updates after AI actions
+- Fixed React hooks errors in chat component
 
 ### Remaining for MVP
 - Keyboard shortcuts (N, E, Del, Space, Arrow keys, /)

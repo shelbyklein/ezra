@@ -70,6 +70,25 @@ Finalize MVP features and prepare for production deployment with comprehensive t
 ✅ Time since last update display
 ✅ Chat bubble available on all pages
 
+### AI Chat Functionality Improvements
+✅ Fixed React hooks error in ChatBubble component
+✅ Implemented task CRUD operations through chat
+✅ Added delete_task action to executeAction function
+✅ Improved JSON parsing with better error handling
+✅ Added fallback patterns for task creation
+✅ Lower temperature for consistent AI responses
+✅ Debug logging for action execution
+
+### Notebook AI Integration
+✅ Context-aware editing - detects current notebook/page
+✅ Implemented update_page action for content editing
+✅ Implemented create_page action for new pages
+✅ Markdown to TipTap JSON conversion parser
+✅ Support for append and replace modes
+✅ Fixed TipTap duplicate link extension warning
+✅ Query invalidation for real-time page updates
+✅ Proper query key types (number vs string)
+
 ## Active Tasks
 ### Production Readiness
 - 🔄 Testing & Quality Assurance
@@ -124,26 +143,25 @@ Finalize MVP features and prepare for production deployment with comprehensive t
 - Add comprehensive test coverage
 
 ## Recent Changes
-- Implemented complete notebook system:
-  - TipTap WYSIWYG editor with formatting toolbar
-  - Folder hierarchy with nesting support
-  - Drag-and-drop file management with visual feedback
-  - Auto-expand folders during drag operations
-  - JSON-based content storage
-  - Slash commands for quick formatting
-- API Key Management:
-  - Added secure API key storage in user settings
-  - Encrypted API keys in database
-  - UI for adding/updating/removing Anthropic API keys
-  - Integration with Account Settings tab
-- Development environment improvements:
-  - Backend port changed to 5001
-  - Automatic port cleanup on startup
-  - Fixed infinite render loop in CreateProjectModal
-  - TypeScript error fixes
+- AI Chat Improvements:
+  - Fixed React hooks order error (useColorModeValue)
+  - Added task CRUD operations to chat bubble
+  - Implemented delete_task action
+  - Improved AI response parsing with fallback patterns
+  - Added debug logging throughout
+- Notebook AI Integration:
+  - Made chat bubble context-aware of current page
+  - Added update_page and create_page actions
+  - Created markdown to TipTap converter
+  - Fixed query invalidation for real-time updates
+  - Resolved TipTap duplicate extension warning
+- Previous Updates:
+  - Complete notebook system with TipTap editor
+  - API Key Management with encryption
+  - Development environment improvements
 
 ## Progress Reference
-- Phase 1: MVP Kanban Board - 95% complete (Only AI and shortcuts remaining)
+- Phase 1: MVP Kanban Board - 98% complete (Only keyboard shortcuts remaining)
 - Phase 2: Notebook System - ✅ COMPLETED
 - Phase 3: Mind Mapping - Future consideration
 

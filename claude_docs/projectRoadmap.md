@@ -274,3 +274,21 @@ Develop mind mapping capabilities for knowledge management
 - [x] Chat context awareness (current page/project)
 - [x] Backend endpoints for recent items
 - [x] Time-based activity display with date-fns
+
+### AI Chat Enhancements Phase
+- [x] React hooks error fix in ChatBubble component
+- [x] Task creation functionality in chat bubble
+- [x] Task update/move functionality
+- [x] Task deletion functionality
+- [x] Improved JSON parsing with error handling
+- [x] Fallback patterns for natural language commands
+- [x] Debug logging for troubleshooting
+
+### Notebook AI Integration Phase
+- [x] Context-aware notebook editing via chat
+- [x] Page content update functionality (append/replace)
+- [x] Markdown to TipTap JSON conversion
+- [x] Create new pages through chat
+- [x] Fixed TipTap duplicate extension warning
+- [x] Query invalidation for real-time updates
+- [x] Proper content refresh after AI edits
