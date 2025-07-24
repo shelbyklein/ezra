@@ -26,6 +26,7 @@ import {
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { ChatBubble } from '../AI/ChatBubble';
+import { BreadcrumbFooter } from './BreadcrumbFooter';
 
 export const AppLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -129,12 +130,15 @@ export const AppLayout: React.FC = () => {
         ) : null}
       </Box>
 
-      <Container maxW="container.xl" py={8}>
+      <Container maxW="container.xl" py={8} pb={16}>
         <Outlet />
       </Container>
       
       {/* Floating Chat Bubble */}
       <ChatBubble />
+      
+      {/* Breadcrumb Footer */}
+      <BreadcrumbFooter />
     </Box>
   );
 };

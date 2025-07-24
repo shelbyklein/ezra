@@ -124,7 +124,7 @@ export const NotebookLayout: React.FC = () => {
   );
 
   return (
-    <Flex h="calc(100vh - 120px)" position="relative">
+    <Flex h="calc(100vh - 160px)" position="relative">
       {/* Desktop Sidebar */}
       {!isMobile && (
         <Box
