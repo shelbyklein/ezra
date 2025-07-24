@@ -77,14 +77,22 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
   const [saveTimer, setSaveTimer] = React.useState<NodeJS.Timeout | null>(null);
 
   // Fetch page data
-  const { data: page, isLoading } = useQuery<Page>({
+  const { data: page, isLoading, refetch } = useQuery<Page>({
     queryKey: ['notebook-page', pageId],
     queryFn: async () => {
+      console.log('Fetching page:', pageId);
       const response = await api.get(`/notebooks/pages/${pageId}`);
       return response.data;
     },
     enabled: !!pageId,
   });
+
+  // Expose refetch to window for debugging
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__refetchPage = refetch;
+    }
+  }, [refetch]);
 
   // Update page mutation
   const updatePage = useMutation({
@@ -102,6 +110,7 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
     extensions: [
       StarterKit.configure({
         codeBlock: false, // We'll use CodeBlockLowlight instead
+        link: false, // We'll configure Link separately
       }),
       Typography,
       Highlight,
@@ -141,14 +150,18 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
     },
   });
 
-  // Update editor content when page loads
+  // Update editor content when page loads or content changes
   useEffect(() => {
-    if (page && editor) {
+    if (page && editor && !editor.isFocused) {
       setTitle(page.title);
       const content = page.content ? JSON.parse(page.content) : '';
-      editor.commands.setContent(content);
+      // Only update if content has actually changed to avoid cursor jumping
+      const currentContent = JSON.stringify(editor.getJSON());
+      if (currentContent !== page.content) {
+        editor.commands.setContent(content);
+      }
     }
-  }, [page, editor]);
+  }, [page?.content, page?.title, editor]);
 
   // Cleanup timer on unmount
   useEffect(() => {

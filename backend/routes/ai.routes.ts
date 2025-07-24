@@ -225,6 +225,17 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
 
     const userProjects = await db('projects').where({ user_id: userId }).select('id', 'name');
 
+    // Get notebook context if available
+    const notebookContext = context?.currentNotebookId ?
+      await db('notebooks').where({ id: context.currentNotebookId, user_id: userId }).first() : null;
+    
+    const pageContext = context?.currentPageId ?
+      await db('notebook_pages as p')
+        .join('notebooks as n', 'p.notebook_id', 'n.id')
+        .where({ 'p.id': context.currentPageId, 'n.user_id': userId })
+        .select('p.*')
+        .first() : null;
+
     // Create a comprehensive prompt
     const systemPrompt = `You are Ezra, an AI assistant for a project management app. You help users manage projects, tasks, and notes through natural conversation.
 
@@ -233,14 +244,24 @@ Current context:
 - Current project: ${projectContext ? `"${projectContext.name}" (ID: ${projectContext.id})` : 'None selected'}
 - Available projects: ${userProjects.map(p => `"${p.name}" (ID: ${p.id})`).join(', ')}
 ${recentTasks.length > 0 ? `- Recent tasks in current project:\n${recentTasks.map(t => `  - [ID: ${t.id}] "${t.title}" (${t.status})`).join('\n')}` : ''}
+${notebookContext ? `- Current notebook: "${notebookContext.name}" (ID: ${notebookContext.id})` : ''}
+${pageContext ? `- Current page: "${pageContext.title}" (ID: ${pageContext.id})\n- You CAN edit this page using the update_page action` : ''}
 
-IMPORTANT: When the user asks you to create, update, delete, or query tasks/projects, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
+IMPORTANT: When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
+
+When on a notebook page, you CAN:
+- Add content to the current page (append mode)
+- Replace the entire page content
+- Edit the page title
+- You do NOT need to see the current content to add to it - just use append: true
 
 Available actions:
 - create_task: Creates a new task (requires: title, optional: description, status, priority)
 - create_project: Creates a new project (requires: name, optional: description, color)
 - update_task: Updates existing tasks (requires: taskIds array, updates object)
 - delete_task: Deletes tasks (requires: taskIds array)
+- update_page: Updates the current notebook page content (requires: pageId, content; optional: title, append)
+- create_page: Creates a new page in a notebook (requires: title, notebookId)
 - navigate: Navigate to a different page (requires: path)
 
 Example responses:
@@ -266,6 +287,44 @@ You must respond with:
     "projectId": ${projectContext?.id || 'null'}
   }
 }
+
+User: "Add a dragon to the story"
+You must respond with:
+{
+  "response": "I'll add a dragon to your story.",
+  "action": "update_page",
+  "parameters": {
+    "pageId": ${pageContext?.id || 'null'},
+    "append": true,
+    "content": "\\n\\nSuddenly, a magnificent dragon appeared in the sky, its scales shimmering like emeralds in the sunlight. The dragon circled overhead before landing gracefully nearby, its intelligent eyes studying the scene with ancient wisdom."
+  }
+}
+
+User: "Add a heading 'Introduction' to this page"
+You must respond with:
+{
+  "response": "I'll add the heading 'Introduction' to the current page.",
+  "action": "update_page",
+  "parameters": {
+    "pageId": ${pageContext?.id || 'null'},
+    "append": true,
+    "content": "# Introduction\\n"
+  }
+}
+
+User: "Replace the content with [some text]"
+You must respond with:
+{
+  "response": "I'll replace the page content with your text.",
+  "action": "update_page",
+  "parameters": {
+    "pageId": ${pageContext?.id || 'null'},
+    "content": "[the user's text]",
+    "append": false
+  }
+}
+
+IMPORTANT: When updating a page, ALWAYS include the pageId parameter. The current page ID is: ${pageContext?.id || 'null'}
 
 ALWAYS respond with a JSON object when the user requests an action. The response field should be conversational, and the action field should specify what to do.`;
 
@@ -409,6 +468,97 @@ ALWAYS respond with a JSON object when the user requests an action. The response
   }
 });
 
+// Helper function to parse markdown to TipTap JSON format
+function parseMarkdownToTipTap(markdown: string): any[] {
+  const lines = markdown.split('\n');
+  const nodes: any[] = [];
+  
+  for (const line of lines) {
+    if (line.trim() === '') {
+      continue; // Skip empty lines
+    }
+    
+    // Headings
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      nodes.push({
+        type: 'heading',
+        attrs: { level },
+        content: [{
+          type: 'text',
+          text: headingMatch[2]
+        }]
+      });
+      continue;
+    }
+    
+    // Bullet lists
+    if (line.match(/^[\*\-]\s+/)) {
+      const text = line.replace(/^[\*\-]\s+/, '');
+      // For simplicity, create as paragraph with bullet prefix
+      // In a real implementation, we'd group these into proper list nodes
+      nodes.push({
+        type: 'paragraph',
+        content: [{
+          type: 'text',
+          text: '• ' + text
+        }]
+      });
+      continue;
+    }
+    
+    // Regular paragraphs with basic formatting
+    let content: any[] = [];
+    let currentText = line;
+    
+    // Handle bold text
+    currentText = currentText.replace(/\*\*(.*?)\*\*/g, (match, text) => {
+      content.push({
+        type: 'text',
+        marks: [{ type: 'bold' }],
+        text: text
+      });
+      return '\u0000'; // Placeholder
+    });
+    
+    // Handle italic text
+    currentText = currentText.replace(/\*(.*?)\*/g, (match, text) => {
+      content.push({
+        type: 'text',
+        marks: [{ type: 'italic' }],
+        text: text
+      });
+      return '\u0000'; // Placeholder
+    });
+    
+    // Add remaining text
+    const parts = currentText.split('\u0000');
+    let contentIndex = 0;
+    const finalContent: any[] = [];
+    
+    for (const part of parts) {
+      if (part) {
+        finalContent.push({
+          type: 'text',
+          text: part
+        });
+      }
+      if (contentIndex < content.length) {
+        finalContent.push(content[contentIndex]);
+        contentIndex++;
+      }
+    }
+    
+    nodes.push({
+      type: 'paragraph',
+      content: finalContent.length > 0 ? finalContent : [{ type: 'text', text: line }]
+    });
+  }
+  
+  return nodes.length > 0 ? nodes : [{ type: 'paragraph', content: [{ type: 'text', text: '' }] }];
+}
+
 // Helper function to execute actions based on chat intent
 async function executeAction(action: string, parameters: any, userId: number, context: any) {
   try {
@@ -537,6 +687,117 @@ async function executeAction(action: string, parameters: any, userId: number, co
           result: { 
             count: tasksToDelete.length,
             taskIds: tasksToDelete.map(t => t.id)
+          }
+        };
+
+      case 'update_page':
+        if (!parameters.pageId) {
+          throw new Error('No page selected. Please navigate to a notebook page first.');
+        }
+
+        // Verify user owns the page
+        const pageCheck = await db('notebook_pages as p')
+          .join('notebooks as n', 'p.notebook_id', 'n.id')
+          .where({ 
+            'p.id': parameters.pageId,
+            'n.user_id': userId 
+          })
+          .select('p.*')
+          .first();
+        
+        if (!pageCheck) {
+          throw new Error('Page not found or you don\'t have access to it');
+        }
+
+        let newContent = parameters.content;
+        
+        // If append mode, get current content and append
+        if (parameters.append) {
+          const currentContent = JSON.parse(pageCheck.content);
+          // Parse markdown content into TipTap nodes
+          const contentNodes = parseMarkdownToTipTap(parameters.content);
+          currentContent.content = currentContent.content || [];
+          currentContent.content.push(...contentNodes);
+          newContent = JSON.stringify(currentContent);
+        } else if (typeof parameters.content === 'string') {
+          // Replace content - parse markdown to TipTap format
+          const contentNodes = parseMarkdownToTipTap(parameters.content);
+          newContent = JSON.stringify({
+            type: 'doc',
+            content: contentNodes
+          });
+        }
+
+        await db('notebook_pages')
+          .where({ id: parameters.pageId })
+          .update({
+            content: newContent,
+            ...(parameters.title ? { title: parameters.title } : {}),
+            updated_at: new Date().toISOString()
+          });
+        
+        return {
+          action: 'updated_page',
+          result: { 
+            pageId: parameters.pageId,
+            updated: true
+          }
+        };
+
+      case 'create_page':
+        const notebookId = parameters.notebookId || context?.currentNotebookId;
+        if (!notebookId) {
+          throw new Error('No notebook selected. Please specify a notebook or navigate to one first.');
+        }
+
+        // Verify user owns the notebook
+        const notebookCheck = await db('notebooks')
+          .where({ 
+            id: notebookId,
+            user_id: userId 
+          })
+          .first();
+        
+        if (!notebookCheck) {
+          throw new Error('Notebook not found or you don\'t have access to it');
+        }
+
+        // Generate slug from title
+        const slug = parameters.title.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+
+        // Get max position
+        const maxPos = await db('notebook_pages')
+          .where({ notebook_id: notebookId })
+          .max('position as max')
+          .first();
+
+        const newPage = {
+          notebook_id: notebookId,
+          folder_id: parameters.folderId || null,
+          title: parameters.title,
+          slug,
+          content: JSON.stringify({ type: 'doc', content: [] }),
+          position: (maxPos?.max || 0) + 1,
+          is_starred: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        await db('notebook_pages').insert(newPage);
+
+        const createdPage = await db('notebook_pages')
+          .where({ notebook_id: notebookId })
+          .orderBy('id', 'desc')
+          .first();
+
+        return {
+          action: 'created_page',
+          result: { 
+            pageId: createdPage.id,
+            pageTitle: createdPage.title,
+            notebookId: notebookId
           }
         };
 

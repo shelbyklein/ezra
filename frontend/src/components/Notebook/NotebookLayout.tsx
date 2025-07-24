@@ -2,7 +2,7 @@
  * Main notebook layout with sidebar and editor
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -71,6 +71,13 @@ export const NotebookLayout: React.FC = () => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, lg: false });
+
+  // Update selectedPageId when URL changes
+  useEffect(() => {
+    if (pageId) {
+      setSelectedPageId(parseInt(pageId));
+    }
+  }, [pageId]);
 
   // Fetch notebooks list
   const { data: notebooks = [], isLoading: notebooksLoading } = useQuery<Notebook[]>({

@@ -112,15 +112,32 @@ export const ChatBubble: React.FC = () => {
     return null;
   };
 
+  // Get current notebook and page from URL if on notebook view
+  const getCurrentNotebookContext = () => {
+    const path = window.location.pathname;
+    const match = path.match(/\/app\/notebooks\/(\d+)(?:\/(\d+))?/);
+    if (match) {
+      return {
+        notebookId: parseInt(match[1]),
+        pageId: match[2] ? parseInt(match[2]) : null
+      };
+    }
+    return null;
+  };
+
   // Process message with AI
   const processChatMutation = useMutation({
     mutationFn: async (message: string) => {
       const currentProject = getCurrentProject();
+      const notebookContext = getCurrentNotebookContext();
+      
       const response = await api.post('/ai/chat', {
         message,
         context: {
           currentProjectId: currentProject?.id,
           currentProjectName: currentProject?.name,
+          currentNotebookId: notebookContext?.notebookId,
+          currentPageId: notebookContext?.pageId,
           currentView: window.location.pathname,
           projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
         },
@@ -141,6 +158,7 @@ export const ChatBubble: React.FC = () => {
 
       // Handle any actions that were performed
       if (data.metadata?.action) {
+        console.log('Handling action result:', data.metadata);
         handleActionResult(data.metadata);
       }
     },
@@ -175,6 +193,52 @@ export const ChatBubble: React.FC = () => {
           queryClient.invalidateQueries({ 
             queryKey: ['tasks', currentProject.id.toString()] 
           });
+        }
+        break;
+      
+      case 'updated_page':
+        const notebookContext = getCurrentNotebookContext();
+        console.log('Updated page action, notebook context:', notebookContext);
+        if (notebookContext?.pageId) {
+          // Invalidate the page query to trigger a refresh
+          console.log('Invalidating queries for pageId:', notebookContext.pageId);
+          // Use number for pageId to match the query key format
+          queryClient.invalidateQueries({ 
+            queryKey: ['notebook-page', notebookContext.pageId] 
+          });
+          // Also invalidate the notebook query to update the sidebar
+          if (notebookContext.notebookId) {
+            queryClient.invalidateQueries({ 
+              queryKey: ['notebook', notebookContext.notebookId] 
+            });
+          }
+          // Force refetch with immediate execution
+          setTimeout(() => {
+            console.log('Force refetching page:', notebookContext.pageId);
+            queryClient.invalidateQueries({ 
+              queryKey: ['notebook-page', notebookContext.pageId],
+              exact: true,
+              refetchType: 'active',
+            });
+            queryClient.refetchQueries({ 
+              queryKey: ['notebook-page', notebookContext.pageId],
+              exact: true,
+            });
+          }, 100);
+        } else {
+          console.warn('No notebook context found for page update');
+        }
+        break;
+      
+      case 'created_page':
+        if (metadata.result?.notebookId) {
+          queryClient.invalidateQueries({ 
+            queryKey: ['notebook', metadata.result.notebookId.toString()] 
+          });
+          // Navigate to the new page
+          if (metadata.result.pageId) {
+            navigate(`/app/notebooks/${metadata.result.notebookId}/${metadata.result.pageId}`);
+          }
         }
         break;
       
