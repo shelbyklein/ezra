@@ -9,6 +9,7 @@ interface SearchResult {
   id: number;
   title: string;
   content: string;
+  fullContent: string; // Add full content field
   snippet: string;
   relevanceScore: number;
   metadata: {
@@ -34,12 +35,21 @@ interface ContextSearchOptions {
  * Extract keywords from a natural language query
  */
 function extractKeywords(query: string): string[] {
-  // Remove common stop words
+  // Remove common stop words but keep important ones like "my"
   const stopWords = new Set([
     'what', 'did', 'i', 'write', 'about', 'the', 'a', 'an', 'is', 'are', 
-    'was', 'were', 'my', 'have', 'has', 'had', 'do', 'does', 'did',
-    'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from'
+    'was', 'were', 'have', 'has', 'had', 'do', 'does', 'did',
+    'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from',
+    'can', 'you', 'find', 'show', 'tell', 'me', 'please'
   ]);
+  
+  // First, look for quoted strings or specific references
+  const quotedMatches = query.match(/"([^"]+)"/g) || [];
+  const quotedKeywords = quotedMatches.map(match => match.replace(/"/g, ''));
+  
+  // Also look for camelCase or snake_case identifiers
+  const identifierMatches = query.match(/\b[a-zA-Z][a-zA-Z0-9_]*[A-Z][a-zA-Z0-9_]*\b/g) || [];
+  const snakeMatches = query.match(/\b[a-z]+_[a-z0-9_]+\b/g) || [];
   
   // Split into words and filter
   const words = query.toLowerCase()
@@ -47,7 +57,15 @@ function extractKeywords(query: string): string[] {
     .split(/\s+/)
     .filter(word => word.length > 2 && !stopWords.has(word));
   
-  return [...new Set(words)]; // Remove duplicates
+  // Combine all keywords, preserving original case for identifiers
+  const allKeywords = [
+    ...quotedKeywords,
+    ...identifierMatches,
+    ...snakeMatches,
+    ...words
+  ];
+  
+  return [...new Set(allKeywords)]; // Remove duplicates
 }
 
 /**
@@ -159,6 +177,7 @@ async function searchNotebookPages(
           id: page.id,
           title: page.title,
           content: textContent,
+          fullContent: textContent, // Include full content
           snippet: extractSnippet(textContent, keywords),
           relevanceScore: relevanceScore + (calculateRelevance(page.title, keywords) * 2), // Boost title matches
           metadata: {
@@ -228,6 +247,7 @@ async function searchProjects(
           id: project.id,
           title: project.name,
           content: project.description || '',
+          fullContent: project.description || project.name,
           snippet: extractSnippet(project.description || project.name, keywords),
           relevanceScore: relevanceScore + (calculateRelevance(project.name, keywords) * 2),
           metadata: {
@@ -288,6 +308,7 @@ async function searchTasks(
           id: task.id,
           title: task.title,
           content: task.description || '',
+          fullContent: `${task.title}${task.description ? ': ' + task.description : ''}`,
           snippet: extractSnippet(task.description || task.title, keywords),
           relevanceScore: relevanceScore + (calculateRelevance(task.title, keywords) * 2),
           metadata: {
@@ -345,42 +366,39 @@ export function formatContextForAI(results: SearchResult[]): string {
     return '';
   }
   
-  let context = 'Found relevant information from your knowledge base:\n\n';
+  let context = 'Found relevant information from your knowledge base. Here is the FULL CONTENT of the matching items:\n\n';
   
-  const groupedResults: { [key: string]: SearchResult[] } = {};
-  
-  // Group by type
-  for (const result of results) {
-    const key = result.type;
-    if (!groupedResults[key]) {
-      groupedResults[key] = [];
+  // Include full content for the AI to parse
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    
+    context += `---\n`;
+    context += `[RESULT ${i + 1}]\n`;
+    
+    switch (result.type) {
+      case 'notebook_page':
+        context += `Type: Notebook Page\n`;
+        context += `Title: ${result.title}\n`;
+        context += `Notebook: ${result.metadata.notebookTitle}\n`;
+        context += `Full Content:\n${result.fullContent}\n`;
+        break;
+        
+      case 'project':
+        context += `Type: Project\n`;
+        context += `Name: ${result.title}\n`;
+        context += `Description: ${result.fullContent}\n`;
+        break;
+        
+      case 'task':
+        context += `Type: Task\n`;
+        context += `Title: ${result.title}\n`;
+        context += `Status: ${result.metadata.status}\n`;
+        context += `Project: ${result.metadata.projectName}\n`;
+        context += `Content: ${result.fullContent}\n`;
+        break;
     }
-    groupedResults[key].push(result);
-  }
-  
-  // Format each group
-  if (groupedResults.notebook_page) {
-    context += '### From your notebooks:\n';
-    for (const result of groupedResults.notebook_page) {
-      context += `- **${result.title}** (in "${result.metadata.notebookTitle}"): ${result.snippet}\n`;
-    }
-    context += '\n';
-  }
-  
-  if (groupedResults.project) {
-    context += '### From your projects:\n';
-    for (const result of groupedResults.project) {
-      context += `- **${result.title}**: ${result.snippet}\n`;
-    }
-    context += '\n';
-  }
-  
-  if (groupedResults.task) {
-    context += '### From your tasks:\n';
-    for (const result of groupedResults.task) {
-      context += `- **${result.title}** (${result.metadata.status} in "${result.metadata.projectName}"): ${result.snippet}\n`;
-    }
-    context += '\n';
+    
+    context += `---\n\n`;
   }
   
   return context;

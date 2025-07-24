@@ -247,21 +247,18 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
     let searchContext = '';
     let citations = '';
     
-    // Perform context search for questions that seem to be asking about past content
-    const questionWords = ['what', 'where', 'when', 'how', 'which', 'who', 'did', 'was', 'find', 'show', 'tell', 'remember', 'recall'];
-    const isQuestion = questionWords.some(word => message.toLowerCase().includes(word));
-    
-    if (isQuestion) {
-      try {
-        searchResults = await searchUserContent(message, userId, { limit: 5 });
-        if (searchResults.length > 0) {
-          searchContext = formatContextForAI(searchResults);
-          citations = generateSourceCitations(searchResults);
-        }
-      } catch (searchError) {
-        console.error('Context search failed:', searchError);
-        // Continue without search context
+    // Always perform context search to find relevant content
+    // This ensures the AI can find specific references like "fakeNumberReference"
+    try {
+      // Search with a higher limit to ensure we capture relevant content
+      searchResults = await searchUserContent(message, userId, { limit: 10 });
+      if (searchResults.length > 0) {
+        searchContext = formatContextForAI(searchResults);
+        citations = generateSourceCitations(searchResults);
       }
+    } catch (searchError) {
+      console.error('Context search failed:', searchError);
+      // Continue without search context
     }
 
     // Build comprehensive context
@@ -304,10 +301,13 @@ IMPORTANT INSTRUCTIONS:
 
 2. When answering questions using information from the knowledge base:
    - FIRST check if the answer is in the current page content (if viewing a page)
-   - Then use the provided search context to give accurate, specific answers
+   - Then CAREFULLY PARSE the FULL CONTENT provided in the search results
+   - Look for EXACT matches or references to what the user is asking about
+   - The search results contain the COMPLETE content of matching pages - read them thoroughly
+   - If you find the specific information (like a number, code, or reference), provide it exactly as written
    - If you reference information from the knowledge base, mention the source naturally in your response
    - Be clear when information comes from the user's own content vs general knowledge
-   - If no relevant information is found in the knowledge base or current page, say so clearly
+   - If no relevant information is found after parsing all content, say so clearly
 
 3. When on a notebook page, you CAN:
 - Add content to the current page (append mode)

@@ -180,13 +180,8 @@ export const ChatBubble: React.FC = () => {
   // Process message with AI
   const processChatMutation = useMutation({
     mutationFn: async (message: string) => {
-      // Show searching indicator for questions
-      const questionWords = ['what', 'where', 'when', 'how', 'which', 'who', 'did', 'was', 'find', 'show', 'tell', 'remember', 'recall'];
-      const isQuestion = questionWords.some(word => message.toLowerCase().includes(word));
-      
-      if (isQuestion) {
-        setIsSearching(true);
-      }
+      // Always show searching indicator since we always search
+      setIsSearching(true);
       
       const response = await api.post('/ai/chat', {
         message,
