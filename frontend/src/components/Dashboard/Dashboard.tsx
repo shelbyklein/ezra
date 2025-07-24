@@ -45,9 +45,9 @@ interface Project {
 
 interface Notebook {
   id: number;
-  name: string;
+  title: string;
   icon: string;
-  color: string;
+  color?: string;
   updated_at: string;
   page_count?: number;
 }
@@ -254,7 +254,7 @@ export const Dashboard: React.FC = () => {
                           <Icon as={FaFolder} boxSize={5} />
                         </Box>
                         <VStack align="start" spacing={0}>
-                          <Heading size="md">{notebook.name}</Heading>
+                          <Heading size="md">{notebook.title}</Heading>
                           {notebook.page_count !== undefined && (
                             <Text fontSize="sm" color="gray.500">
                               {notebook.page_count} page{notebook.page_count !== 1 ? 's' : ''}
