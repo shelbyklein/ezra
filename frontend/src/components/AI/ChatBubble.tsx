@@ -33,29 +33,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  metadata?: {
-    action?: string;
-    result?: any;
-    error?: boolean;
-    hasContext?: boolean;
-  };
-}
+import { useChat, Message } from '../../contexts/ChatContext';
 
 const MotionBox = motion(Box);
 
 export const ChatBubble: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { isOpen, setIsOpen, messages, setMessages } = useChat();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [currentContext, setCurrentContext] = useState<any>(null);
+  const [conversationId, setConversationId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -153,6 +141,23 @@ export const ChatBubble: React.FC = () => {
     });
   }, [location.pathname, projects]);
 
+  // Create conversation mutation
+  const createConversationMutation = useMutation({
+    mutationFn: async (firstMessage: string) => {
+      const response = await api.post('/chat-history/conversations', {
+        message: {
+          role: 'user',
+          content: firstMessage,
+        },
+        isNewConversation: true,
+      });
+      return response.data.conversationId;
+    },
+    onSuccess: (newConversationId) => {
+      setConversationId(newConversationId);
+    },
+  });
+
   // Set context-aware greeting when chat opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -186,6 +191,7 @@ export const ChatBubble: React.FC = () => {
       const response = await api.post('/ai/chat', {
         message,
         context: currentContext,
+        conversationId,
       });
       return response.data;
     },
@@ -299,7 +305,7 @@ export const ChatBubble: React.FC = () => {
     }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -310,10 +316,16 @@ export const ChatBubble: React.FC = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageText = input;
     setInput('');
     setIsTyping(true);
 
-    processChatMutation.mutate(input);
+    // Create conversation on first message
+    if (!conversationId && messages.length === 1) { // Only greeting exists
+      await createConversationMutation.mutateAsync(messageText);
+    }
+
+    processChatMutation.mutate(messageText);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

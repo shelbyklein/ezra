@@ -44,6 +44,7 @@ import notebooksRoutes from '../routes/notebooks.routes'
 import usersRoutes from '../routes/users.routes'
 import aiRoutes from '../routes/ai.routes'
 import devRoutes from '../routes/dev.routes'
+import chatHistoryRoutes from '../routes/chat-history.routes'
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -78,6 +79,9 @@ app.use('/api/users', usersRoutes)
 console.log('Registering AI routes');
 app.use('/api/ai', aiRoutes)
 console.log('AI routes registered');
+
+// Chat history routes
+app.use('/api/chat-history', chatHistoryRoutes)
 
 // Development routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

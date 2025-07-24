@@ -226,7 +226,7 @@ router.post('/search-context', authenticate, async (req: Request, res: Response)
 // Main chat endpoint for conversational interface
 router.post('/chat', authenticate, async (req: Request, res: Response) => {
   try {
-    const { message, context } = req.body;
+    const { message, context, conversationId } = req.body;
     const userId = req.user!.userId;
 
     if (!message) {
@@ -480,6 +480,40 @@ ALWAYS respond with a JSON object when the user requests an action. The response
             finalResponse += citations;
           }
           
+          // Save messages to chat history if conversationId is provided
+          if (conversationId) {
+            try {
+              // Save user message
+              await db('chat_messages').insert({
+                conversation_id: conversationId,
+                role: 'user',
+                content: message,
+                metadata: JSON.stringify({}),
+                created_at: new Date().toISOString()
+              });
+              
+              // Save assistant response
+              await db('chat_messages').insert({
+                conversation_id: conversationId,
+                role: 'assistant',
+                content: finalResponse,
+                metadata: JSON.stringify({
+                  ...(parsed.metadata || {}),
+                  hasContext: searchResults.length > 0
+                }),
+                created_at: new Date().toISOString()
+              });
+              
+              // Update conversation last message time
+              await db('chat_conversations')
+                .where({ id: conversationId })
+                .update({ last_message_at: new Date().toISOString() });
+            } catch (dbError) {
+              console.error('Failed to save chat history:', dbError);
+              // Continue without saving
+            }
+          }
+          
           res.json({
             response: finalResponse,
             metadata: {
@@ -535,6 +569,38 @@ ALWAYS respond with a JSON object when the user requests an action. The response
             finalResponse += citations;
           }
           
+          // Save messages to chat history if conversationId is provided
+          if (conversationId) {
+            try {
+              // Save user message
+              await db('chat_messages').insert({
+                conversation_id: conversationId,
+                role: 'user',
+                content: message,
+                metadata: JSON.stringify({}),
+                created_at: new Date().toISOString()
+              });
+              
+              // Save assistant response
+              await db('chat_messages').insert({
+                conversation_id: conversationId,
+                role: 'assistant',
+                content: finalResponse,
+                metadata: JSON.stringify({
+                  hasContext: searchResults.length > 0
+                }),
+                created_at: new Date().toISOString()
+              });
+              
+              // Update conversation last message time
+              await db('chat_conversations')
+                .where({ id: conversationId })
+                .update({ last_message_at: new Date().toISOString() });
+            } catch (dbError) {
+              console.error('Failed to save chat history:', dbError);
+            }
+          }
+          
           res.json({
             response: finalResponse,
             metadata: {
@@ -547,6 +613,36 @@ ALWAYS respond with a JSON object when the user requests an action. The response
         let finalResponse = content.text;
         if (searchResults.length > 0) {
           finalResponse += citations;
+        }
+        
+        // Save messages to chat history if conversationId is provided
+        if (conversationId) {
+          try {
+            await db('chat_messages').insert([
+              {
+                conversation_id: conversationId,
+                role: 'user',
+                content: message,
+                metadata: JSON.stringify({}),
+                created_at: new Date().toISOString()
+              },
+              {
+                conversation_id: conversationId,
+                role: 'assistant',
+                content: finalResponse,
+                metadata: JSON.stringify({
+                  hasContext: searchResults.length > 0
+                }),
+                created_at: new Date().toISOString()
+              }
+            ]);
+            
+            await db('chat_conversations')
+              .where({ id: conversationId })
+              .update({ last_message_at: new Date().toISOString() });
+          } catch (dbError) {
+            console.error('Failed to save chat history:', dbError);
+          }
         }
         
         res.json({

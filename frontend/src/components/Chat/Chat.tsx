@@ -15,11 +15,14 @@ import {
   Spinner,
   Avatar,
   Flex,
+  Button,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane, FaHistory } from 'react-icons/fa';
 import { useMutation } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import ReactMarkdown from 'react-markdown';
+import { ChatHistory } from './ChatHistory';
 
 interface Message {
   id: string;
@@ -33,6 +36,7 @@ export const Chat: React.FC = () => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const cardBg = useColorModeValue('white', 'gray.800');
@@ -109,10 +113,22 @@ export const Chat: React.FC = () => {
       <VStack h="full" spacing={0}>
         {/* Chat Header */}
         <Box w="full" bg={cardBg} p={4} borderBottomWidth={1}>
-          <Text fontSize="xl" fontWeight="bold">AI Assistant</Text>
-          <Text fontSize="sm" color="gray.500">
-            Ask me anything about your projects, tasks, or notebooks
-          </Text>
+          <HStack justify="space-between">
+            <Box>
+              <Text fontSize="xl" fontWeight="bold">AI Assistant</Text>
+              <Text fontSize="sm" color="gray.500">
+                Ask me anything about your projects, tasks, or notebooks
+              </Text>
+            </Box>
+            <Button
+              leftIcon={<FaHistory />}
+              variant="outline"
+              size="sm"
+              onClick={onOpen}
+            >
+              Chat History
+            </Button>
+          </HStack>
         </Box>
 
         {/* Messages Area */}
@@ -237,6 +253,9 @@ export const Chat: React.FC = () => {
           </HStack>
         </Box>
       </VStack>
+
+      {/* Chat History Modal */}
+      <ChatHistory isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };
