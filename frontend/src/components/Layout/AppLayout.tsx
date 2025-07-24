@@ -62,13 +62,13 @@ export const AppLayout: React.FC = () => {
             </Box>
             <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
               <Button variant="ghost" onClick={() => navigate('/')}>
+                Home
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/app/chat')}>
                 Chat
               </Button>
               <Button variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
-              </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/board')}>
-                Board
               </Button>
               <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
@@ -114,13 +114,13 @@ export const AppLayout: React.FC = () => {
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as="nav" spacing={4}>
               <Button variant="ghost" onClick={() => navigate('/')}>
+                Home
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/app/chat')}>
                 Chat
               </Button>
               <Button variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
-              </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/board')}>
-                Board
               </Button>
               <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
