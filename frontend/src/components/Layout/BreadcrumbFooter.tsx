@@ -62,6 +62,7 @@ export const BreadcrumbFooter: React.FC = () => {
       return response.data;
     },
     enabled: !!params.notebookId,
+    staleTime: 0, // Always refetch when params change
   });
 
   // Fetch page data if on a page route
@@ -73,6 +74,7 @@ export const BreadcrumbFooter: React.FC = () => {
       return response.data;
     },
     enabled: !!params.pageId,
+    staleTime: 0, // Always refetch when params change
   });
 
   // Build breadcrumb items based on current route

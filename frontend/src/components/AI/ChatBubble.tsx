@@ -36,7 +36,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -55,21 +55,16 @@ const MotionBox = motion(Box);
 
 export const ChatBubble: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: `Hi! I'm Ezra. How can I help you today?`,
-      timestamp: new Date(),
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [currentContext, setCurrentContext] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const toast = useToast();
   const queryClient = useQueryClient();
+  const location = useLocation();
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
@@ -85,12 +80,36 @@ export const ChatBubble: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  // Focus input when chat opens
+  // Focus input when chat opens and set context-aware greeting
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+    if (isOpen) {
+      if (inputRef.current) {
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+      
+      // Only add greeting if no messages exist
+      if (messages.length === 0) {
+        let greeting = `Hi! I'm Ezra. `;
+        
+        if (currentContext?.currentPageId && currentPage) {
+          greeting += `I see you're editing "${currentPage.title}". How can I help you with this page?`;
+        } else if (currentContext?.currentNotebookId && currentNotebook) {
+          greeting += `I see you're in the "${currentNotebook.title}" notebook. What would you like to do?`;
+        } else if (currentContext?.currentProjectId) {
+          greeting += `I see you're working on ${currentContext.currentProjectName || 'your project'}. How can I assist you?`;
+        } else {
+          greeting += `How can I help you today?`;
+        }
+        
+        setMessages([{
+          id: '1',
+          role: 'assistant',
+          content: greeting,
+          timestamp: new Date(),
+        }]);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, currentContext, currentPage, currentNotebook]);
 
   // Fetch user's projects for context
   const { data: projects } = useQuery({
@@ -103,7 +122,7 @@ export const ChatBubble: React.FC = () => {
 
   // Get current project from URL if on board view
   const getCurrentProject = () => {
-    const path = window.location.pathname;
+    const path = location.pathname;
     const match = path.match(/\/app\/board\/(\d+)/);
     if (match) {
       const projectId = parseInt(match[1]);
@@ -114,7 +133,7 @@ export const ChatBubble: React.FC = () => {
 
   // Get current notebook and page from URL if on notebook view
   const getCurrentNotebookContext = () => {
-    const path = window.location.pathname;
+    const path = location.pathname;
     const match = path.match(/\/app\/notebooks\/(\d+)(?:\/(\d+))?/);
     if (match) {
       return {
@@ -125,22 +144,49 @@ export const ChatBubble: React.FC = () => {
     return null;
   };
 
+  // Fetch current page data for context display
+  const { data: currentPage } = useQuery({
+    queryKey: ['notebook-page', currentContext?.currentPageId],
+    queryFn: async () => {
+      if (!currentContext?.currentPageId) return null;
+      const response = await api.get(`/notebooks/pages/${currentContext.currentPageId}`);
+      return response.data;
+    },
+    enabled: !!currentContext?.currentPageId,
+  });
+
+  // Fetch current notebook data for context display
+  const { data: currentNotebook } = useQuery({
+    queryKey: ['notebook', currentContext?.currentNotebookId],
+    queryFn: async () => {
+      if (!currentContext?.currentNotebookId) return null;
+      const response = await api.get(`/notebooks/${currentContext.currentNotebookId}`);
+      return response.data;
+    },
+    enabled: !!currentContext?.currentNotebookId && !currentContext?.currentPageId,
+  });
+
+  // Update context when location changes
+  useEffect(() => {
+    const project = getCurrentProject();
+    const notebookContext = getCurrentNotebookContext();
+    
+    setCurrentContext({
+      currentProjectId: project?.id,
+      currentProjectName: project?.name,
+      currentNotebookId: notebookContext?.notebookId,
+      currentPageId: notebookContext?.pageId,
+      currentView: location.pathname,
+      projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
+    });
+  }, [location.pathname, projects]);
+
   // Process message with AI
   const processChatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const currentProject = getCurrentProject();
-      const notebookContext = getCurrentNotebookContext();
-      
       const response = await api.post('/ai/chat', {
         message,
-        context: {
-          currentProjectId: currentProject?.id,
-          currentProjectName: currentProject?.name,
-          currentNotebookId: notebookContext?.notebookId,
-          currentPageId: notebookContext?.pageId,
-          currentView: window.location.pathname,
-          projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
-        },
+        context: currentContext,
       });
       return response.data;
     },
@@ -338,13 +384,30 @@ export const ChatBubble: React.FC = () => {
                 justify="space-between"
                 bg={headerBgColor}
               >
-                <HStack>
-                  <Avatar icon={<FaRobot />} bg="purple.500" size="sm" />
-                  <VStack align="start" spacing={0}>
-                    <Text fontWeight="bold">Ezra</Text>
-                    <Text fontSize="xs" opacity={0.8}>AI Assistant</Text>
-                  </VStack>
-                </HStack>
+                <VStack align="start" spacing={1} flex={1}>
+                  <HStack>
+                    <Avatar icon={<FaRobot />} bg="purple.500" size="sm" />
+                    <VStack align="start" spacing={0}>
+                      <Text fontWeight="bold">Ezra</Text>
+                      <Text fontSize="xs" opacity={0.8}>AI Assistant</Text>
+                    </VStack>
+                  </HStack>
+                  {currentContext?.currentPageId && currentPage && (
+                    <Text fontSize="xs" opacity={0.7} ml={12}>
+                      Editing: {currentPage.title}
+                    </Text>
+                  )}
+                  {currentContext?.currentNotebookId && !currentContext?.currentPageId && currentNotebook && (
+                    <Text fontSize="xs" opacity={0.7} ml={12}>
+                      Viewing: {currentNotebook.title}
+                    </Text>
+                  )}
+                  {currentContext?.currentProjectId && !currentContext?.currentPageId && !currentContext?.currentNotebookId && (
+                    <Text fontSize="xs" opacity={0.7} ml={12}>
+                      Working on: {currentContext.currentProjectName || `Project ${currentContext.currentProjectId}`}
+                    </Text>
+                  )}
+                </VStack>
                 <CloseButton onClick={() => setIsOpen(false)} />
               </Flex>
 
