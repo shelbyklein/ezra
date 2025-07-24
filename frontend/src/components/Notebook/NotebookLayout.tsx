@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Flex,
@@ -66,6 +66,7 @@ interface NotebookWithStructure extends Notebook {
 
 export const NotebookLayout: React.FC = () => {
   const { notebookId, pageId } = useParams<{ notebookId?: string; pageId?: string }>();
+  const navigate = useNavigate();
   const [selectedPageId, setSelectedPageId] = useState<number | null>(
     pageId ? parseInt(pageId) : null
   );
@@ -101,6 +102,8 @@ export const NotebookLayout: React.FC = () => {
 
   const handlePageSelect = (pageId: number) => {
     setSelectedPageId(pageId);
+    // Update the URL to reflect the new page
+    navigate(`/app/notebooks/${notebookId}/${pageId}`);
     if (isMobile) {
       onClose();
     }
