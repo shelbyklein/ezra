@@ -25,8 +25,8 @@ Create a functional kanban board with AI-powered task management
 - [x] Dark/light mode with system preference support
 - [x] Project color customization
 - [x] Comprehensive tags system for task organization
+- [x] API key management for users
 - [ ] AI-powered task enhancement using Claude API
-- [ ] API key management for users
 - [ ] Keyboard shortcuts for improved productivity
 
 ### Phase 2: Notebook System ✅ COMPLETED
@@ -37,6 +37,7 @@ Implement a comprehensive notebook system with WYSIWYG editing
 - [x] Drag-and-drop file management
 - [x] Auto-save functionality
 - [x] Slash commands for quick formatting
+- [x] Drag pages/folders to notebook root
 - [ ] Attach notebooks/pages to projects and tasks
 - [ ] AI-powered content generation and summarization
 - [ ] Full-text search capabilities
@@ -243,3 +244,11 @@ Develop mind mapping capabilities for knowledge management
 - [x] Startup scripts for clean development
 - [x] Fixed infinite loop in CreateProjectModal
 - [x] TypeScript error fixes in editor components
+
+### API Key Management Phase
+- [x] Database migration for anthropic_api_key field
+- [x] User routes for API key CRUD operations
+- [x] Secure encryption/decryption for API keys
+- [x] ApiKeySettings component in Account Settings
+- [x] Anthropic utility functions for AI operations
+- [x] Fixed user profile query column names

@@ -10,10 +10,12 @@ Complete the MVP with AI-powered task enhancement and implement remaining featur
 - Tags system fully implemented for both projects and tasks
 - Task attachments system (URLs, notes, files) implemented
 - Dark/light mode with system preference support
-- **NEW**: Complete notebook system with WYSIWYG editing
-- Next: AI integration and keyboard shortcuts
+- Complete notebook system with WYSIWYG editing
+- API key management for Anthropic integration ready
+- Next: AI task enhancement and keyboard shortcuts
 
-## Recently Completed (Notebook System)
+## Recently Completed
+### Notebook System
 ✅ Database schema for notebooks (notebooks, folders, pages, blocks)
 ✅ Full backend API for notebooks CRUD operations
 ✅ TipTap WYSIWYG editor integration with rich text formatting
@@ -22,6 +24,17 @@ Complete the MVP with AI-powered task enhancement and implement remaining featur
 ✅ Slash commands for quick content insertion
 ✅ Visual file/folder icons for better UX
 ✅ Batch update API for efficient position changes
+✅ Drag pages/folders to notebook root with DroppableRootZone
+
+### API Key Management
+✅ Database migration for anthropic_api_key field
+✅ Secure API key storage with encryption
+✅ User routes for API key CRUD operations
+✅ ApiKeySettings component in Account Settings
+✅ Anthropic utility functions for AI operations
+✅ Fixed user profile query (full_name column)
+
+### Development Environment
 ✅ Fixed infinite loop in CreateProjectModal
 ✅ Backend port changed from 3001 to 5001
 ✅ Automatic port cleanup with kill-port
@@ -50,12 +63,12 @@ Complete the MVP with AI-powered task enhancement and implement remaining featur
    - Loading states and error handling for AI operations
    - Rate limiting consideration
 
-3. **Keyboard Shortcuts**
+2. **Keyboard Shortcuts**
    - Implement keyboard event listeners
    - Visual hints for shortcuts (tooltips)
    - Shortcut customization in settings
 
-4. **Production Readiness**
+3. **Production Readiness**
    - Filter tasks by tags
    - Task search functionality
    - Bulk operations for tasks

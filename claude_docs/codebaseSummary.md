@@ -32,6 +32,8 @@ Ezra/
 │   │   ├── notes.routes.ts # Notes CRUD
 │   │   ├── tags.routes.ts  # Tags CRUD for tasks/projects
 │   │   ├── attachments.routes.ts # Task attachments CRUD
+│   │   ├── notebooks.routes.ts # Notebooks CRUD
+│   │   ├── users.routes.ts # User profile and API key management
 │   │   └── dev.routes.ts  # Development tools (reset, seed)
 │   ├── middleware/
 │   │   └── auth.middleware.ts # JWT authentication
@@ -40,7 +42,8 @@ Ezra/
 │   │   ├── Project.ts     # Project model
 │   │   └── Task.ts        # Task model
 │   ├── utils/
-│   │   └── jwt.ts         # JWT token utilities
+│   │   ├── jwt.ts         # JWT token utilities
+│   │   └── anthropic.ts   # Anthropic API integration utilities
 │   ├── migrations/        # Database migrations
 │   │   ├── 20240101_create_users.ts
 │   │   ├── 20240102_create_projects.ts
@@ -48,7 +51,9 @@ Ezra/
 │   │   ├── 20240104_create_notes.ts
 │   │   ├── 20240105_create_tags.ts
 │   │   ├── 006_add_project_tags.ts
-│   │   └── 007_add_task_attachments.ts
+│   │   ├── 007_add_task_attachments.ts
+│   │   ├── 008_create_notebooks.ts
+│   │   └── 009_add_user_api_key.ts
 │   ├── tests/
 │   │   └── api.test.ts    # API endpoint tests
 │   ├── knexfile.ts        # Database configuration
@@ -94,6 +99,7 @@ Ezra/
   - Settings - Settings page with tabs for different sections
   - DeveloperTools - Data reset and testing tools (dev only)
   - TagsManagement - Tags CRUD interface with color picker
+  - ApiKeySettings - Anthropic API key management interface
 - **Tasks/** - Task management
   - CreateTaskForm - Quick task creation modal with tag selector
   - TaskDetailModal - View/edit/delete task details with tags
@@ -101,11 +107,17 @@ Ezra/
 - **Common/** - Reusable components
   - ColorPicker - Color selection with predefined palette
   - TagSelector - Multi-select tag dropdown
+- **Notebook/** - Notebook system components
+  - NotebookLayout - Main notebook interface
+  - NotebookSidebar/DraggableNotebookSidebar - Hierarchical file browser with drag-and-drop
+  - NotebookEditor - TipTap WYSIWYG editor with toolbar
+  - CreateNotebookModal - New notebook creation
+  - CreatePageModal - New page creation
+  - CreateFolderModal - New folder creation
 
 ### Frontend Components (Planned)
 - **AI/** - AI integration
   - TaskEnhancer - AI-powered task improvement
-  - ApiKeyManager - User API key management
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
@@ -115,6 +127,8 @@ Ezra/
   - notes.routes.ts - Notes CRUD operations
   - tags.routes.ts - Tags CRUD + task/project assignment
   - attachments.routes.ts - Task attachments CRUD
+  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates
+  - users.routes.ts - User profile + API key management
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -124,6 +138,7 @@ Ezra/
   - auth.middleware.ts - JWT token verification
 - **utils/** - Helper functions
   - jwt.ts - Token generation and verification
+  - anthropic.ts - Claude API integration and task enhancement
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
@@ -145,7 +160,9 @@ Ezra/
 - react, react-dom - Core React
 - @chakra-ui/react - UI components
 - @dnd-kit/sortable - Drag and drop
+- @tiptap/react - WYSIWYG editor
 - react-markdown - Markdown rendering
+- react-icons - Icon library
 - axios - HTTP client
 - typescript - Type safety
 
@@ -155,14 +172,16 @@ Ezra/
 - sqlite3 - Database (initial)
 - jsonwebtoken - Authentication
 - bcrypt - Password hashing
-- anthropic - Claude API client
+- @anthropic-ai/sdk - Claude API client
 - cors - Cross-origin support
 - dotenv - Environment variables
+- crypto - API key encryption
 
 ### Development Dependencies
 - vite - Frontend build tool
 - nodemon - Backend hot reload
 - concurrently - Run multiple processes
+- kill-port - Port cleanup utility
 - eslint - Linting
 - prettier - Code formatting
 - ts-node - TypeScript execution
@@ -225,9 +244,26 @@ Ezra/
 - Sample data generation
 - Development-only access
 
+### Phase 2: Notebook System ✅ COMPLETED
+- Complete database schema (notebooks, folders, pages)
+- Full backend API with batch updates
+- TipTap WYSIWYG editor integration
+- Hierarchical folder structure
+- Drag-and-drop file management
+- Drag to notebook root functionality
+- Auto-save with debouncing
+- Slash commands for formatting
+- Visual file/folder icons
+
+### Phase 3: API Key Management ✅ COMPLETED
+- Database field for encrypted API keys
+- User routes for API key CRUD
+- Secure encryption/decryption
+- ApiKeySettings UI component
+- Anthropic utility functions ready
+
 ### Remaining for MVP
 - AI task enhancement integration
-- API key management for users
 - Keyboard shortcuts
 
 ## User Feedback Integration and Its Impact on Development
