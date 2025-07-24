@@ -97,7 +97,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         description: project.description || '',
         color: project.color || '#3182CE',
       });
-      setSelectedTags(projectTags.map((tag: any) => tag.id));
     } else {
       reset({
         name: '',
@@ -106,7 +105,26 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       });
       setSelectedTags([]);
     }
-  }, [project, projectTags, reset]);
+  }, [project, reset]);
+
+  // Separate effect for tags to avoid infinite loop
+  useEffect(() => {
+    if (project && projectTags.length > 0) {
+      setSelectedTags(projectTags.map((tag: any) => tag.id));
+    }
+  }, [project?.id, projectTags.length]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      reset({
+        name: '',
+        description: '',
+        color: '#3182CE',
+      });
+      setSelectedTags([]);
+    }
+  }, [isOpen, reset]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ProjectFormData) => {

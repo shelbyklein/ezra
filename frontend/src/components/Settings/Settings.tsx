@@ -27,6 +27,7 @@ import {
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { DeveloperTools } from './DeveloperTools';
 import { TagsManagement } from './TagsManagement';
+import { ApiKeySettings } from './ApiKeySettings';
 
 export const Settings: React.FC = () => {
   const { colorMode, setColorMode } = useColorMode();
@@ -118,10 +119,11 @@ export const Settings: React.FC = () => {
               </TabPanel>
 
               <TabPanel>
-                <VStack align="stretch" spacing={4}>
+                <VStack align="stretch" spacing={6}>
                   <Heading size="md">Account Settings</Heading>
-                  <Box color="text.secondary">
-                    Account settings will be added here (profile, password, API keys)
+                  <ApiKeySettings />
+                  <Box color="text.secondary" pt={4}>
+                    More account settings coming soon (profile, password change, etc.)
                   </Box>
                 </VStack>
               </TabPanel>

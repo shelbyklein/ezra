@@ -1,7 +1,7 @@
 # Current Task - Ezra Development
 
 ## Current Objectives
-Complete the MVP with AI-powered task enhancement and keyboard shortcuts for improved productivity.
+Complete the MVP with AI-powered task enhancement and implement remaining features for production readiness.
 
 ## Context
 - Complete backend API with all CRUD operations including tags and attachments
@@ -10,121 +10,88 @@ Complete the MVP with AI-powered task enhancement and keyboard shortcuts for imp
 - Tags system fully implemented for both projects and tasks
 - Task attachments system (URLs, notes, files) implemented
 - Dark/light mode with system preference support
+- **NEW**: Complete notebook system with WYSIWYG editing
 - Next: AI integration and keyboard shortcuts
 
-## Completed Tasks
-### Infrastructure Setup
-✅ Documentation structure (claude_docs)
-✅ Monorepo setup with npm workspaces
-✅ Frontend React + TypeScript + Chakra UI setup
-✅ Backend Express + TypeScript setup
-✅ Shared types package
-✅ Environment configuration templates
-✅ Development scripts for flexible deployment
-✅ API service configuration with axios
-✅ CORS configuration for separate servers
+## Recently Completed (Notebook System)
+✅ Database schema for notebooks (notebooks, folders, pages, blocks)
+✅ Full backend API for notebooks CRUD operations
+✅ TipTap WYSIWYG editor integration with rich text formatting
+✅ Hierarchical folder structure with drag-and-drop management
+✅ Auto-save functionality with debouncing
+✅ Slash commands for quick content insertion
+✅ Visual file/folder icons for better UX
+✅ Batch update API for efficient position changes
+✅ Fixed infinite loop in CreateProjectModal
+✅ Backend port changed from 3001 to 5001
+✅ Automatic port cleanup with kill-port
 
-### Backend Implementation
-✅ Database setup with Knex.js and SQLite
-✅ Database migrations for all entities
-✅ User model with authentication
-✅ JWT token generation and verification
-✅ Authentication middleware
-✅ Project CRUD endpoints with tags support
-✅ Task CRUD endpoints with reordering
-✅ Notes CRUD endpoints
-✅ Tags CRUD endpoints for tasks and projects
-✅ Attachments CRUD endpoints
-✅ API testing and validation
-
-### Frontend Implementation
-✅ React Router setup with protected routes
-✅ Authentication context with JWT management
-✅ Login and register components with validation
-✅ App layout with navigation
-✅ Project list with CRUD operations and tags
-✅ Create/edit project modal with tag selection
-✅ React Query for server state
-✅ Form validation with react-hook-form
-✅ Error handling and toast notifications
-✅ @chakra-ui/icons package installed
-
-### Kanban Board Implementation
-✅ Board component with data fetching
-✅ Project header with navigation
-✅ Three-column layout (Todo, In Progress, Done)
-✅ BoardColumn component with task counts
-✅ TaskCard component with rich display and tags
-✅ Priority indicators and due dates
-✅ Responsive design for mobile
-✅ Loading and error states
-✅ Visual hover effects
-✅ Full drag-and-drop functionality with @dnd-kit
-✅ Optimistic updates for smooth UX
-✅ Task reordering within and between columns
-✅ Backend persistence of drag operations
-
-### Development Tools
-✅ Backend dev routes for data management
-  - /api/dev/reset-all - Clear entire database
-  - /api/dev/reset-user - Clear current user data
-  - /api/dev/seed - Create sample data
-  - /api/dev/stats - View database statistics
-✅ Environment-based protection (dev only)
-✅ Frontend developer tools in login page
-✅ Settings page with developer tools tab
-
-### UI/UX Features
-✅ Dark/light mode with system preference support
-✅ Theme toggle in navigation
-✅ Project color customization with tags
-✅ Tags system with color coding for tasks and projects
-✅ Task attachments system (URLs, notes, files)
-✅ Responsive design for all components
-✅ Toast notifications for user feedback
-✅ Loading states and error handling
-
-## Active Task
-AI Integration and Keyboard Shortcuts:
-- 🔄 Keyboard shortcuts for efficiency
-  - N for new task, E for edit selected
-  - Del for delete, Space for status change
-  - Arrow keys for navigation
-- 🔄 AI integration for task enhancement
-  - Anthropic Claude API integration
-  - "Enhance with AI" button in forms
+## Active Tasks
+### AI Integration
+- 🔄 Anthropic Claude API integration
+  - ✅ API key management in user settings
+  - "Enhance with AI" button in task forms
   - Smart suggestions for task details
+  - AI-powered content generation for notebooks
+
+### Keyboard Shortcuts
+- 🔄 Implement global keyboard shortcuts
+  - N for new task
+  - E for edit selected task
+  - Del for delete task
+  - Space for status change
+  - Arrow keys for navigation
+  - / for search (future)
 
 ## Next Steps
-1. Implement keyboard shortcuts (N for new task, E for edit, etc.)
-2. Integrate Anthropic Claude API for task enhancement
-3. Add API key management in user settings
-4. Add "Enhance with AI" button to task forms
-5. Create loading states for AI operations
-6. Consider implementing:
+1. **AI Task Enhancement**
+   - Add "Enhance with AI" button to task creation/edit forms
+   - Implement API calls to Claude for task enhancement
+   - Loading states and error handling for AI operations
+   - Rate limiting consideration
+
+3. **Keyboard Shortcuts**
+   - Implement keyboard event listeners
+   - Visual hints for shortcuts (tooltips)
+   - Shortcut customization in settings
+
+4. **Production Readiness**
    - Filter tasks by tags
    - Task search functionality
-   - Bulk operations
-   - Task templates
+   - Bulk operations for tasks
    - File upload for attachments (currently path-based)
+   - Export notebooks to PDF/Markdown
+   - Full-text search in notebooks
+
+## Technical Debt
+- Table functionality in TipTap editor (temporarily disabled)
+- Some TypeScript warnings for unused imports
+- Consider migrating to PostgreSQL for production
+- Add comprehensive test coverage
 
 ## Recent Changes
-- Implemented project tags system:
-  - Database schema with project_tags junction table
-  - API endpoints for project tag management
-  - Tags display on project cards (up to 3 with overflow)
-  - Tag selection in create/edit project modal
-- Implemented task attachments system:
-  - Database schema supporting files, URLs, and notes
-  - Full CRUD API for attachments
-  - TaskAttachments component with add/edit/delete
-  - Support for three attachment types with icons
-  - Modal interface for attachment management
-- Fixed Board component infinite loop issue
-- Updated all TypeScript interfaces for consistency
+- Implemented complete notebook system:
+  - TipTap WYSIWYG editor with formatting toolbar
+  - Folder hierarchy with nesting support
+  - Drag-and-drop file management with visual feedback
+  - Auto-expand folders during drag operations
+  - JSON-based content storage
+  - Slash commands for quick formatting
+- API Key Management:
+  - Added secure API key storage in user settings
+  - Encrypted API keys in database
+  - UI for adding/updating/removing Anthropic API keys
+  - Integration with Account Settings tab
+- Development environment improvements:
+  - Backend port changed to 5001
+  - Automatic port cleanup on startup
+  - Fixed infinite render loop in CreateProjectModal
+  - TypeScript error fixes
 
 ## Progress Reference
-See projectRoadmap.md - Phase 1: MVP Kanban Board 95% complete - Only AI integration and keyboard shortcuts remaining!
+- Phase 1: MVP Kanban Board - 95% complete (Only AI and shortcuts remaining)
+- Phase 2: Notebook System - ✅ COMPLETED
+- Phase 3: Mind Mapping - Future consideration
 
 ## Technical Stack in Use
 - React 18 with TypeScript
@@ -133,6 +100,8 @@ See projectRoadmap.md - Phase 1: MVP Kanban Board 95% complete - Only AI integra
 - React Hook Form for forms
 - Chakra UI for components
 - @dnd-kit for drag-and-drop
+- TipTap for WYSIWYG editing
 - Axios with JWT interceptors
-- Backend API fully operational
+- Backend API on port 5001
 - SQLite with Knex.js migrations
+- Kill-port for development convenience

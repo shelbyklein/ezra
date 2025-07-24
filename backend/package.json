@@ -5,8 +5,8 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "dev": "kill-port 3001 && nodemon",
-    "dev:force": "lsof -ti:3001 | xargs kill -9 2>/dev/null || true && nodemon",
+    "dev": "kill-port 5001 && nodemon",
+    "dev:force": "lsof -ti:5001 | xargs kill -9 2>/dev/null || true && nodemon",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
