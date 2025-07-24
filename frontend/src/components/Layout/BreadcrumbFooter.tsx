@@ -96,15 +96,17 @@ export const BreadcrumbFooter: React.FC = () => {
     }
 
     if (path.includes('/app/board')) {
-      if (!path.includes('/projects')) {
-        items.push({ label: 'Board', icon: FaTasks, href: '/app/board' });
-      } else if (project) {
+      if (params.projectId && project) {
+        // Viewing a specific project board
         items.push({ 
-          label: 'Board', 
+          label: project.name, 
           icon: FaTasks,
           href: `/app/board/${params.projectId}`,
           isCurrentPage: true 
         });
+      } else {
+        // Viewing the general board
+        items.push({ label: 'Board', icon: FaTasks, href: '/app/board' });
       }
     }
 
