@@ -15,7 +15,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  VStack,
   useToast,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
@@ -43,7 +42,7 @@ export const CreatePageModal: React.FC<CreatePageModalProps> = ({
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<PageFormData>();
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<PageFormData>();
 
   const createPage = useMutation({
     mutationFn: async (data: PageFormData) => {

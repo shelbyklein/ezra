@@ -17,6 +17,7 @@ import {
   Center,
   useToast,
   useDisclosure,
+  Tooltip,
 } from '@chakra-ui/react';
 import { AddIcon, ArrowLeftIcon } from '@chakra-ui/icons';
 import { FaMagic } from 'react-icons/fa';
@@ -44,6 +45,8 @@ import { TaskCard } from './TaskCard';
 import { CreateTaskForm } from '../Tasks/CreateTaskForm';
 import { TaskDetailModal } from '../Tasks/TaskDetailModal';
 import { NaturalLanguageInput } from '../AI/NaturalLanguageInput';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
+import { KeyboardShortcutsHelp } from '../common/KeyboardShortcutsHelp';
 
 interface Task {
   id: number;
@@ -85,6 +88,18 @@ export const Board: React.FC = () => {
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure();
   const { isOpen: isNLOpen, onOpen: onNLOpen, onClose: onNLClose } = useDisclosure();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  
+  // Initialize keyboard shortcuts
+  const {
+    shortcuts,
+    selectedTaskId,
+    setSelectedTaskId,
+    isHelpOpen,
+    onOpenHelp,
+    onCloseHelp,
+    isNewTaskOpen,
+    onCloseNewTask,
+  } = useKeyboardShortcuts();
 
   // Setup drag sensors
   const sensors = useSensors(
@@ -138,6 +153,36 @@ export const Board: React.FC = () => {
       refetch();
     },
   });
+  
+  // Mutation for moving a single task
+  const moveTaskMutation = useMutation({
+    mutationFn: async ({ taskId, newStatus, newPosition }: { 
+      taskId: number; 
+      newStatus: 'todo' | 'in_progress' | 'done';
+      newPosition: number;
+    }) => {
+      const response = await api.patch(`/tasks/${taskId}`, { 
+        status: newStatus,
+        position: newPosition 
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      refetch();
+      toast({
+        title: 'Task moved',
+        status: 'success',
+        duration: 2000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to move task',
+        status: 'error',
+        duration: 3000,
+      });
+    },
+  });
 
   // Group tasks by status
   const columns = React.useMemo(() => {
@@ -154,19 +199,139 @@ export const Board: React.FC = () => {
     [activeId, tasks]
   );
 
-  // Keyboard shortcut for natural language input
+  // Handle keyboard shortcut events
   React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd/Ctrl + K to open natural language input
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        onNLOpen();
+    const handleOpenCommandBar = () => onNLOpen();
+    const handleOpenSearch = () => {
+      // TODO: Implement search functionality
+      toast({
+        title: 'Search coming soon',
+        description: 'Task search functionality will be implemented',
+        status: 'info',
+        duration: 2000,
+      });
+    };
+    
+    const handleEditTask = (event: CustomEvent) => {
+      const task = tasks.find(t => t.id === event.detail.taskId);
+      if (task) {
+        setSelectedTask(task);
+        onDetailOpen();
       }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onNLOpen]);
+    
+    const handleDeleteTask = (event: CustomEvent) => {
+      const task = tasks.find(t => t.id === event.detail.taskId);
+      if (task) {
+        setSelectedTask(task);
+        // The delete will be handled in the detail modal
+        onDetailOpen();
+      }
+    };
+    
+    const handleCycleTaskStatus = async (event: CustomEvent) => {
+      const task = tasks.find(t => t.id === event.detail.taskId);
+      if (task) {
+        const statusOrder = ['todo', 'in_progress', 'done'];
+        const currentIndex = statusOrder.indexOf(task.status);
+        const nextStatus = statusOrder[(currentIndex + 1) % statusOrder.length];
+        
+        await moveTaskMutation.mutateAsync({
+          taskId: task.id,
+          newStatus: nextStatus as 'todo' | 'in_progress' | 'done',
+          newPosition: 0,
+        });
+      }
+    };
+    
+    const handleSelectPreviousTask = (event: CustomEvent) => {
+      const allTasks = [...columns.todo, ...columns.in_progress, ...columns.done];
+      const currentIndex = allTasks.findIndex(t => t.id === event.detail.currentTaskId);
+      if (currentIndex > 0) {
+        setSelectedTaskId(allTasks[currentIndex - 1].id);
+        const taskEvent = new CustomEvent('taskSelected', { detail: { taskId: allTasks[currentIndex - 1].id } });
+        window.dispatchEvent(taskEvent);
+      }
+    };
+    
+    const handleSelectNextTask = (event: CustomEvent) => {
+      const allTasks = [...columns.todo, ...columns.in_progress, ...columns.done];
+      const currentIndex = allTasks.findIndex(t => t.id === event.detail.currentTaskId);
+      if (currentIndex < allTasks.length - 1 && currentIndex !== -1) {
+        setSelectedTaskId(allTasks[currentIndex + 1].id);
+        const taskEvent = new CustomEvent('taskSelected', { detail: { taskId: allTasks[currentIndex + 1].id } });
+        window.dispatchEvent(taskEvent);
+      } else if (currentIndex === -1 && allTasks.length > 0) {
+        setSelectedTaskId(allTasks[0].id);
+        const taskEvent = new CustomEvent('taskSelected', { detail: { taskId: allTasks[0].id } });
+        window.dispatchEvent(taskEvent);
+      }
+    };
+    
+    const handleMoveTaskLeft = async (event: CustomEvent) => {
+      const task = tasks.find(t => t.id === event.detail.taskId);
+      if (task) {
+        const statusOrder = ['done', 'in_progress', 'todo'];
+        const currentIndex = statusOrder.indexOf(task.status);
+        if (currentIndex < statusOrder.length - 1) {
+          const nextStatus = statusOrder[currentIndex + 1];
+          await moveTaskMutation.mutateAsync({
+            taskId: task.id,
+            newStatus: nextStatus as 'todo' | 'in_progress' | 'done',
+            newPosition: 0,
+          });
+        }
+      }
+    };
+    
+    const handleMoveTaskRight = async (event: CustomEvent) => {
+      const task = tasks.find(t => t.id === event.detail.taskId);
+      if (task) {
+        const statusOrder = ['todo', 'in_progress', 'done'];
+        const currentIndex = statusOrder.indexOf(task.status);
+        if (currentIndex < statusOrder.length - 1) {
+          const nextStatus = statusOrder[currentIndex + 1];
+          await moveTaskMutation.mutateAsync({
+            taskId: task.id,
+            newStatus: nextStatus as 'todo' | 'in_progress' | 'done',
+            newPosition: 0,
+          });
+        }
+      }
+    };
+    
+    const handleCloseModals = () => {
+      onClose();
+      onDetailClose();
+      onNLClose();
+      onCloseHelp();
+    };
+    
+    // Add event listeners
+    window.addEventListener('openCommandBar', handleOpenCommandBar);
+    window.addEventListener('openSearch', handleOpenSearch);
+    window.addEventListener('editTask' as any, handleEditTask);
+    window.addEventListener('deleteTask' as any, handleDeleteTask);
+    window.addEventListener('cycleTaskStatus' as any, handleCycleTaskStatus);
+    window.addEventListener('selectPreviousTask' as any, handleSelectPreviousTask);
+    window.addEventListener('selectNextTask' as any, handleSelectNextTask);
+    window.addEventListener('moveTaskLeft' as any, handleMoveTaskLeft);
+    window.addEventListener('moveTaskRight' as any, handleMoveTaskRight);
+    window.addEventListener('closeModals', handleCloseModals);
+    
+    return () => {
+      window.removeEventListener('openCommandBar', handleOpenCommandBar);
+      window.removeEventListener('openSearch', handleOpenSearch);
+      window.removeEventListener('editTask' as any, handleEditTask);
+      window.removeEventListener('deleteTask' as any, handleDeleteTask);
+      window.removeEventListener('cycleTaskStatus' as any, handleCycleTaskStatus);
+      window.removeEventListener('selectPreviousTask' as any, handleSelectPreviousTask);
+      window.removeEventListener('selectNextTask' as any, handleSelectNextTask);
+      window.removeEventListener('moveTaskLeft' as any, handleMoveTaskLeft);
+      window.removeEventListener('moveTaskRight' as any, handleMoveTaskRight);
+      window.removeEventListener('closeModals', handleCloseModals);
+    };
+  }, [tasks, columns, onNLOpen, onDetailOpen, toast, setSelectedTaskId]);
 
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
@@ -280,6 +445,10 @@ export const Board: React.FC = () => {
   // Handle task click
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
+    setSelectedTaskId(task.id);
+    // Dispatch selection event for keyboard shortcuts
+    const event = new CustomEvent('taskSelected', { detail: { taskId: task.id } });
+    window.dispatchEvent(event);
     onDetailOpen();
   };
 
@@ -353,18 +522,31 @@ export const Board: React.FC = () => {
             </HStack>
           </HStack>
           <HStack spacing={2}>
-            <Button 
-              leftIcon={<FaMagic />} 
-              colorScheme="purple" 
-              variant="outline"
-              onClick={onNLOpen}
-              title="Natural Language Command (Cmd/Ctrl + K)"
-            >
-              AI Command
-            </Button>
-            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
-              New Task
-            </Button>
+            <Tooltip label="⌘K / Ctrl+K" placement="bottom">
+              <Button 
+                leftIcon={<FaMagic />} 
+                colorScheme="purple" 
+                variant="outline"
+                onClick={onNLOpen}
+              >
+                AI Command
+              </Button>
+            </Tooltip>
+            <Tooltip label="Press N" placement="bottom">
+              <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
+                New Task
+              </Button>
+            </Tooltip>
+            <Tooltip label="Keyboard Shortcuts" placement="bottom">
+              <Button 
+                variant="ghost"
+                onClick={() => onOpenHelp()}
+                size="sm"
+                color="gray.500"
+              >
+                ?
+              </Button>
+            </Tooltip>
           </HStack>
         </HStack>
 
@@ -383,6 +565,7 @@ export const Board: React.FC = () => {
               tasks={columns[status]}
               projectId={Number(projectId)}
               onTaskClick={handleTaskClick}
+              selectedTaskId={selectedTaskId}
             />
           ))}
         </Grid>
@@ -432,6 +615,20 @@ export const Board: React.FC = () => {
           projectId={Number(projectId)}
         />
       )}
+      
+      {/* Keyboard Shortcuts Help Modal */}
+      <KeyboardShortcutsHelp
+        isOpen={isHelpOpen}
+        onClose={onCloseHelp}
+        shortcuts={shortcuts}
+      />
+      
+      {/* Create Task Modal for keyboard shortcut */}
+      <CreateTaskForm
+        isOpen={isNewTaskOpen}
+        onClose={onCloseNewTask}
+        projectId={Number(projectId)}
+      />
     </DndContext>
   );
 };

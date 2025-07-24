@@ -24,7 +24,6 @@ import {
   Input,
   useDisclosure,
   Box,
-  Badge,
   SimpleGrid,
   Alert,
   AlertIcon,
@@ -56,7 +55,7 @@ export const TagsManagement: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
   // Fetch tags
-  const { data: tags = [], isLoading } = useQuery<Tag[]>({
+  const { data: tags = [] } = useQuery<Tag[]>({
     queryKey: ['tags'],
     queryFn: async () => {
       const response = await api.get('/tags');

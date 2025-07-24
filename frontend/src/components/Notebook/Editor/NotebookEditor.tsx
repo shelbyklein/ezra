@@ -10,9 +10,6 @@ import {
   Text,
   Input,
   IconButton,
-  ButtonGroup,
-  Divider,
-  useToast,
   Spinner,
   Center,
 } from '@chakra-ui/react';
@@ -71,7 +68,6 @@ interface NotebookEditorProps {
 }
 
 export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebookId }) => {
-  const toast = useToast();
   const queryClient = useQueryClient();
   const [title, setTitle] = React.useState('');
   const [saveTimer, setSaveTimer] = React.useState<NodeJS.Timeout | null>(null);

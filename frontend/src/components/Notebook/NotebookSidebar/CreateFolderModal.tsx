@@ -42,7 +42,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
 }) => {
   const toast = useToast();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FolderFormData>();
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<FolderFormData>();
 
   const createFolder = useMutation({
     mutationFn: async (data: FolderFormData) => {

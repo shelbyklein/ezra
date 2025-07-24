@@ -27,7 +27,7 @@ import {
   InputGroup,
   InputLeftElement,
 } from '@chakra-ui/react';
-import { FaMagic, FaCheck, FaTimes, FaRobot } from 'react-icons/fa';
+import { FaMagic, FaCheck, FaRobot } from 'react-icons/fa';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';

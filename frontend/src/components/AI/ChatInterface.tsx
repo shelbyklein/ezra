@@ -19,13 +19,11 @@ import {
   Badge,
   Card,
   CardBody,
-  Divider,
   Button,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  useToast,
 } from '@chakra-ui/react';
 import { 
   FaPaperPlane, 
@@ -34,7 +32,6 @@ import {
   FaProjectDiagram, 
   FaTasks,
   FaBook,
-  FaPlus,
   FaEllipsisV,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -90,9 +87,8 @@ What would you like to do today?`,
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const toast = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { } = useAuth();
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');

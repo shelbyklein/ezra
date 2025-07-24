@@ -21,8 +21,6 @@ import {
   RiItalic,
   RiStrikethrough,
   RiCodeLine,
-  RiH1,
-  RiH2,
   RiListUnordered,
   RiListOrdered,
   RiDoubleQuotesL,

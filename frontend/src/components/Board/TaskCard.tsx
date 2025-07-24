@@ -9,7 +9,6 @@ import {
   HStack,
   VStack,
   Badge,
-  useColorModeValue,
   Icon,
   Tag,
   TagLabel,
@@ -40,6 +39,7 @@ interface TaskCardProps {
   task: Task;
   isDragging?: boolean;
   onClick?: () => void;
+  isSelected?: boolean;
 }
 
 const priorityColors = {
@@ -54,7 +54,7 @@ const priorityBorderColors = {
   high: 'red.500',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false, onClick }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false, onClick, isSelected = false }) => {
 
   const {
     attributes,
@@ -97,14 +97,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false, on
       style={style}
       bg="bg.card"
       borderRadius="md"
-      borderWidth="1px"
-      borderColor="border.primary"
+      borderWidth={isSelected ? "2px" : "1px"}
+      borderColor={isSelected ? "blue.500" : "border.primary"}
       borderLeftWidth="3px"
       borderLeftColor={priorityBorderColors[task.priority]}
       p={3}
       cursor="pointer"
       transition="all 0.2s"
       opacity={isSortableDragging || isDragging ? 0.5 : 1}
+      boxShadow={isSelected ? "0 0 0 3px rgba(66, 153, 225, 0.3)" : undefined}
       _hover={{
         bg: 'bg.hover',
         transform: isSortableDragging ? undefined : 'translateY(-2px)',

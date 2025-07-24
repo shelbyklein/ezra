@@ -143,7 +143,22 @@ Finalize MVP features and prepare for production deployment with comprehensive t
 - Add comprehensive test coverage
 
 ## Recent Changes
-- UI/UX Enhancements:
+- Keyboard Shortcuts Implementation:
+  - Created useKeyboardShortcuts hook for global keyboard handling
+  - Added keyboard shortcuts: N (new task), E (edit), Delete, Space (status change)
+  - Arrow keys for task navigation (up/down) and movement (left/right)
+  - Cmd/Ctrl+K for AI command bar, / for search (placeholder)
+  - ? key to show keyboard shortcuts help modal
+  - Visual selection indicator on tasks with blue border
+  - Tooltips on buttons showing keyboard shortcuts
+  - KeyboardShortcutsHelp modal component
+- Navigation & UI Updates:
+  - Reorganized navigation header: Home, Chat, Projects, Notebooks
+  - Created dedicated Chat page component (/app/chat)
+  - Removed "Board" from navigation (access via project cards)
+  - Updated default /app redirect to go to Chat page
+  - Chat page features full conversation history and markdown rendering
+- Previous UI/UX Enhancements:
   - Added breadcrumb footer showing navigation hierarchy
   - Fixed navigation context updates when clicking pages
   - Fixed page creation redirect (missing /app prefix)

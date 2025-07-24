@@ -13,16 +13,13 @@ import {
   Text,
   Badge,
   Divider,
-  IconButton,
-  Tooltip,
   useToast,
   Spinner,
-  Heading,
   List,
   ListItem,
   ListIcon,
 } from '@chakra-ui/react';
-import { CheckIcon, CloseIcon, RepeatIcon } from '@chakra-ui/icons';
+import { CheckIcon, RepeatIcon } from '@chakra-ui/icons';
 import { MdCheckCircle } from 'react-icons/md';
 import { api } from '../../services/api';
 

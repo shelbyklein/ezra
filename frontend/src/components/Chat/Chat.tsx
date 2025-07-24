@@ -163,8 +163,9 @@ export const Chat: React.FC = () => {
                           ul: ({ children }) => <Box as="ul" pl={4} mb={2}>{children}</Box>,
                           ol: ({ children }) => <Box as="ol" pl={4} mb={2}>{children}</Box>,
                           li: ({ children }) => <Box as="li" mb={1}>{children}</Box>,
-                          code: ({ inline, children }) =>
-                            inline ? (
+                          code: ({ children, ...props }) => {
+                            const isInline = !props.node || props.node.children.length === 1;
+                            return isInline ? (
                               <Text as="code" bg="gray.700" px={1} borderRadius="sm">
                                 {children}
                               </Text>
@@ -181,7 +182,8 @@ export const Chat: React.FC = () => {
                                   {children}
                                 </Text>
                               </Box>
-                            ),
+                            );
+                          },
                         }}
                       >
                         {message.content}

@@ -18,19 +18,13 @@ import {
   Spinner,
   Badge,
   Card,
-  CardBody,
-  Button,
-  Collapse,
-  ScaleFade,
   CloseButton,
   Tooltip,
-  useToast,
 } from '@chakra-ui/react';
 import { 
   FaPaperPlane, 
   FaRobot, 
   FaUser, 
-  FaTimes,
   FaComment,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,7 +56,6 @@ export const ChatBubble: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const toast = useToast();
   const queryClient = useQueryClient();
   const location = useLocation();
 

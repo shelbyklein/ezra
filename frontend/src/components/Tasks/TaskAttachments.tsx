@@ -87,7 +87,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
   });
 
   // Fetch attachments
-  const { data: attachments = [], isLoading } = useQuery<Attachment[]>({
+  const { data: attachments = [] } = useQuery<Attachment[]>({
     queryKey: ['attachments', taskId],
     queryFn: async () => {
       const response = await api.get(`/attachments/task/${taskId}`);

@@ -5,7 +5,6 @@
 import React from 'react';
 import {
   Box,
-  Grid,
   Heading,
   Text,
   VStack,
@@ -20,7 +19,6 @@ import {
   useColorModeValue,
   Icon,
   Badge,
-  Flex,
   Container,
   SimpleGrid,
 } from '@chakra-ui/react';

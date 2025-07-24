@@ -37,7 +37,7 @@ interface NotebookFormData {
 export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<NotebookFormData>();
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<NotebookFormData>();
 
   const createNotebook = useMutation({
     mutationFn: async (data: NotebookFormData) => {

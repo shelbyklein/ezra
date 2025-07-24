@@ -2,7 +2,7 @@
  * Slash commands list component
  */
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Box, VStack, HStack, Text } from '@chakra-ui/react';
 
 interface Command {
@@ -19,7 +19,7 @@ interface SlashCommandsListProps {
 }
 
 export const SlashCommandsList = forwardRef<any, SlashCommandsListProps>(
-  ({ items, command, editor, range }, ref) => {
+  ({ items, command }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const selectItem = (index: number) => {

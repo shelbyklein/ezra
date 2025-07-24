@@ -42,6 +42,7 @@ interface BoardColumnProps {
   tasks: Task[];
   projectId: number;
   onTaskClick?: (task: Task) => void;
+  selectedTaskId?: number | null;
 }
 
 export const BoardColumn: React.FC<BoardColumnProps> = ({
@@ -49,6 +50,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
   title,
   tasks,
   onTaskClick,
+  selectedTaskId,
 }) => {
   const activeBg = useColorModeValue('gray.100', 'gray.600');
 
@@ -128,6 +130,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
                 key={task.id} 
                 task={task} 
                 onClick={() => onTaskClick?.(task)}
+                isSelected={selectedTaskId === task.id}
               />
             ))
           )}

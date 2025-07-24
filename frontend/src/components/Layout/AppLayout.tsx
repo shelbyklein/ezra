@@ -16,7 +16,6 @@ import {
   MenuItem,
   MenuDivider,
   useDisclosure,
-  useColorModeValue,
   useColorMode,
   Stack,
   Avatar,

@@ -170,7 +170,13 @@ export const SlashCommands = Extension.create({
                 return true;
               }
 
-              return component.ref?.onKeyDown(props);
+              // Handle arrow keys and enter
+              const ref = component.ref as any;
+              if (ref && ref.onKeyDown) {
+                return ref.onKeyDown(props);
+              }
+              
+              return false;
             },
 
             onExit() {

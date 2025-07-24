@@ -8,7 +8,6 @@ import {
   Box,
   Flex,
   VStack,
-  HStack,
   IconButton,
   useDisclosure,
   Drawer,

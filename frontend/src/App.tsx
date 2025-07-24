@@ -15,7 +15,6 @@ import { Board } from './components/Board/Board';
 import { Settings } from './components/Settings/Settings';
 import { NotebookLayout } from './components/Notebook/NotebookLayout';
 import { Dashboard } from './components/Dashboard/Dashboard';
-import { ChatBubble } from './components/AI/ChatBubble';
 import { Chat } from './components/Chat/Chat';
 import theme from './theme';
 import { useSystemColorMode } from './hooks/useSystemColorMode';
