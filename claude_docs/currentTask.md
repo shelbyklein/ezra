@@ -143,22 +143,31 @@ Finalize MVP features and prepare for production deployment with comprehensive t
 - Add comprehensive test coverage
 
 ## Recent Changes
-- AI Chat Improvements:
+- UI/UX Enhancements:
+  - Added breadcrumb footer showing navigation hierarchy
+  - Fixed navigation context updates when clicking pages
+  - Fixed page creation redirect (missing /app prefix)
+  - Chat bubble now shows current context in header
+  - Dynamic greeting messages based on location
+  - Fixed React hooks initialization errors
+- AI Feature Improvements:
+  - Added highlight parameter for AI-created content
+  - Enhanced parseMarkdownToTipTap with highlight support
+  - Updated AI prompt to explain highlight usage
+  - Fixed context awareness to update on navigation
+  - Chat now tracks location changes in real-time
+- Previous AI Updates:
   - Fixed React hooks order error (useColorModeValue)
   - Added task CRUD operations to chat bubble
   - Implemented delete_task action
   - Improved AI response parsing with fallback patterns
   - Added debug logging throughout
-- Notebook AI Integration:
+- Previous Notebook Integration:
   - Made chat bubble context-aware of current page
   - Added update_page and create_page actions
   - Created markdown to TipTap converter
   - Fixed query invalidation for real-time updates
   - Resolved TipTap duplicate extension warning
-- Previous Updates:
-  - Complete notebook system with TipTap editor
-  - API Key Management with encryption
-  - Development environment improvements
 
 ## Progress Reference
 - Phase 1: MVP Kanban Board - 98% complete (Only keyboard shortcuts remaining)

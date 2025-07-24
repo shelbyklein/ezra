@@ -65,9 +65,11 @@ export const CreatePageModal: React.FC<CreatePageModalProps> = ({
       // Navigate to the new page
       navigate(`/app/notebooks/${notebookId}/${page.id}`);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Page creation error:', error);
       toast({
         title: 'Failed to create page',
+        description: error.response?.data?.error || 'An error occurred',
         status: 'error',
         duration: 5000,
       });

@@ -45,6 +45,7 @@
   - Parses markdown text to TipTap JSON format
   - Supports paragraphs, headings, lists, code blocks
   - Enables AI to edit notebook pages
+  - Now supports highlight parameter for new content
 
 ### UI Components and Utilities (Implemented)
 - **Framer Motion** - Animations for chat bubble ✅

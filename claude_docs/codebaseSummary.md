@@ -121,10 +121,19 @@ Ezra/
     - Supports task CRUD operations ✅
     - Supports notebook page editing via natural language ✅
     - Real-time query invalidation after actions ✅
+    - Shows current context in header (page/notebook name) ✅
+    - Dynamic greeting based on location ✅
+    - Tracks navigation changes with useLocation ✅
   - ChatInterface - Full-screen chat (replaced by bubble) ✅
   - NaturalLanguageInput - Command bar (Cmd/Ctrl + K) ✅
 - **Dashboard/** - Recent activity display
   - Dashboard - Shows 3 recent projects and notebooks ✅
+- **Layout/** - Application structure components
+  - AppLayout - Main layout with navigation bar and user menu ✅
+  - BreadcrumbFooter - Fixed footer showing navigation hierarchy ✅
+    - Dynamic breadcrumb generation based on route ✅
+    - Fetches names for projects/notebooks/pages ✅
+    - Clickable navigation to parent sections ✅
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
@@ -140,6 +149,7 @@ Ezra/
     - Context-aware processing (current notebook/page/project)
     - Action execution (task CRUD, page updates, navigation)
     - Markdown to TipTap conversion for page editing
+    - Support for highlight parameter in update_page action
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -151,6 +161,7 @@ Ezra/
   - jwt.ts - Token generation and verification
   - anthropic.ts - Claude API integration, task enhancement, and natural language parsing
   - parseMarkdownToTipTap() - Converts markdown to TipTap JSON format
+    - Now supports highlight parameter for marking new content
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
