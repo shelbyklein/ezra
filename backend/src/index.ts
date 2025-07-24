@@ -42,6 +42,7 @@ import tagsRoutes from '../routes/tags.routes'
 import attachmentsRoutes from '../routes/attachments.routes'
 import notebooksRoutes from '../routes/notebooks.routes'
 import usersRoutes from '../routes/users.routes'
+import aiRoutes from '../routes/ai.routes'
 import devRoutes from '../routes/dev.routes'
 
 // Health check endpoint
@@ -72,6 +73,9 @@ app.use('/api/notebooks', notebooksRoutes)
 
 // Users routes
 app.use('/api/users', usersRoutes)
+
+// AI routes
+app.use('/api/ai', aiRoutes)
 
 // Development routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

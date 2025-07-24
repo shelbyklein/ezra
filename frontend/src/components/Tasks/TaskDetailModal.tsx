@@ -26,14 +26,17 @@ import {
   useToast,
   FormErrorMessage,
   Divider,
+  Tooltip,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { FaMagic } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { TagSelector } from '../common/TagSelector';
 import { Tag, TagLabel } from '@chakra-ui/react';
 import { TaskAttachments } from './TaskAttachments';
+import { TaskEnhancer } from '../AI/TaskEnhancer';
 
 interface Task {
   id: number;
@@ -94,6 +97,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   task,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showEnhancer, setShowEnhancer] = useState(false);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -102,6 +106,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TaskFormData>({
     defaultValues: {
@@ -220,7 +225,20 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     });
   };
 
-  return (
+  const handleApplyEnhancement = (enhancement: any) => {
+    if (enhancement.title) {
+      setValue('title', enhancement.title);
+    }
+    if (enhancement.description) {
+      setValue('description', enhancement.description);
+    }
+    if (enhancement.priority) {
+      setValue('priority', enhancement.priority);
+    }
+    setShowEnhancer(false);
+  };
+
+  return (<>
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
@@ -236,6 +254,18 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     size="sm"
                     onClick={() => setIsEditing(true)}
                   />
+                )}
+                {isEditing && (
+                  <Tooltip label="Enhance with AI" placement="left">
+                    <IconButton
+                      aria-label="Enhance with AI"
+                      icon={<FaMagic />}
+                      size="sm"
+                      colorScheme="purple"
+                      variant="ghost"
+                      onClick={() => setShowEnhancer(true)}
+                    />
+                  </Tooltip>
                 )}
                 <IconButton
                   aria-label="Delete task"
@@ -403,5 +433,23 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </form>
       </ModalContent>
     </Modal>
-  );
+
+    {/* AI Enhancement Modal */}
+    <Modal isOpen={showEnhancer} onClose={() => setShowEnhancer(false)} size="xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>AI Task Enhancement</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <TaskEnhancer
+            taskId={task.id}
+            title={task.title}
+            description={task.description || ''}
+            onApply={handleApplyEnhancement}
+            onClose={() => setShowEnhancer(false)}
+          />
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  </>);
 };

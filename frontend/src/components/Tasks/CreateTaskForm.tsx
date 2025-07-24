@@ -21,11 +21,15 @@ import {
   useToast,
   VStack,
   FormErrorMessage,
+  IconButton,
+  Tooltip,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FaMagic } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { TagSelector } from '../common/TagSelector';
+import { TaskEnhancer } from '../AI/TaskEnhancer';
 
 interface CreateTaskFormProps {
   isOpen: boolean;
@@ -51,11 +55,14 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   const toast = useToast();
   const queryClient = useQueryClient();
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [showEnhancer, setShowEnhancer] = useState(false);
   
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TaskFormData>({
     defaultValues: {
@@ -111,7 +118,37 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   const handleClose = () => {
     reset();
     setSelectedTags([]);
+    setShowEnhancer(false);
     onClose();
+  };
+
+  const watchedTitle = watch('title');
+  const watchedDescription = watch('description');
+
+  const handleEnhance = () => {
+    if (!watchedTitle) {
+      toast({
+        title: 'Title required',
+        description: 'Please enter a task title before enhancing',
+        status: 'warning',
+        duration: 3000,
+      });
+      return;
+    }
+    setShowEnhancer(true);
+  };
+
+  const handleApplyEnhancement = (enhancement: any) => {
+    if (enhancement.title) {
+      setValue('title', enhancement.title);
+    }
+    if (enhancement.description) {
+      setValue('description', enhancement.description);
+    }
+    if (enhancement.priority) {
+      setValue('priority', enhancement.priority);
+    }
+    setShowEnhancer(false);
   };
 
   return (
@@ -119,7 +156,22 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>Create New Task</ModalHeader>
+          <ModalHeader>
+            <HStack justify="space-between" w="full">
+              <span>Create New Task</span>
+              <Tooltip label="Enhance with AI" placement="left">
+                <IconButton
+                  aria-label="Enhance with AI"
+                  icon={<FaMagic />}
+                  size="sm"
+                  colorScheme="purple"
+                  variant="ghost"
+                  onClick={handleEnhance}
+                  isDisabled={!watchedTitle || showEnhancer}
+                />
+              </Tooltip>
+            </HStack>
+          </ModalHeader>
           <ModalCloseButton />
           
           <ModalBody>
@@ -198,6 +250,23 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
           </ModalFooter>
         </form>
       </ModalContent>
+
+      {/* AI Enhancement Modal */}
+      <Modal isOpen={showEnhancer} onClose={() => setShowEnhancer(false)} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>AI Task Enhancement</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <TaskEnhancer
+              title={watchedTitle}
+              description={watchedDescription}
+              onApply={handleApplyEnhancement}
+              onClose={() => setShowEnhancer(false)}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Modal>
   );
 };
