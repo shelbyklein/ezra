@@ -2,7 +2,7 @@
  * Simple API test script for testing backend endpoints
  */
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'http://localhost:5001/api';
 let authToken = '';
 let userId = '';
 let projectId = '';

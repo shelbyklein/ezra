@@ -6,7 +6,7 @@ The backend API and frontend authentication flow are now implemented and running
 ## Running the Application
 
 ### Backend Server
-The backend should already be running on port 3001. If not:
+The backend should already be running on port 5001. If not:
 ```bash
 cd backend
 npm run dev
@@ -100,21 +100,21 @@ The application now includes development-only API endpoints for managing test da
 
 #### 1. Clear All Data
 ```bash
-curl -X DELETE http://localhost:3001/api/dev/reset-all
+curl -X DELETE http://localhost:5001/api/dev/reset-all
 ```
 This removes all users, projects, tasks, and notes from the database.
 
 #### 2. Clear Your Data Only
 If you're logged in and want to clear just your data:
 ```bash
-curl -X DELETE http://localhost:3001/api/dev/reset-user \
+curl -X DELETE http://localhost:5001/api/dev/reset-user \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 #### 3. Generate Sample Data
 Create a test user with sample projects and tasks:
 ```bash
-curl -X POST http://localhost:3001/api/dev/seed
+curl -X POST http://localhost:5001/api/dev/seed
 ```
 This creates:
 - Test user: email: test@example.com, password: testpass123
@@ -123,7 +123,7 @@ This creates:
 
 #### 4. Check Database Statistics
 ```bash
-curl http://localhost:3001/api/dev/stats
+curl http://localhost:5001/api/dev/stats
 ```
 Shows counts of users, projects, tasks, and notes.
 

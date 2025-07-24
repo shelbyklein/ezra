@@ -21,6 +21,8 @@ import {
   Badge,
   Spinner,
   Center,
+  Tag,
+  TagLabel,
 } from '@chakra-ui/react';
 import { AddIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -37,6 +39,11 @@ interface Project {
   position: number;
   created_at: string;
   updated_at: string;
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 }
 
 export const ProjectList: React.FC = () => {
@@ -140,6 +147,8 @@ export const ProjectList: React.FC = () => {
               onClick={() => navigate(`/board/${project.id}`)}
               _hover={{ shadow: 'lg' }}
               transition="all 0.2s"
+              borderTopWidth={4}
+              borderTopColor={project.color}
             >
               <CardHeader pb={2}>
                 <HStack justify="space-between">
@@ -170,9 +179,32 @@ export const ProjectList: React.FC = () => {
                 </HStack>
               </CardHeader>
               <CardBody py={2}>
-                <Text color="gray.600" noOfLines={2}>
-                  {project.description || 'No description'}
-                </Text>
+                <VStack align="stretch" spacing={2}>
+                  <Text color="gray.600" noOfLines={2}>
+                    {project.description || 'No description'}
+                  </Text>
+                  {project.tags && project.tags.length > 0 && (
+                    <HStack spacing={2} flexWrap="wrap">
+                      {project.tags.slice(0, 3).map(tag => (
+                        <Tag
+                          key={tag.id}
+                          size="sm"
+                          borderRadius="full"
+                          variant="solid"
+                          bg={tag.color}
+                          color="white"
+                        >
+                          <TagLabel>{tag.name}</TagLabel>
+                        </Tag>
+                      ))}
+                      {project.tags.length > 3 && (
+                        <Text fontSize="xs" color="gray.500">
+                          +{project.tags.length - 3}
+                        </Text>
+                      )}
+                    </HStack>
+                  )}
+                </VStack>
               </CardBody>
               <CardFooter pt={2}>
                 <HStack justify="space-between" w="full">

@@ -6,21 +6,25 @@
 - **React 18** - Modern UI library ✅
 - **TypeScript** - Type safety across the application ✅
 - **Chakra UI** - Component library with icons ✅
+  - Color mode support for dark/light themes
+  - Semantic color tokens
+  - Custom theme configuration
 - **React Router v6** - Client-side routing ✅
 
 ### State Management (Implemented)
 - **React Context API** - Authentication state ✅
 - **React Query/TanStack Query** - Server state management ✅
+- **Local state** - Component-level state for forms and UI ✅
 
 ### Forms and Validation (Implemented)
 - **React Hook Form** - Form state management ✅
 - **Built-in validation** - Email, password, username rules ✅
 
-### Drag and Drop (Ready to Implement)
-- **@dnd-kit/sortable** - Installed and ready
-  - @dnd-kit/core
-  - @dnd-kit/sortable
-  - @dnd-kit/utilities
+### Drag and Drop (Implemented)
+- **@dnd-kit/sortable** - Smooth drag-and-drop ✅
+  - @dnd-kit/core - Core functionality
+  - @dnd-kit/sortable - Sortable lists
+  - @dnd-kit/utilities - Helper functions
 
 ### Markdown
 - **react-markdown** - Markdown rendering
@@ -40,10 +44,11 @@
 - **TypeScript** - Type safety
 
 ### Database
-- **SQLite** (current) - Simple, file-based database
+- **SQLite** (current) - Simple, file-based database ✅
   - Easy setup for MVP
   - No additional services required
   - Using with Knex.js for migrations
+  - Tables: users, projects, tasks, notes, tags, task_tags, project_tags, attachments
 - **PostgreSQL** (future) - Production database
   - Better performance at scale
   - Advanced features

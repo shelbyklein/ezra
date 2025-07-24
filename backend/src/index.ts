@@ -8,7 +8,7 @@ import db from './db'
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 5001
 
 // Middleware
 app.use(cors({
@@ -38,6 +38,9 @@ import authRoutes from '../routes/auth.routes'
 import projectRoutes from '../routes/projects.routes'
 import taskRoutes from '../routes/tasks.routes'
 import notesRoutes from '../routes/notes.routes'
+import tagsRoutes from '../routes/tags.routes'
+import attachmentsRoutes from '../routes/attachments.routes'
+import notebooksRoutes from '../routes/notebooks.routes'
 import devRoutes from '../routes/dev.routes'
 
 // Health check endpoint
@@ -56,6 +59,15 @@ app.use('/api/tasks', taskRoutes)
 
 // Notes routes
 app.use('/api/notes', notesRoutes)
+
+// Tags routes
+app.use('/api/tags', tagsRoutes)
+
+// Attachments routes
+app.use('/api/attachments', attachmentsRoutes)
+
+// Notebooks routes
+app.use('/api/notebooks', notebooksRoutes)
 
 // Development routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

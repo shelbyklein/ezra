@@ -77,13 +77,13 @@ export const Register: React.FC = () => {
       <VStack spacing="8">
         <VStack spacing="2">
           <Heading size="xl">Create an account</Heading>
-          <Text color="gray.600">Start managing your projects with AI assistance</Text>
+          <Text color="text.secondary">Start managing your projects with AI assistance</Text>
         </VStack>
 
         <Box
           py="8"
           px={{ base: '4', sm: '10' }}
-          bg="white"
+          bg="bg.card"
           boxShadow="base"
           borderRadius="xl"
           w="full"

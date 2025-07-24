@@ -3,7 +3,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
@@ -13,6 +13,9 @@ import { AppLayout } from './components/Layout/AppLayout';
 import { ProjectList } from './components/Projects/ProjectList';
 import { Board } from './components/Board/Board';
 import { Settings } from './components/Settings/Settings';
+import { NotebookLayout } from './components/Notebook/NotebookLayout';
+import theme from './theme';
+import { useSystemColorMode } from './hooks/useSystemColorMode';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -24,39 +27,52 @@ const queryClient = new QueryClient({
   },
 });
 
+// Component to initialize system color mode
+const AppWithSystemColorMode = () => {
+  useSystemColorMode();
+  
+  return (
+    <Router>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* Protected routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/projects" replace />} />
+          <Route path="projects" element={<ProjectList />} />
+          <Route path="board/:projectId?" element={<Board />} />
+          <Route path="notebooks/:notebookId?/:pageId?" element={<NotebookLayout />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+        
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+};
+
 function App() {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Protected routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Navigate to="/projects" replace />} />
-                <Route path="projects" element={<ProjectList />} />
-                <Route path="board/:projectId?" element={<Board />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
-              
-              {/* Catch all */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ChakraProvider>
+    <>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <ChakraProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AppWithSystemColorMode />
+          </AuthProvider>
+        </QueryClientProvider>
+      </ChakraProvider>
+    </>
   );
 }
 

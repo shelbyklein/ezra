@@ -29,6 +29,11 @@ interface Task {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 }
 
 interface BoardColumnProps {
@@ -36,15 +41,15 @@ interface BoardColumnProps {
   title: string;
   tasks: Task[];
   projectId: number;
+  onTaskClick?: (task: Task) => void;
 }
 
 export const BoardColumn: React.FC<BoardColumnProps> = ({
   status,
   title,
   tasks,
+  onTaskClick,
 }) => {
-  const bgColor = useColorModeValue('gray.50', 'gray.700');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
   const activeBg = useColorModeValue('gray.100', 'gray.600');
 
   const { setNodeRef, isOver } = useDroppable({
@@ -71,10 +76,10 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
   return (
     <Box
       ref={setNodeRef}
-      bg={isOver ? activeBg : bgColor}
+      bg={isOver ? activeBg : 'bg.tertiary'}
       borderRadius="lg"
       borderWidth="1px"
-      borderColor={isOver ? `${getColumnColor()}.400` : borderColor}
+      borderColor={isOver ? `${getColumnColor()}.400` : 'border.primary'}
       p={4}
       h="full"
       display="flex"
@@ -113,13 +118,17 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
         >
           {tasks.length === 0 ? (
             <Box py={8} textAlign="center">
-              <Text color="gray.500" fontSize="sm">
+              <Text color="text.secondary" fontSize="sm">
                 No tasks in {title.toLowerCase()}
               </Text>
             </Box>
           ) : (
             tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onClick={() => onTaskClick?.(task)}
+              />
             ))
           )}
         </VStack>

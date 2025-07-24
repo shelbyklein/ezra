@@ -11,6 +11,8 @@ import {
   Badge,
   useColorModeValue,
   Icon,
+  Tag,
+  TagLabel,
 } from '@chakra-ui/react';
 import { CalendarIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useSortable } from '@dnd-kit/sortable';
@@ -27,11 +29,17 @@ interface Task {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 }
 
 interface TaskCardProps {
   task: Task;
   isDragging?: boolean;
+  onClick?: () => void;
 }
 
 const priorityColors = {
@@ -46,12 +54,7 @@ const priorityBorderColors = {
   high: 'red.500',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) => {
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
-  const textColor = useColorModeValue('gray.700', 'gray.200');
-  const mutedColor = useColorModeValue('gray.500', 'gray.400');
+export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false, onClick }) => {
 
   const {
     attributes,
@@ -80,14 +83,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
     return { text: date.toLocaleDateString(), color: 'gray' };
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Only trigger onClick if not dragging and onClick is provided
+    if (!isSortableDragging && onClick) {
+      e.stopPropagation();
+      onClick();
+    }
+  };
+
   return (
     <Box
       ref={setNodeRef}
       style={style}
-      bg={bgColor}
+      bg="bg.card"
       borderRadius="md"
       borderWidth="1px"
-      borderColor={borderColor}
+      borderColor="border.primary"
       borderLeftWidth="3px"
       borderLeftColor={priorityBorderColors[task.priority]}
       p={3}
@@ -95,11 +106,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
       transition="all 0.2s"
       opacity={isSortableDragging || isDragging ? 0.5 : 1}
       _hover={{
-        bg: hoverBg,
+        bg: 'bg.hover',
         transform: isSortableDragging ? undefined : 'translateY(-2px)',
         shadow: 'md',
       }}
       position="relative"
+      onClick={handleClick}
       {...attributes}
       {...listeners}
     >
@@ -109,7 +121,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
         position="absolute"
         top={2}
         right={2}
-        color={mutedColor}
+        color="text.muted"
         opacity={0}
         transition="opacity 0.2s"
         _groupHover={{ opacity: 0.6 }}
@@ -122,7 +134,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
         <Text
           fontSize="sm"
           fontWeight="medium"
-          color={textColor}
+          color="text.primary"
           noOfLines={2}
         >
           {task.title}
@@ -132,7 +144,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
         {task.description && (
           <Text
             fontSize="xs"
-            color={mutedColor}
+            color="text.secondary"
             noOfLines={2}
           >
             {task.description}
@@ -153,7 +165,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
           {/* Due Date */}
           {task.due_date && (
             <HStack spacing={1}>
-              <Icon as={CalendarIcon} boxSize={3} color={mutedColor} />
+              <Icon as={CalendarIcon} boxSize={3} color="text.muted" />
               <Text
                 fontSize="xs"
                 color={formatDueDate(task.due_date).color + '.500'}
@@ -161,6 +173,33 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false }) 
                 {formatDueDate(task.due_date).text}
               </Text>
             </HStack>
+          )}
+          
+          {/* Tags */}
+          {task.tags && task.tags.length > 0 && (
+            <>
+              {task.tags.slice(0, 2).map(tag => (
+                <Tag
+                  key={tag.id}
+                  size="sm"
+                  borderRadius="full"
+                  variant="solid"
+                  bg={tag.color}
+                  color="white"
+                  fontSize="xs"
+                  py={0}
+                  px={2}
+                  h={5}
+                >
+                  <TagLabel>{tag.name}</TagLabel>
+                </Tag>
+              ))}
+              {task.tags.length > 2 && (
+                <Text fontSize="xs" color="text.muted">
+                  +{task.tags.length - 2}
+                </Text>
+              )}
+            </>
           )}
         </HStack>
       </VStack>

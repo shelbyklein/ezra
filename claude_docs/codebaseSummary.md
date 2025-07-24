@@ -27,9 +27,11 @@ Ezra/
 │   │       └── index.ts   # Database connection setup
 │   ├── routes/            # API route handlers
 │   │   ├── auth.routes.ts # Authentication endpoints
-│   │   ├── projects.routes.ts # Project CRUD
+│   │   ├── projects.routes.ts # Project CRUD + tags
 │   │   ├── tasks.routes.ts # Task CRUD + reordering
 │   │   ├── notes.routes.ts # Notes CRUD
+│   │   ├── tags.routes.ts  # Tags CRUD for tasks/projects
+│   │   ├── attachments.routes.ts # Task attachments CRUD
 │   │   └── dev.routes.ts  # Development tools (reset, seed)
 │   ├── middleware/
 │   │   └── auth.middleware.ts # JWT authentication
@@ -43,7 +45,10 @@ Ezra/
 │   │   ├── 20240101_create_users.ts
 │   │   ├── 20240102_create_projects.ts
 │   │   ├── 20240103_create_tasks.ts
-│   │   └── 20240104_create_notes.ts
+│   │   ├── 20240104_create_notes.ts
+│   │   ├── 20240105_create_tags.ts
+│   │   ├── 006_add_project_tags.ts
+│   │   └── 007_add_task_attachments.ts
 │   ├── tests/
 │   │   └── api.test.ts    # API endpoint tests
 │   ├── knexfile.ts        # Database configuration
@@ -75,31 +80,41 @@ Ezra/
   - Login - User login form with validation
   - Register - User registration form
   - ProtectedRoute - Route guard for authenticated users
+  - LoginDevTools - Development tools access from login
 - **Layout/** - Application structure
-  - AppLayout - Main layout with navigation bar
+  - AppLayout - Main layout with navigation bar and user menu
 - **Projects/** - Project management
-  - ProjectList - Grid view of all projects
-  - CreateProjectModal - Create/edit project form
+  - ProjectList - Grid view with project tags display
+  - CreateProjectModal - Create/edit with tag selection
 - **Board/** - Kanban board components
   - Board - Main board with DndContext and drag handlers
-  - BoardColumn - Droppable columns with SortableContext
-  - TaskCard - Draggable cards with priority/date indicators
+  - BoardColumn - Droppable columns with task click handling
+  - TaskCard - Draggable/clickable cards with priority/date indicators
+- **Settings/** - Application settings
+  - Settings - Settings page with tabs for different sections
+  - DeveloperTools - Data reset and testing tools (dev only)
+  - TagsManagement - Tags CRUD interface with color picker
+- **Tasks/** - Task management
+  - CreateTaskForm - Quick task creation modal with tag selector
+  - TaskDetailModal - View/edit/delete task details with tags
+  - TaskAttachments - Manage file/URL/note attachments
+- **Common/** - Reusable components
+  - ColorPicker - Color selection with predefined palette
+  - TagSelector - Multi-select tag dropdown
 
 ### Frontend Components (Planned)
-- **Settings/** - Application settings
-  - DeveloperTools - Data reset and testing tools (dev only)
-- **Tasks/** - Task management
-  - CreateTaskForm - Quick task creation
-  - TaskDetailModal - View/edit task details
 - **AI/** - AI integration
   - TaskEnhancer - AI-powered task improvement
+  - ApiKeyManager - User API key management
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
   - auth.routes.ts - Authentication (register/login)
-  - projects.routes.ts - Project CRUD operations
-  - tasks.routes.ts - Task CRUD + reordering endpoint
+  - projects.routes.ts - Project CRUD + tags integration
+  - tasks.routes.ts - Task CRUD + reordering + tags fetching
   - notes.routes.ts - Notes CRUD operations
+  - tags.routes.ts - Tags CRUD + task/project assignment
+  - attachments.routes.ts - Task attachments CRUD
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -155,46 +170,65 @@ Ezra/
 
 ## Recent Significant Changes
 
-### Initial Setup (Completed)
-- Initial project structure created with npm workspaces
-- Documentation framework established
-- Technology stack decisions finalized
-- Separate server configuration implemented
-- Environment-based API configuration added
-- Basic frontend and backend entry points created
-- TypeScript configuration for all workspaces
-- Development scripts for flexible deployment options
+### Phase 1: MVP Kanban Board (95% Complete)
 
-### Backend Implementation (Completed)
+#### Infrastructure & Setup ✅
+- Project initialization with npm workspaces
+- Documentation structure (claude_docs)
+- Technology stack decisions
+- TypeScript configuration across all packages
+- Development scripts for flexible deployment
+- CORS configuration for separate servers
+
+#### Backend Implementation ✅
 - Database setup with Knex.js and SQLite
-- Complete database schema with migrations
-- User authentication system with JWT tokens
-- Full CRUD API endpoints for projects, tasks, and notes
-- Task reordering endpoint for drag-and-drop support
-- Proper error handling and response formatting
-- API endpoint testing suite
-- Authentication middleware with user context
+- Complete migrations for users, projects, tasks, notes
+- JWT authentication system
+- Full CRUD endpoints for all entities
+- Task reordering endpoint for drag-and-drop
+- Development tools endpoints (reset, seed, stats)
+- Comprehensive error handling
 
-### Frontend Implementation (Completed)
-- React Router setup with protected routes
-- Authentication system with JWT management
-- Login and register forms with validation
-- Project management UI (list, create, edit, delete)
-- React Query for server state management
-- Chakra UI component integration
-- Fixed @chakra-ui/icons dependency issue
-- Application layout with responsive navigation
-- Kanban board with three-column layout
-- Full drag-and-drop functionality with @dnd-kit
+#### Frontend Core Features ✅
+- React Router with protected routes
+- Authentication flow (login/register)
+- Project management (CRUD operations)
+- React Query for server state
+- Chakra UI components
+- Responsive navigation
+
+#### Kanban Board Features ✅
+- Three-column layout (Todo, In Progress, Done)
+- Full drag-and-drop with @dnd-kit
+- Task cards with priority/date indicators
 - Optimistic updates for smooth UX
-- Task cards with priority and due date display
+- Task creation form with validation
+- Task detail/edit modal
+- Delete task functionality
+- Click-to-view task details
 
-### Development Tools (In Progress)
-- Backend dev routes for data management
-- Sample data seeding capability
-- Database reset functionality
-- User-specific data clearing
-- Environment-based protection (dev only)
+#### UI/UX Enhancements ✅
+- Dark/light mode with system preference support
+- Project color customization
+- Tags system for tasks and projects
+- Tag display on task/project cards
+- Task attachments (URLs, notes, files)
+- Responsive design throughout
+- Loading states and error handling
+- Toast notifications
+
+#### Developer Tools ✅
+- Settings page with dev tools tab
+- Database statistics display
+- Reset all data functionality
+- Reset user data functionality
+- Sample data generation
+- Development-only access
+
+### Remaining for MVP
+- AI task enhancement integration
+- API key management for users
+- Keyboard shortcuts
 
 ## User Feedback Integration and Its Impact on Development
 

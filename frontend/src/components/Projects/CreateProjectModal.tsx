@@ -2,9 +2,9 @@
  * Modal for creating and editing projects
  */
 
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import {
   Modal,
   ModalOverlay,
@@ -23,6 +23,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { api } from '../../services/api';
+import { ColorPicker } from '../common/ColorPicker';
+import { TagSelector } from '../common/TagSelector';
 
 interface Project {
   id: number;
@@ -34,6 +36,11 @@ interface Project {
   position: number;
   created_at: string;
   updated_at: string;
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 }
 
 interface CreateProjectModalProps {
@@ -45,6 +52,7 @@ interface CreateProjectModalProps {
 interface ProjectFormData {
   name: string;
   description: string;
+  color: string;
 }
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
@@ -55,17 +63,31 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   const toast = useToast();
   const queryClient = useQueryClient();
   const isEditing = !!project;
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ProjectFormData>({
     defaultValues: {
       name: project?.name || '',
       description: project?.description || '',
+      color: project?.color || '#3182CE',
     },
+  });
+
+  // Fetch project tags if editing
+  const { data: projectTags = [] } = useQuery({
+    queryKey: ['project-tags', project?.id],
+    queryFn: async () => {
+      if (!project?.id) return [];
+      const response = await api.get(`/tags/project/${project.id}`);
+      return response.data;
+    },
+    enabled: !!project?.id,
   });
 
   useEffect(() => {
@@ -73,27 +95,40 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       reset({
         name: project.name,
         description: project.description || '',
+        color: project.color || '#3182CE',
       });
+      setSelectedTags(projectTags.map((tag: any) => tag.id));
     } else {
       reset({
         name: '',
         description: '',
+        color: '#3182CE',
       });
+      setSelectedTags([]);
     }
-  }, [project, reset]);
+  }, [project, projectTags, reset]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ProjectFormData) => {
+      let projectResponse;
       if (isEditing) {
-        const response = await api.put(`/projects/${project.id}`, data);
-        return response.data;
+        projectResponse = await api.put(`/projects/${project.id}`, data);
       } else {
-        const response = await api.post('/projects', data);
-        return response.data;
+        projectResponse = await api.post('/projects', data);
       }
+      
+      // Update project tags
+      if (projectResponse.data.id) {
+        await api.post(`/tags/project/${projectResponse.data.id}`, {
+          tagIds: selectedTags,
+        });
+      }
+      
+      return projectResponse.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['project-tags'] });
       toast({
         title: isEditing ? 'Project updated' : 'Project created',
         status: 'success',
@@ -102,6 +137,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
       });
       onClose();
       reset();
+      setSelectedTags([]);
     },
     onError: () => {
       toast({
@@ -150,6 +186,24 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 />
                 <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
               </FormControl>
+
+              <Controller
+                name="color"
+                control={control}
+                render={({ field }) => (
+                  <ColorPicker
+                    label="Project Color"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+
+              <TagSelector
+                label="Project Tags"
+                value={selectedTags}
+                onChange={setSelectedTags}
+              />
             </VStack>
           </ModalBody>
 

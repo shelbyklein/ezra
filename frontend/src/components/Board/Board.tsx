@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
+  Box,
   Grid,
   Heading,
   HStack,
@@ -15,6 +16,7 @@ import {
   Spinner,
   Center,
   useToast,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon, ArrowLeftIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -38,6 +40,8 @@ import {
 import { api } from '../../services/api';
 import { BoardColumn } from './BoardColumn';
 import { TaskCard } from './TaskCard';
+import { CreateTaskForm } from '../Tasks/CreateTaskForm';
+import { TaskDetailModal } from '../Tasks/TaskDetailModal';
 
 interface Task {
   id: number;
@@ -50,12 +54,18 @@ interface Task {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
 }
 
 interface Project {
   id: number;
   name: string;
   description: string | null;
+  color?: string;
 }
 
 const COLUMN_TITLES = {
@@ -69,6 +79,9 @@ export const Board: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Setup drag sensors
   const sensors = useSensors(
@@ -123,25 +136,19 @@ export const Board: React.FC = () => {
     },
   });
 
-  // Group tasks by status with mutable state for optimistic updates
-  const [localTasks, setLocalTasks] = useState<Task[]>([]);
-
-  React.useEffect(() => {
-    setLocalTasks(tasks);
-  }, [tasks]);
-
+  // Group tasks by status
   const columns = React.useMemo(() => {
     return {
-      todo: localTasks.filter(task => task.status === 'todo').sort((a, b) => a.position - b.position),
-      in_progress: localTasks.filter(task => task.status === 'in_progress').sort((a, b) => a.position - b.position),
-      done: localTasks.filter(task => task.status === 'done').sort((a, b) => a.position - b.position),
+      todo: tasks.filter(task => task.status === 'todo').sort((a, b) => a.position - b.position),
+      in_progress: tasks.filter(task => task.status === 'in_progress').sort((a, b) => a.position - b.position),
+      done: tasks.filter(task => task.status === 'done').sort((a, b) => a.position - b.position),
     };
-  }, [localTasks]);
+  }, [tasks]);
 
   // Find active task for drag overlay
   const activeTask = React.useMemo(
-    () => localTasks.find((task) => task.id.toString() === activeId),
-    [activeId, localTasks]
+    () => tasks.find((task) => task.id.toString() === activeId),
+    [activeId, tasks]
   );
 
   // Handle drag start
@@ -166,19 +173,8 @@ export const Board: React.FC = () => {
       return;
     }
 
-    setLocalTasks((tasks) => {
-      const activeTask = tasks.find((t) => t.id.toString() === activeId);
-      if (!activeTask) return tasks;
-
-      // Update task status
-      const updatedTask = { ...activeTask, status: overContainer as Task['status'] };
-      
-      // Remove from old position and add to new
-      const newTasks = tasks.filter((t) => t.id !== activeTask.id);
-      newTasks.push(updatedTask);
-      
-      return newTasks;
-    });
+    // We'll handle the actual movement in handleDragEnd
+    // This is just for visual feedback during drag
   };
 
   // Handle drag end
@@ -243,17 +239,6 @@ export const Board: React.FC = () => {
     }
 
     if (updatedTasks.length > 0) {
-      // Optimistically update UI
-      setLocalTasks((tasks) => {
-        return tasks.map((task) => {
-          const update = updatedTasks.find((u) => u.id === task.id);
-          if (update) {
-            return { ...task, position: update.position, status: update.status as Task['status'] };
-          }
-          return task;
-        });
-      });
-
       // Send to backend
       reorderMutation.mutate(updatedTasks);
     }
@@ -273,6 +258,12 @@ export const Board: React.FC = () => {
     });
     
     return foundKey;
+  };
+
+  // Handle task click
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    onDetailOpen();
   };
 
   if (!projectId) {
@@ -330,9 +321,21 @@ export const Board: React.FC = () => {
             >
               Back
             </Button>
-            <Heading size="lg">{project?.name || 'Loading...'}</Heading>
+            <HStack spacing={2}>
+              {project && (
+                <Box
+                  w={4}
+                  h={4}
+                  borderRadius="full"
+                  bg={project.color}
+                  borderWidth={1}
+                  borderColor="border.primary"
+                />
+              )}
+              <Heading size="lg">{project?.name || 'Loading...'}</Heading>
+            </HStack>
           </HStack>
-          <Button leftIcon={<AddIcon />} colorScheme="blue">
+          <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
             New Task
           </Button>
         </HStack>
@@ -351,6 +354,7 @@ export const Board: React.FC = () => {
               title={COLUMN_TITLES[status]}
               tasks={columns[status]}
               projectId={Number(projectId)}
+              onTaskClick={handleTaskClick}
             />
           ))}
         </Grid>
@@ -370,6 +374,27 @@ export const Board: React.FC = () => {
       >
         {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
       </DragOverlay>
+
+      {/* Create Task Modal */}
+      {projectId && (
+        <CreateTaskForm
+          isOpen={isOpen}
+          onClose={onClose}
+          projectId={Number(projectId)}
+        />
+      )}
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetailModal
+          isOpen={isDetailOpen}
+          onClose={() => {
+            onDetailClose();
+            setSelectedTask(null);
+          }}
+          task={selectedTask}
+        />
+      )}
     </DndContext>
   );
 };

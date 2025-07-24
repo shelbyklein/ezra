@@ -10,10 +10,11 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:clean": "./scripts/start-dev.sh",
     "dev:frontend": "npm run dev --workspace=frontend",
     "dev:frontend-only": "npm run dev --workspace=frontend",
-    "dev:backend": "npm run dev --workspace=backend",
-    "dev:backend-only": "npm run dev --workspace=backend",
+    "dev:backend": "npm run dev:force --workspace=backend",
+    "dev:backend-only": "npm run dev:force --workspace=backend",
     "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend",

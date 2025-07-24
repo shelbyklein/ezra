@@ -17,18 +17,20 @@ import {
   MenuDivider,
   useDisclosure,
   useColorModeValue,
+  useColorMode,
   Stack,
   Avatar,
   Text,
   Container,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const AppLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const handleLogout = () => {
     logout();
@@ -36,8 +38,8 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')}>
-      <Box bg={useColorModeValue('white', 'gray.800')} px={4} boxShadow="sm">
+    <Box minH="100vh" bg="bg.secondary">
+      <Box bg="bg.primary" px={4} boxShadow="sm">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <IconButton
             size="md"
@@ -63,9 +65,19 @@ export const AppLayout: React.FC = () => {
               <Button variant="ghost" onClick={() => navigate('/board')}>
                 Board
               </Button>
+              <Button variant="ghost" onClick={() => navigate('/notebooks')}>
+                Notebooks
+              </Button>
             </HStack>
           </HStack>
-          <Flex alignItems="center">
+          <Flex alignItems="center" gap={2}>
+            <IconButton
+              aria-label="Toggle theme"
+              icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+              onClick={toggleColorMode}
+              variant="ghost"
+              size="sm"
+            />
             <Menu>
               <MenuButton
                 as={Button}
@@ -80,7 +92,7 @@ export const AppLayout: React.FC = () => {
                 <MenuItem>
                   <Stack spacing={0}>
                     <Text fontWeight="medium">{user?.username}</Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color="text.secondary">
                       {user?.email}
                     </Text>
                   </Stack>
@@ -101,6 +113,9 @@ export const AppLayout: React.FC = () => {
               </Button>
               <Button variant="ghost" onClick={() => navigate('/board')}>
                 Board
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/notebooks')}>
+                Notebooks
               </Button>
             </Stack>
           </Box>

@@ -1,86 +1,153 @@
 # Next Steps - Ezra Development
 
-## Immediate Priority: Frontend MVP Implementation
+## Current Status: MVP 95% Complete ✅
 
-### 1. Frontend Setup and Dependencies
-```bash
-cd frontend
-npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
-npm install react-router-dom @types/react-router-dom
-npm install @tanstack/react-query
-npm install react-hook-form
-```
+### Completed Features:
+- ✅ Full authentication system (login/register)
+- ✅ Project management (CRUD operations) with color customization and tags
+- ✅ Kanban board with drag-and-drop
+- ✅ Task creation and editing with tags
+- ✅ Task detail modal with inline editing
+- ✅ Task attachments system (URLs, notes, files)
+- ✅ Developer tools for testing
+- ✅ Responsive UI with Chakra components
+- ✅ Dark/light mode with system preference support
+- ✅ Comprehensive tags system with color coding
+- ✅ Tags display on task and project cards
+- ✅ Tags management in Settings
 
-### 2. Authentication Implementation
-- [ ] Create AuthContext for managing authentication state
-- [ ] Build Login and Register components
-- [ ] Implement token storage and management
-- [ ] Set up axios interceptors for auth headers
-- [ ] Create ProtectedRoute component
-- [ ] Add logout functionality
+## Immediate Priority: Complete MVP (Phase 1)
 
-### 3. Project Management UI
-- [ ] Create ProjectList component for displaying all projects
-- [ ] Build CreateProjectModal with form validation
-- [ ] Implement project selection and switching
-- [ ] Add project edit/delete functionality
-- [ ] Create ProjectContext for current project state
+### 1. AI Integration with Claude API (Critical - 2-3 days)
+This is the key differentiator for Ezra. Implementation plan:
 
-### 4. Kanban Board Implementation
-- [ ] Create Board component layout
-- [ ] Build Column components (Todo, In Progress, Done)
-- [ ] Create TaskCard component with drag handles
-- [ ] Implement drag-and-drop with @dnd-kit
-- [ ] Add visual feedback during drag operations
-- [ ] Handle task reordering API calls
+#### Backend Tasks:
+- [ ] Install Anthropic SDK: `npm install @anthropic-ai/sdk --workspace=backend`
+- [ ] Create AI service module (`backend/src/services/ai.service.ts`)
+- [ ] Add API endpoints:
+  - `POST /api/tasks/:id/enhance` - Enhance existing task
+  - `POST /api/ai/suggest-tasks` - Suggest tasks based on project
+- [ ] Add rate limiting for AI endpoints
+- [ ] Handle API errors gracefully
 
-### 5. Task Management
-- [ ] Create AddTaskForm component
-- [ ] Build TaskDetailModal for viewing/editing
-- [ ] Implement quick actions (status change, delete)
-- [ ] Add task filtering and search
-- [ ] Create keyboard shortcuts for common actions
+#### Frontend Tasks:
+- [ ] Add "Enhance with AI" button to CreateTaskForm
+- [ ] Add "Enhance" button to TaskDetailModal edit mode
+- [ ] Create loading states for AI operations
+- [ ] Show AI suggestions in a reviewable format
+- [ ] Allow users to accept/reject AI enhancements
 
-### 6. State Management
-- [ ] Set up React Query for server state
-- [ ] Implement optimistic updates for drag-and-drop
-- [ ] Create custom hooks for API operations
-- [ ] Add error handling and retry logic
-- [ ] Implement loading states
+#### API Key Management:
+- [ ] Add `api_key` column to users table (encrypted)
+- [ ] Create API key settings in Account tab
+- [ ] Validate API keys before storing
+- [ ] Use user's API key for AI operations
 
-### 7. UI Polish and UX
-- [ ] Add loading skeletons
-- [ ] Implement toast notifications
-- [ ] Create empty states
-- [ ] Add animations and transitions
-- [ ] Ensure mobile responsiveness
+### 2. Keyboard Shortcuts (Nice to have - 1 day)
+Improve productivity with keyboard navigation:
 
-### 8. Basic AI Integration
-- [ ] Add AI enhancement button to task forms
-- [ ] Create API endpoint for Claude integration
-- [ ] Implement task description enhancement
-- [ ] Add AI-powered task suggestions
+- [ ] Create `useKeyboardShortcuts` hook
+- [ ] Implement shortcuts:
+  - `N` - New task (open create form)
+  - `E` - Edit selected task
+  - `Delete` - Delete selected task (with confirmation)
+  - `1/2/3` - Focus Todo/In Progress/Done column
+  - `?` - Show keyboard shortcuts help
+- [ ] Add visual indicators for shortcuts
+- [ ] Create help modal showing all shortcuts
 
-## Development Order Recommendation
+### 3. Polish & UX Improvements (1 day)
+Final touches for professional feel:
 
-1. **Start with Authentication** - Required for all other features
-2. **Project Management** - Need projects before creating tasks
-3. **Basic Board Layout** - Visual structure first
-4. **Drag and Drop** - Core functionality
-5. **Task CRUD** - Complete the workflow
-6. **Polish and AI** - Enhance the experience
+- [ ] Add empty state illustrations for columns
+- [ ] Add loading skeletons for better perceived performance
+- [ ] Implement task search/filter functionality
+- [ ] Add task count badges to project cards
+- [ ] Improve mobile drag-and-drop experience
+- [ ] Add success animations for task operations
 
-## Testing Considerations
-- Test authentication flow end-to-end
-- Verify drag-and-drop across different scenarios
-- Ensure API error handling works properly
-- Test on different screen sizes
-- Validate form inputs and error states
+### 4. Testing & Documentation (1 day)
+Ensure reliability and maintainability:
 
-## Future Enhancements (Post-MVP)
-- Real-time collaboration with WebSockets
-- Advanced filtering and views
-- Bulk operations
-- Keyboard navigation
-- Export functionality
-- Analytics dashboard
+- [ ] Write unit tests for critical components
+- [ ] Create API documentation
+- [ ] Update README with:
+  - Setup instructions
+  - Feature overview
+  - Screenshots
+  - API key setup guide
+- [ ] Create user guide for AI features
+
+## Phase 2: Notes System (Future - 1 week)
+After MVP completion:
+
+1. **Markdown Editor Integration**
+   - Rich markdown editor component
+   - Live preview
+   - Syntax highlighting
+   - Image uploads
+
+2. **Note Organization**
+   - Attach notes to tasks/projects
+   - Note categories/tags
+   - Full-text search
+   - Recent notes widget
+
+3. **AI-Powered Notes**
+   - Generate meeting notes from bullet points
+   - Summarize long notes
+   - Extract action items from notes
+   - Convert notes to tasks
+
+## Phase 3: Mind Mapping (Future - 2 weeks)
+Knowledge management expansion:
+
+1. **Canvas Implementation**
+   - React Flow integration
+   - Node types (text, image, link, task)
+   - Connection types
+   - Zoom/pan controls
+
+2. **AI Mind Map Generation**
+   - Generate mind maps from project descriptions
+   - Suggest connections between nodes
+   - Auto-layout algorithms
+   - Export to various formats
+
+## Technical Debt & Optimization
+Ongoing improvements:
+
+- [ ] Migrate to PostgreSQL for production
+- [ ] Implement Redis caching
+- [ ] Add WebSocket for real-time updates
+- [ ] Optimize bundle size
+- [ ] Add error boundary components
+- [ ] Implement proper logging system
+
+## Recommended Development Order
+
+1. **Week 1**: Complete AI Integration
+   - Most critical differentiator
+   - Highest user value
+   - Sets Ezra apart from competitors
+
+2. **Week 2**: Polish & Deploy
+   - Keyboard shortcuts
+   - UX improvements
+   - Testing & documentation
+   - Initial deployment
+
+3. **Week 3+**: Iterate based on feedback
+   - User feedback collection
+   - Bug fixes
+   - Performance optimization
+   - Begin Phase 2 planning
+
+## Success Metrics
+Track these KPIs:
+
+- User engagement (daily active users)
+- Task creation rate
+- AI feature usage rate
+- User retention (7-day, 30-day)
+- Performance metrics (load time, API response time)

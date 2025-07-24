@@ -29,7 +29,7 @@ import axios from 'axios';
 
 // Create axios instance with same config as main API
 const devApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -166,7 +166,7 @@ export const LoginDevTools: React.FC = () => {
                 </Button>
 
                 <Box pt={2}>
-                  <Text fontSize="sm" color="gray.600" fontWeight="bold">
+                  <Text fontSize="sm" color="text.secondary" fontWeight="bold">
                     Test Account:
                   </Text>
                   <Code fontSize="xs">test@example.com / testpass123</Code>

@@ -73,13 +73,13 @@ export const Login: React.FC = () => {
         <VStack spacing="8">
         <VStack spacing="2">
           <Heading size="xl">Welcome back</Heading>
-          <Text color="gray.600">Sign in to your account to continue</Text>
+          <Text color="text.secondary">Sign in to your account to continue</Text>
         </VStack>
 
         <Box
           py="8"
           px={{ base: '4', sm: '10' }}
-          bg="white"
+          bg="bg.card"
           boxShadow="base"
           borderRadius="xl"
           w="full"

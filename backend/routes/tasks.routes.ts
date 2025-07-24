@@ -27,7 +27,36 @@ router.get('/project/:projectId', authenticate, async (req, res) => {
       .where({ project_id: req.params.projectId })
       .orderBy('position', 'asc');
     
-    res.json(tasks);
+    // Fetch tags for all tasks
+    const taskIds = tasks.map(task => task.id);
+    let taskTags: Array<{ task_id: number; id: number; name: string; color: string }> = [];
+    if (taskIds.length > 0) {
+      taskTags = await db('task_tags as tt')
+        .join('tags as t', 'tt.tag_id', 't.id')
+        .whereIn('tt.task_id', taskIds)
+        .select('tt.task_id', 't.id', 't.name', 't.color');
+    }
+    
+    // Group tags by task
+    const tagsByTask = taskTags.reduce((acc, tag) => {
+      if (!acc[tag.task_id]) {
+        acc[tag.task_id] = [];
+      }
+      acc[tag.task_id].push({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color
+      });
+      return acc;
+    }, {} as Record<number, Array<{ id: number; name: string; color: string }>>);
+    
+    // Add tags to tasks
+    const tasksWithTags = tasks.map(task => ({
+      ...task,
+      tags: tagsByTask[task.id] || []
+    }));
+    
+    res.json(tasksWithTags);
   } catch (error) {
     console.error('Error fetching tasks:', error);
     res.status(500).json({ error: 'Failed to fetch tasks' });
