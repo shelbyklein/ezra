@@ -63,7 +63,7 @@ export const CreatePageModal: React.FC<CreatePageModalProps> = ({
       reset();
       onClose();
       // Navigate to the new page
-      navigate(`/notebooks/${notebookId}/${page.id}`);
+      navigate(`/app/notebooks/${notebookId}/${page.id}`);
     },
     onError: () => {
       toast({

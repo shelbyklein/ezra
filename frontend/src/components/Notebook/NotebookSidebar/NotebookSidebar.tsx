@@ -277,7 +277,7 @@ export const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
             variant={currentNotebook?.id === notebook.id ? 'solid' : 'ghost'}
             size="sm"
             justifyContent="flex-start"
-            onClick={() => navigate(`/notebooks/${notebook.id}`)}
+            onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
           >
             {notebook.icon} {notebook.title}
           </Button>
