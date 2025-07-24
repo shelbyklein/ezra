@@ -1,6 +1,6 @@
 # Next Steps - Ezra Development
 
-## Current Status: MVP 95% Complete ✅
+## Current Status: MVP 98% Complete ✅
 
 ### Completed Features:
 - ✅ Full authentication system (login/register)
@@ -17,36 +17,13 @@
 - ✅ Tags management in Settings
 - ✅ Complete notebook system with WYSIWYG editing
 - ✅ API key management for Anthropic integration
+- ✅ AI-powered features (natural language, chat interface)
+- ✅ Dashboard with recent activity display
+- ✅ Floating chat bubble interface
 
 ## Immediate Priority: Complete MVP (Phase 1)
 
-### 1. AI Integration with Claude API (Critical - 1-2 days)
-This is the key differentiator for Ezra. Implementation plan:
-
-#### Backend Tasks:
-- [x] Install Anthropic SDK: `@anthropic-ai/sdk`
-- [x] Create AI utility module (`backend/utils/anthropic.ts`)
-- [x] API key storage and encryption implemented
-- [ ] Add API endpoints:
-  - `POST /api/tasks/:id/enhance` - Enhance existing task
-  - `POST /api/ai/suggest-tasks` - Suggest tasks based on project
-- [ ] Add rate limiting for AI endpoints
-- [ ] Handle API errors gracefully
-
-#### Frontend Tasks:
-- [ ] Add "Enhance with AI" button to CreateTaskForm
-- [ ] Add "Enhance" button to TaskDetailModal edit mode
-- [ ] Create loading states for AI operations
-- [ ] Show AI suggestions in a reviewable format
-- [ ] Allow users to accept/reject AI enhancements
-
-#### API Key Management:
-- [x] Add `anthropic_api_key` column to users table (encrypted)
-- [x] Create API key settings in Account tab
-- [x] Validate API keys before storing
-- [x] Use user's API key for AI operations
-
-### 2. Keyboard Shortcuts (Nice to have - 1 day)
+### 1. Keyboard Shortcuts (Final MVP Feature - 1 day)
 Improve productivity with keyboard navigation:
 
 - [ ] Create `useKeyboardShortcuts` hook
@@ -54,100 +31,206 @@ Improve productivity with keyboard navigation:
   - `N` - New task (open create form)
   - `E` - Edit selected task
   - `Delete` - Delete selected task (with confirmation)
-  - `1/2/3` - Focus Todo/In Progress/Done column
-  - `?` - Show keyboard shortcuts help
+  - `Space` - Change task status
+  - `Arrow keys` - Navigate between tasks
+  - `/` - Search tasks (future)
+  - ✅ `Cmd/Ctrl + K` - Open AI command bar
 - [ ] Add visual indicators for shortcuts
 - [ ] Create help modal showing all shortcuts
 
-### 3. Polish & UX Improvements (1 day)
-Final touches for professional feel:
+### 2. Testing & Quality Assurance (High Priority - 2-3 days)
+Ensure reliability before deployment:
 
-- [ ] Add empty state illustrations for columns
-- [ ] Add loading skeletons for better perceived performance
-- [ ] Implement task search/filter functionality
-- [ ] Add task count badges to project cards
-- [ ] Improve mobile drag-and-drop experience
-- [ ] Add success animations for task operations
+- [ ] Unit Tests:
+  - [ ] Authentication flow tests
+  - [ ] Task CRUD operation tests
+  - [ ] Drag-and-drop functionality tests
+  - [ ] AI integration tests
+- [ ] Integration Tests:
+  - [ ] API endpoint tests with Supertest
+  - [ ] Database operation tests
+  - [ ] AI chat conversation tests
+- [ ] E2E Tests:
+  - [ ] Complete user journey tests
+  - [ ] Cross-browser compatibility
+  - [ ] Mobile responsiveness
+- [ ] Performance Testing:
+  - [ ] Load testing for concurrent users
+  - [ ] Response time optimization
+  - [ ] Bundle size analysis
 
-### 4. Testing & Documentation (1 day)
-Ensure reliability and maintainability:
+### 3. Performance Optimization (1-2 days)
+Optimize for production use:
 
-- [ ] Write unit tests for critical components
-- [ ] Create API documentation
-- [ ] Update README with:
-  - Setup instructions
-  - Feature overview
-  - Screenshots
-  - API key setup guide
-- [ ] Create user guide for AI features
+- [ ] Frontend Optimizations:
+  - [ ] Implement React.memo for heavy components
+  - [ ] Add virtual scrolling for long task lists
+  - [ ] Lazy load routes with React.lazy
+  - [ ] Optimize bundle with code splitting
+  - [ ] Add service worker for offline support
+- [ ] Backend Optimizations:
+  - [ ] Add response caching with Redis
+  - [ ] Implement database query optimization
+  - [ ] Add rate limiting for all endpoints
+  - [ ] Optimize AI response times
 
-## Phase 2: Notebook System ✅ COMPLETED
-The notebook system has been fully implemented with:
+### 4. Deployment Preparation (2-3 days)
+Ready for production launch:
 
-- ✅ TipTap WYSIWYG editor with rich formatting
-- ✅ Hierarchical folder structure
-- ✅ Drag-and-drop file management
-- ✅ Auto-save functionality
-- ✅ Slash commands for quick formatting
-- ✅ Visual file/folder icons
-- ✅ Drag to root functionality
+- [ ] Environment Setup:
+  - [ ] Production environment variables
+  - [ ] Secure secrets management
+  - [ ] SSL certificate configuration
+- [ ] Database Migration:
+  - [ ] PostgreSQL setup for production
+  - [ ] Data migration scripts
+  - [ ] Backup strategy
+- [ ] CI/CD Pipeline:
+  - [ ] GitHub Actions workflow
+  - [ ] Automated testing on PR
+  - [ ] Deployment automation
+  - [ ] Rollback procedures
+- [ ] Monitoring:
+  - [ ] Error tracking (Sentry)
+  - [ ] Performance monitoring
+  - [ ] User analytics
+  - [ ] Uptime monitoring
 
-### Future Notebook Enhancements:
-- [ ] AI-powered content generation
-- [ ] Link notebooks/pages to tasks and projects
-- [ ] Full-text search across all pages
-- [ ] Export to PDF/Markdown
-- [ ] Collaborative editing
+## Phase 2: Enhanced Features (Post-MVP)
 
-## Phase 3: Mind Mapping (Future - 2 weeks)
-Knowledge management expansion:
+### 1. Advanced AI Features (1 week)
+Expand AI capabilities:
 
-1. **Canvas Implementation**
-   - React Flow integration
-   - Node types (text, image, link, task)
-   - Connection types
-   - Zoom/pan controls
+- [ ] AI-powered task suggestions based on project context
+- [ ] Bulk task generation from project descriptions
+- [ ] Smart task prioritization
+- [ ] AI-generated daily/weekly summaries
+- [ ] Natural language search across all content
+- [ ] AI-powered notebook content generation
 
-2. **AI Mind Map Generation**
-   - Generate mind maps from project descriptions
-   - Suggest connections between nodes
+### 2. Collaboration Features (2 weeks)
+Enable team productivity:
+
+- [ ] Team workspaces
+- [ ] Real-time collaboration with WebSockets
+- [ ] User mentions and notifications
+- [ ] Activity feed and audit logs
+- [ ] Role-based permissions
+- [ ] Shared notebooks with collaborative editing
+
+### 3. Advanced Search & Filtering (1 week)
+Improve content discovery:
+
+- [ ] Full-text search across tasks, notes, and notebooks
+- [ ] Advanced filters (date ranges, multiple tags, assignees)
+- [ ] Saved search queries
+- [ ] Search history
+- [ ] Quick filters in UI
+
+### 4. Data Export & Integration (1 week)
+Connect with other tools:
+
+- [ ] Export projects to CSV/JSON
+- [ ] Export notebooks to PDF/Markdown
+- [ ] Calendar integration
+- [ ] Webhook support
+- [ ] API for third-party integrations
+- [ ] Zapier integration
+
+## Phase 3: Mind Mapping (Future - 3-4 weeks)
+Visual knowledge management:
+
+1. **Core Mind Map Features**
+   - Canvas-based interface with React Flow
+   - Multiple node types (text, image, URL, task reference)
+   - Rich node editing capabilities
+   - Connection types and labels
+   - Zoom/pan/minimap controls
+
+2. **AI-Powered Mind Mapping**
+   - Generate mind maps from project/notebook content
+   - AI suggestions for connections
    - Auto-layout algorithms
-   - Export to various formats
+   - Topic extraction from content
 
-## Technical Debt & Optimization
-Ongoing improvements:
+3. **Integration & Export**
+   - Link mind map nodes to tasks/projects/notebooks
+   - Export to PNG/SVG/PDF
+   - Import from other mind mapping tools
+   - Collaborative mind mapping
 
-- [ ] Migrate to PostgreSQL for production
-- [ ] Implement Redis caching
-- [ ] Add WebSocket for real-time updates
-- [ ] Optimize bundle size
-- [ ] Add error boundary components
-- [ ] Implement proper logging system
+## Technical Improvements (Ongoing)
 
-## Recommended Development Order
+### Infrastructure:
+- [ ] Migrate to PostgreSQL for production scale
+- [ ] Implement Redis for caching and sessions
+- [ ] Add CDN for static assets
+- [ ] Implement horizontal scaling strategy
 
-1. **Week 1**: Complete AI Integration
-   - Most critical differentiator
-   - Highest user value
-   - Sets Ezra apart from competitors
+### Security:
+- [ ] Security audit of all endpoints
+- [ ] Implement OWASP best practices
+- [ ] Add 2FA support
+- [ ] Regular dependency updates
+- [ ] Penetration testing
 
-2. **Week 2**: Polish & Deploy
-   - Keyboard shortcuts
-   - UX improvements
-   - Testing & documentation
-   - Initial deployment
+### Developer Experience:
+- [ ] Comprehensive API documentation
+- [ ] Storybook for component library
+- [ ] Improved TypeScript types
+- [ ] Developer onboarding guide
 
-3. **Week 3+**: Iterate based on feedback
-   - User feedback collection
-   - Bug fixes
-   - Performance optimization
-   - Begin Phase 2 planning
+## Success Metrics & KPIs
 
-## Success Metrics
-Track these KPIs:
+### User Engagement:
+- Daily/Monthly Active Users (DAU/MAU)
+- Average session duration
+- Task creation rate per user
+- AI feature adoption rate
 
-- User engagement (daily active users)
-- Task creation rate
-- AI feature usage rate
+### Performance:
+- Page load time < 2s
+- API response time < 200ms
+- 99.9% uptime
+- Error rate < 0.1%
+
+### Business Metrics:
 - User retention (7-day, 30-day)
-- Performance metrics (load time, API response time)
+- Feature usage analytics
+- User satisfaction (NPS)
+- Support ticket volume
+
+## Recommended Next Actions
+
+1. **Immediate (This Week)**:
+   - Complete keyboard shortcuts implementation
+   - Begin writing critical unit tests
+   - Set up CI/CD pipeline basics
+
+2. **Short-term (Next 2 Weeks)**:
+   - Complete test suite
+   - Performance optimization pass
+   - Prepare for initial deployment
+   - Create user documentation
+
+3. **Medium-term (Next Month)**:
+   - Deploy to production
+   - Gather user feedback
+   - Iterate based on analytics
+   - Plan Phase 2 features
+
+4. **Long-term (3+ Months)**:
+   - Implement collaboration features
+   - Launch mind mapping
+   - Build integration ecosystem
+   - Scale infrastructure
+
+## Risk Mitigation
+
+- **Technical Debt**: Schedule regular refactoring sprints
+- **Scaling Issues**: Plan for horizontal scaling early
+- **User Adoption**: Focus on onboarding and documentation
+- **Competition**: Continuous innovation with AI features
+- **Security**: Regular audits and updates
+
+This roadmap positions Ezra as a comprehensive, AI-powered project management solution that grows with user needs.

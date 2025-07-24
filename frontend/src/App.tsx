@@ -14,6 +14,8 @@ import { ProjectList } from './components/Projects/ProjectList';
 import { Board } from './components/Board/Board';
 import { Settings } from './components/Settings/Settings';
 import { NotebookLayout } from './components/Notebook/NotebookLayout';
+import { Dashboard } from './components/Dashboard/Dashboard';
+import { ChatBubble } from './components/AI/ChatBubble';
 import theme from './theme';
 import { useSystemColorMode } from './hooks/useSystemColorMode';
 
@@ -43,11 +45,21 @@ const AppWithSystemColorMode = () => {
           path="/"
           element={
             <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* App routes with layout */}
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
               <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/projects" replace />} />
+          <Route index element={<Navigate to="/app/projects" replace />} />
           <Route path="projects" element={<ProjectList />} />
           <Route path="board/:projectId?" element={<Board />} />
           <Route path="notebooks/:notebookId?/:pageId?" element={<NotebookLayout />} />

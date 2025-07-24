@@ -27,13 +27,14 @@ Ezra/
 │   │       └── index.ts   # Database connection setup
 │   ├── routes/            # API route handlers
 │   │   ├── auth.routes.ts # Authentication endpoints
-│   │   ├── projects.routes.ts # Project CRUD + tags
-│   │   ├── tasks.routes.ts # Task CRUD + reordering
+│   │   ├── projects.routes.ts # Project CRUD + tags + recent endpoint
+│   │   ├── tasks.routes.ts # Task CRUD + reordering + natural language
 │   │   ├── notes.routes.ts # Notes CRUD
 │   │   ├── tags.routes.ts  # Tags CRUD for tasks/projects
 │   │   ├── attachments.routes.ts # Task attachments CRUD
-│   │   ├── notebooks.routes.ts # Notebooks CRUD
+│   │   ├── notebooks.routes.ts # Notebooks CRUD + recent endpoint
 │   │   ├── users.routes.ts # User profile and API key management
+│   │   ├── ai.routes.ts   # AI chat and natural language endpoints
 │   │   └── dev.routes.ts  # Development tools (reset, seed)
 │   ├── middleware/
 │   │   └── auth.middleware.ts # JWT authentication
@@ -114,21 +115,24 @@ Ezra/
   - CreateNotebookModal - New notebook creation
   - CreatePageModal - New page creation
   - CreateFolderModal - New folder creation
-
-### Frontend Components (Planned)
-- **AI/** - AI integration
-  - TaskEnhancer - AI-powered task improvement
+- **AI/** - AI integration components
+  - ChatBubble - Floating chat interface in bottom right ✅
+  - ChatInterface - Full-screen chat (replaced by bubble) ✅
+  - NaturalLanguageInput - Command bar (Cmd/Ctrl + K) ✅
+- **Dashboard/** - Recent activity display
+  - Dashboard - Shows 3 recent projects and notebooks ✅
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
   - auth.routes.ts - Authentication (register/login)
-  - projects.routes.ts - Project CRUD + tags integration
-  - tasks.routes.ts - Task CRUD + reordering + tags fetching
+  - projects.routes.ts - Project CRUD + tags integration + /recent endpoint
+  - tasks.routes.ts - Task CRUD + reordering + tags fetching + /natural-language endpoint
   - notes.routes.ts - Notes CRUD operations
   - tags.routes.ts - Tags CRUD + task/project assignment
   - attachments.routes.ts - Task attachments CRUD
-  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates
+  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint
   - users.routes.ts - User profile + API key management
+  - ai.routes.ts - AI chat endpoint (/chat) for conversational interface
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -138,7 +142,7 @@ Ezra/
   - auth.middleware.ts - JWT token verification
 - **utils/** - Helper functions
   - jwt.ts - Token generation and verification
-  - anthropic.ts - Claude API integration and task enhancement
+  - anthropic.ts - Claude API integration, task enhancement, and natural language parsing
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
@@ -152,7 +156,7 @@ Ezra/
 4. **Database Operations** → Knex.js → SQLite
 5. **Response** → JSON with consistent structure → Frontend
 6. **State Updates** → React Context → UI Updates
-7. **AI Integration** (planned) → Claude API → Task Enhancement
+7. **AI Integration** → Claude API → Natural Language Processing → Task Operations
 
 ## External Dependencies
 
@@ -165,6 +169,11 @@ Ezra/
 - react-icons - Icon library
 - axios - HTTP client
 - typescript - Type safety
+- framer-motion - Animations (chat bubble)
+- date-fns - Date formatting
+- react-router-dom - Client-side routing
+- @tanstack/react-query - Server state management
+- react-hook-form - Form management
 
 ### Backend Dependencies
 - express - Web framework
@@ -262,9 +271,18 @@ Ezra/
 - ApiKeySettings UI component
 - Anthropic utility functions ready
 
+### AI Integration Phase ✅ COMPLETED
+- Natural language task creation via command bar
+- Full conversational AI chat interface
+- Task enhancement using Claude API
+- Context-aware AI responses
+- Dashboard showing recent activity
+- Floating chat bubble interface
+- Backend AI endpoints (/chat, /natural-language)
+- Model updated to Claude 3.5 Sonnet
+
 ### Remaining for MVP
-- AI task enhancement integration
-- Keyboard shortcuts
+- Keyboard shortcuts (N, E, Del, Space, Arrow keys, /)
 
 ## User Feedback Integration and Its Impact on Development
 
@@ -287,6 +305,7 @@ Ezra/
 - **README.md** - Project overview and setup instructions
 - **.env.example** - Backend environment configuration template
 - **frontend/.env.example** - Frontend environment configuration template
+- **claude_docs/featureIdeas.md** - Future feature considerations (if exists)
 
 ### Key Configuration Files
 - **vite.config.ts** - Frontend build configuration with proxy support

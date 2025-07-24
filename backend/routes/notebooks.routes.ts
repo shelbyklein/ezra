@@ -10,6 +10,41 @@ const router = express.Router();
 
 // ============ NOTEBOOKS ============
 
+// Get recent notebooks for authenticated user
+router.get('/recent', authenticate, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 3;
+    
+    const notebooks = await db('notebooks')
+      .where({ user_id: req.user!.userId })
+      .orderBy('updated_at', 'desc')
+      .limit(limit);
+    
+    // Get page counts for each notebook
+    const notebookIds = notebooks.map(n => n.id);
+    const pageCounts = await db('notebook_pages')
+      .whereIn('notebook_id', notebookIds)
+      .groupBy('notebook_id')
+      .select('notebook_id')
+      .count('id as count');
+    
+    const pageCountMap = pageCounts.reduce((acc, pc) => {
+      acc[pc.notebook_id] = parseInt(pc.count as string);
+      return acc;
+    }, {} as Record<number, number>);
+    
+    const notebooksWithDetails = notebooks.map(notebook => ({
+      ...notebook,
+      page_count: pageCountMap[notebook.id] || 0
+    }));
+    
+    res.json(notebooksWithDetails);
+  } catch (error) {
+    console.error('Error fetching recent notebooks:', error);
+    res.status(500).json({ error: 'Failed to fetch recent notebooks' });
+  }
+});
+
 // Get all notebooks for authenticated user
 router.get('/', authenticate, async (req, res) => {
   try {

@@ -19,6 +19,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon, ArrowLeftIcon } from '@chakra-ui/icons';
+import { FaMagic } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {
   DndContext,
@@ -42,6 +43,7 @@ import { BoardColumn } from './BoardColumn';
 import { TaskCard } from './TaskCard';
 import { CreateTaskForm } from '../Tasks/CreateTaskForm';
 import { TaskDetailModal } from '../Tasks/TaskDetailModal';
+import { NaturalLanguageInput } from '../AI/NaturalLanguageInput';
 
 interface Task {
   id: number;
@@ -81,6 +83,7 @@ export const Board: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure();
+  const { isOpen: isNLOpen, onOpen: onNLOpen, onClose: onNLClose } = useDisclosure();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Setup drag sensors
@@ -150,6 +153,20 @@ export const Board: React.FC = () => {
     () => tasks.find((task) => task.id.toString() === activeId),
     [activeId, tasks]
   );
+
+  // Keyboard shortcut for natural language input
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + K to open natural language input
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        onNLOpen();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onNLOpen]);
 
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
@@ -335,9 +352,20 @@ export const Board: React.FC = () => {
               <Heading size="lg">{project?.name || 'Loading...'}</Heading>
             </HStack>
           </HStack>
-          <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
-            New Task
-          </Button>
+          <HStack spacing={2}>
+            <Button 
+              leftIcon={<FaMagic />} 
+              colorScheme="purple" 
+              variant="outline"
+              onClick={onNLOpen}
+              title="Natural Language Command (Cmd/Ctrl + K)"
+            >
+              AI Command
+            </Button>
+            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
+              New Task
+            </Button>
+          </HStack>
         </HStack>
 
         {/* Board Columns */}
@@ -393,6 +421,15 @@ export const Board: React.FC = () => {
             setSelectedTask(null);
           }}
           task={selectedTask}
+        />
+      )}
+
+      {/* Natural Language Input Modal */}
+      {projectId && (
+        <NaturalLanguageInput
+          isOpen={isNLOpen}
+          onClose={onNLClose}
+          projectId={Number(projectId)}
         />
       )}
     </DndContext>

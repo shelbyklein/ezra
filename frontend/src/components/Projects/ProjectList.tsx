@@ -144,7 +144,7 @@ export const ProjectList: React.FC = () => {
             <Card
               key={project.id}
               cursor="pointer"
-              onClick={() => navigate(`/board/${project.id}`)}
+              onClick={() => navigate(`/app/board/${project.id}`)}
               _hover={{ shadow: 'lg' }}
               transition="all 0.2s"
               borderTopWidth={4}

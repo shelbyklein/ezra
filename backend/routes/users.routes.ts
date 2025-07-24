@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import authenticate from '../middleware/auth.middleware';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import db from '../src/db';
 
 const router = Router();

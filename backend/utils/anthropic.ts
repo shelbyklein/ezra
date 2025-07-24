@@ -3,7 +3,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import db from '../src/db';
 
 // Decryption helpers (must match encryption in users.routes.ts)
@@ -54,6 +54,28 @@ export interface TaskEnhancement {
   tags?: string[];
 }
 
+export interface NaturalLanguageCommand {
+  action: 'create' | 'update' | 'delete' | 'move' | 'query' | 'bulk';
+  taskData?: {
+    title?: string;
+    description?: string;
+    status?: 'todo' | 'in_progress' | 'done';
+    priority?: 'low' | 'medium' | 'high';
+    due_date?: string;
+    tags?: string[];
+  };
+  targetTasks?: {
+    taskIds?: number[];
+    filter?: {
+      status?: string;
+      priority?: string;
+      overdue?: boolean;
+      tags?: string[];
+    };
+  };
+  updates?: Partial<NaturalLanguageCommand['taskData']>;
+}
+
 export async function enhanceTaskWithAI(
   userId: number,
   taskTitle: string,
@@ -84,7 +106,7 @@ Please provide a JSON response with the following structure:
 Focus on making the task specific, measurable, achievable, relevant, and time-bound (SMART).`;
 
     const response = await client.messages.create({
-      model: 'claude-3-sonnet-20240229',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
       temperature: 0.7,
       messages: [
@@ -107,6 +129,89 @@ Focus on making the task specific, measurable, achievable, relevant, and time-bo
     return null;
   } catch (error) {
     console.error('Error enhancing task with AI:', error);
+    throw error;
+  }
+}
+
+export async function parseNaturalLanguageCommand(
+  userId: number,
+  command: string,
+  context?: {
+    projectId?: number;
+    currentTasks?: Array<{ id: number; title: string; status: string }>;
+  }
+): Promise<NaturalLanguageCommand | null> {
+  const client = await createAnthropicClient(userId);
+  
+  if (!client) {
+    throw new Error('No API key configured');
+  }
+
+  try {
+    const prompt = `You are a project management assistant. Parse the following natural language command into a structured format.
+
+Command: "${command}"
+
+${context?.currentTasks ? `Current tasks in the project:
+${context.currentTasks.map(t => `- [ID: ${t.id}] ${t.title} (${t.status})`).join('\n')}` : ''}
+
+Parse the command and return a JSON object with this structure:
+{
+  "action": "create|update|delete|move|query|bulk",
+  "taskData": {
+    "title": "task title if creating",
+    "description": "task description if provided",
+    "status": "todo|in_progress|done",
+    "priority": "low|medium|high",
+    "due_date": "YYYY-MM-DD format",
+    "tags": ["tag1", "tag2"]
+  },
+  "targetTasks": {
+    "taskIds": [1, 2, 3],
+    "filter": {
+      "status": "status to filter by",
+      "priority": "priority to filter by",
+      "overdue": true/false,
+      "tags": ["tags to filter by"]
+    }
+  },
+  "updates": {
+    // same structure as taskData for updates
+  }
+}
+
+Examples:
+- "Create a task to review the design mockups by Friday" → action: "create" with taskData
+- "Move task 5 to done" → action: "update" with targetTasks.taskIds and updates.status
+- "Set all high priority tasks to in progress" → action: "bulk" with filter and updates
+- "Delete the authentication task" → action: "delete" with taskIds based on title match
+
+For dates, convert relative dates (tomorrow, next week, Friday) to YYYY-MM-DD format based on today's date.
+Only include fields that are explicitly mentioned or clearly implied in the command.`;
+
+    const response = await client.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 1000,
+      temperature: 0.3,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    });
+
+    const content = response.content[0];
+    if (content.type === 'text') {
+      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error parsing natural language command:', error);
     throw error;
   }
 }

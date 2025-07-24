@@ -75,7 +75,9 @@ app.use('/api/notebooks', notebooksRoutes)
 app.use('/api/users', usersRoutes)
 
 // AI routes
+console.log('Registering AI routes');
 app.use('/api/ai', aiRoutes)
+console.log('AI routes registered');
 
 // Development routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

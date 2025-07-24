@@ -25,6 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { ChatBubble } from '../AI/ChatBubble';
 
 export const AppLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -59,13 +60,16 @@ export const AppLayout: React.FC = () => {
               Ezra
             </Box>
             <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-              <Button variant="ghost" onClick={() => navigate('/projects')}>
+              <Button variant="ghost" onClick={() => navigate('/')}>
+                Chat
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/board')}>
+              <Button variant="ghost" onClick={() => navigate('/app/board')}>
                 Board
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/notebooks')}>
+              <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
               </Button>
             </HStack>
@@ -98,7 +102,7 @@ export const AppLayout: React.FC = () => {
                   </Stack>
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={() => navigate('/settings')}>Settings</MenuItem>
+                <MenuItem onClick={() => navigate('/app/settings')}>Settings</MenuItem>
                 <MenuItem onClick={handleLogout}>Sign out</MenuItem>
               </MenuList>
             </Menu>
@@ -108,13 +112,16 @@ export const AppLayout: React.FC = () => {
         {isOpen ? (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as="nav" spacing={4}>
-              <Button variant="ghost" onClick={() => navigate('/projects')}>
+              <Button variant="ghost" onClick={() => navigate('/')}>
+                Chat
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/board')}>
+              <Button variant="ghost" onClick={() => navigate('/app/board')}>
                 Board
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/notebooks')}>
+              <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
               </Button>
             </Stack>
@@ -125,6 +132,9 @@ export const AppLayout: React.FC = () => {
       <Container maxW="container.xl" py={8}>
         <Outlet />
       </Container>
+      
+      {/* Floating Chat Bubble */}
+      <ChatBubble />
     </Box>
   );
 };

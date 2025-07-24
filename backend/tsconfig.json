@@ -3,14 +3,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@ezra/shared": ["../shared/src"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "routes/**/*", "utils/**/*", "middleware/**/*", "models/**/*", "migrations/**/*", "knexfile.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../shared" }

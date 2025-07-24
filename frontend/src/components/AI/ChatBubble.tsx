@@ -1,0 +1,422 @@
+/**
+ * Floating chat bubble component for AI assistant
+ */
+
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Box,
+  VStack,
+  HStack,
+  Input,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+  Text,
+  Avatar,
+  Flex,
+  useColorModeValue,
+  Spinner,
+  Badge,
+  Card,
+  CardBody,
+  Button,
+  Collapse,
+  ScaleFade,
+  CloseButton,
+  Tooltip,
+  useToast,
+} from '@chakra-ui/react';
+import { 
+  FaPaperPlane, 
+  FaRobot, 
+  FaUser, 
+  FaTimes,
+  FaComment,
+} from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  metadata?: {
+    action?: string;
+    result?: any;
+    error?: boolean;
+  };
+}
+
+const MotionBox = motion(Box);
+
+export const ChatBubble: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: `Hi! I'm Ezra. How can I help you today?`,
+      timestamp: new Date(),
+    }
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const userMsgBg = useColorModeValue('blue.50', 'blue.900');
+  const assistantMsgBg = useColorModeValue('gray.50', 'gray.700');
+  const shadowColor = useColorModeValue('lg', 'dark-lg');
+  const headerBgColor = useColorModeValue('purple.50', 'purple.900');
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
+  // Fetch user's projects for context
+  const { data: projects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const response = await api.get('/projects');
+      return response.data;
+    },
+  });
+
+  // Get current project from URL if on board view
+  const getCurrentProject = () => {
+    const path = window.location.pathname;
+    const match = path.match(/\/app\/board\/(\d+)/);
+    if (match) {
+      const projectId = parseInt(match[1]);
+      return projects?.find((p: any) => p.id === projectId);
+    }
+    return null;
+  };
+
+  // Process message with AI
+  const processChatMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const currentProject = getCurrentProject();
+      const response = await api.post('/ai/chat', {
+        message,
+        context: {
+          currentProjectId: currentProject?.id,
+          currentProjectName: currentProject?.name,
+          currentView: window.location.pathname,
+          projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: data.response,
+        timestamp: new Date(),
+        metadata: data.metadata,
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+      setIsTyping(false);
+
+      // Handle any actions that were performed
+      if (data.metadata?.action) {
+        handleActionResult(data.metadata);
+      }
+    },
+    onError: (error: any) => {
+      setIsTyping(false);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `I encountered an error: ${error.response?.data?.error || 'Something went wrong'}. Please try again.`,
+        timestamp: new Date(),
+        metadata: { error: true },
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    },
+  });
+
+  const handleActionResult = (metadata: any) => {
+    // Refresh relevant data based on action
+    switch (metadata.action) {
+      case 'created_project':
+      case 'updated_project':
+      case 'deleted_project':
+        queryClient.invalidateQueries({ queryKey: ['projects'] });
+        break;
+      
+      case 'created_task':
+      case 'updated_task':
+      case 'deleted_task':
+      case 'bulk_updated_tasks':
+        const currentProject = getCurrentProject();
+        if (currentProject) {
+          queryClient.invalidateQueries({ 
+            queryKey: ['tasks', currentProject.id.toString()] 
+          });
+        }
+        break;
+      
+      case 'navigate':
+        if (metadata.result?.path) {
+          navigate(metadata.result.path);
+          // Optionally close the chat after navigation
+          setTimeout(() => setIsOpen(false), 500);
+        }
+        break;
+    }
+  };
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
+
+    processChatMutation.mutate(input);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <>
+      {/* Chat Bubble Button */}
+      <AnimatePresence>
+        {!isOpen && (
+          <MotionBox
+            position="fixed"
+            bottom={6}
+            right={6}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Tooltip label="Chat with Ezra" placement="left">
+              <IconButton
+                aria-label="Open chat"
+                icon={<FaComment />}
+                size="lg"
+                colorScheme="purple"
+                rounded="full"
+                shadow={shadowColor}
+                onClick={() => setIsOpen(true)}
+                width={16}
+                height={16}
+              />
+            </Tooltip>
+          </MotionBox>
+        )}
+      </AnimatePresence>
+
+      {/* Chat Window */}
+      <AnimatePresence>
+        {isOpen && (
+          <MotionBox
+            position="fixed"
+            bottom={6}
+            right={6}
+            width={{ base: 'calc(100% - 48px)', md: '400px' }}
+            height="600px"
+            maxHeight="calc(100vh - 100px)"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card
+              height="full"
+              shadow={shadowColor}
+              borderWidth={1}
+              borderColor={borderColor}
+              overflow="hidden"
+            >
+              {/* Header */}
+              <Flex
+                p={4}
+                borderBottomWidth={1}
+                borderColor={borderColor}
+                align="center"
+                justify="space-between"
+                bg={headerBgColor}
+              >
+                <HStack>
+                  <Avatar icon={<FaRobot />} bg="purple.500" size="sm" />
+                  <VStack align="start" spacing={0}>
+                    <Text fontWeight="bold">Ezra</Text>
+                    <Text fontSize="xs" opacity={0.8}>AI Assistant</Text>
+                  </VStack>
+                </HStack>
+                <CloseButton onClick={() => setIsOpen(false)} />
+              </Flex>
+
+              {/* Messages */}
+              <Box
+                flex={1}
+                overflowY="auto"
+                p={4}
+                bg={bgColor}
+              >
+                <VStack spacing={3} align="stretch">
+                  <AnimatePresence initial={false}>
+                    {messages.map((message) => (
+                      <MotionBox
+                        key={message.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <HStack
+                          align="start"
+                          spacing={2}
+                          justify={message.role === 'user' ? 'flex-end' : 'flex-start'}
+                        >
+                          {message.role === 'assistant' && (
+                            <Avatar
+                              icon={<FaRobot />}
+                              bg="purple.500"
+                              size="xs"
+                              mt={1}
+                            />
+                          )}
+                          
+                          <Box
+                            maxW="85%"
+                            bg={message.role === 'user' ? userMsgBg : assistantMsgBg}
+                            px={3}
+                            py={2}
+                            borderRadius="lg"
+                            fontSize="sm"
+                          >
+                            {message.role === 'assistant' ? (
+                              <ReactMarkdown
+                                components={{
+                                  p: ({ children }) => <Text>{children}</Text>,
+                                  ul: ({ children }) => <Box as="ul" pl={3}>{children}</Box>,
+                                  li: ({ children }) => <Box as="li" mb={1}>{children}</Box>,
+                                }}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            ) : (
+                              <Text>{message.content}</Text>
+                            )}
+                            
+                            {message.metadata?.action && (
+                              <Badge
+                                mt={1}
+                                colorScheme={message.metadata.error ? 'red' : 'green'}
+                                fontSize="xs"
+                              >
+                                {message.metadata.action.replace(/_/g, ' ')}
+                              </Badge>
+                            )}
+                          </Box>
+                          
+                          {message.role === 'user' && (
+                            <Avatar
+                              icon={<FaUser />}
+                              bg="blue.500"
+                              size="xs"
+                              mt={1}
+                            />
+                          )}
+                        </HStack>
+                      </MotionBox>
+                    ))}
+                  </AnimatePresence>
+                  
+                  {isTyping && (
+                    <HStack>
+                      <Avatar icon={<FaRobot />} bg="purple.500" size="xs" />
+                      <Box
+                        bg={assistantMsgBg}
+                        px={3}
+                        py={2}
+                        borderRadius="lg"
+                      >
+                        <Spinner size="xs" />
+                      </Box>
+                    </HStack>
+                  )}
+                  
+                  <div ref={messagesEndRef} />
+                </VStack>
+              </Box>
+
+              {/* Input */}
+              <Box
+                p={3}
+                borderTopWidth={1}
+                borderColor={borderColor}
+                bg={bgColor}
+              >
+                <InputGroup size="md">
+                  <Input
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type a message..."
+                    isDisabled={isTyping}
+                    size="sm"
+                    _focus={{
+                      borderColor: 'purple.400',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-purple-400)',
+                    }}
+                  />
+                  <InputRightElement height="auto">
+                    <IconButton
+                      aria-label="Send message"
+                      icon={<FaPaperPlane />}
+                      onClick={handleSend}
+                      isDisabled={!input.trim() || isTyping}
+                      colorScheme="purple"
+                      variant="ghost"
+                      size="sm"
+                    />
+                  </InputRightElement>
+                </InputGroup>
+              </Box>
+            </Card>
+          </MotionBox>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};

@@ -8,6 +8,60 @@ import db from '../src/db';
 
 const router = express.Router();
 
+// Get recent projects for a user
+router.get('/recent', authenticate, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 3;
+    
+    const projects = await db('projects')
+      .where({ user_id: req.user!.userId })
+      .orderBy('updated_at', 'desc')
+      .limit(limit);
+    
+    // Get task counts for each project
+    const projectIds = projects.map(p => p.id);
+    const taskCounts = await db('tasks')
+      .whereIn('project_id', projectIds)
+      .groupBy('project_id')
+      .select('project_id')
+      .count('id as count');
+    
+    const taskCountMap = taskCounts.reduce((acc, tc) => {
+      acc[tc.project_id] = parseInt(tc.count as string);
+      return acc;
+    }, {} as Record<number, number>);
+    
+    // Get tags for each project
+    const projectTags = await db('project_tags as pt')
+      .join('tags as t', 'pt.tag_id', 't.id')
+      .whereIn('pt.project_id', projectIds)
+      .select('pt.project_id', 't.id', 't.name', 't.color');
+    
+    const tagsByProject = projectTags.reduce((acc, tag) => {
+      if (!acc[tag.project_id]) {
+        acc[tag.project_id] = [];
+      }
+      acc[tag.project_id].push({
+        id: tag.id,
+        name: tag.name,
+        color: tag.color
+      });
+      return acc;
+    }, {} as Record<number, Array<{ id: number; name: string; color: string }>>);
+    
+    const projectsWithDetails = projects.map(project => ({
+      ...project,
+      task_count: taskCountMap[project.id] || 0,
+      tags: tagsByProject[project.id] || []
+    }));
+    
+    res.json(projectsWithDetails);
+  } catch (error) {
+    console.error('Error fetching recent projects:', error);
+    res.status(500).json({ error: 'Failed to fetch recent projects' });
+  }
+});
+
 // Get all projects for authenticated user
 router.get('/', authenticate, async (req, res) => {
   try {

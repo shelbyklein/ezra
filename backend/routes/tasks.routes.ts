@@ -5,6 +5,7 @@
 import express from 'express';
 import authenticate from '../middleware/auth.middleware';
 import db from '../src/db';
+import { parseNaturalLanguageCommand } from '../utils/anthropic';
 
 const router = express.Router();
 
@@ -257,6 +258,191 @@ router.post('/reorder', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Error reordering tasks:', error);
     res.status(500).json({ error: 'Failed to reorder tasks' });
+  }
+});
+
+// Natural language command processing
+router.post('/natural-language', authenticate, async (req, res) => {
+  try {
+    const { command, projectId } = req.body;
+    
+    if (!command || !projectId) {
+      return res.status(400).json({ error: 'Command and project ID are required' });
+    }
+    
+    // Verify user owns the project
+    const project = await db('projects')
+      .where({ 
+        id: projectId,
+        user_id: req.user!.userId 
+      })
+      .first();
+    
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    // Get current tasks for context
+    const currentTasks = await db('tasks')
+      .where({ project_id: projectId })
+      .select('id', 'title', 'status');
+    
+    // Parse the natural language command
+    const parsedCommand = await parseNaturalLanguageCommand(
+      req.user!.userId,
+      command,
+      { projectId, currentTasks }
+    );
+    
+    if (!parsedCommand) {
+      return res.status(400).json({ error: 'Could not understand the command' });
+    }
+    
+    // Execute the command based on the action
+    let result: any = null;
+    
+    switch (parsedCommand.action) {
+      case 'create':
+        if (!parsedCommand.taskData?.title) {
+          return res.status(400).json({ error: 'Task title is required for creation' });
+        }
+        
+        const maxPosition = await db('tasks')
+          .where({ 
+            project_id: projectId,
+            status: parsedCommand.taskData.status || 'todo' 
+          })
+          .max('position as max')
+          .first();
+        
+        const newTask = {
+          project_id: projectId,
+          title: parsedCommand.taskData.title,
+          description: parsedCommand.taskData.description || null,
+          status: parsedCommand.taskData.status || 'todo',
+          priority: parsedCommand.taskData.priority || 'medium',
+          position: (maxPosition?.max || 0) + 1,
+          due_date: parsedCommand.taskData.due_date || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        await db('tasks').insert(newTask);
+        
+        const createdTask = await db('tasks')
+          .where({ project_id: projectId })
+          .orderBy('id', 'desc')
+          .first();
+        
+        result = { action: 'created', task: createdTask };
+        break;
+        
+      case 'update':
+      case 'move':
+        if (!parsedCommand.targetTasks?.taskIds?.length || !parsedCommand.updates) {
+          return res.status(400).json({ error: 'Task IDs and updates are required' });
+        }
+        
+        // Verify user owns all tasks
+        const tasksToUpdate = await db('tasks')
+          .whereIn('id', parsedCommand.targetTasks.taskIds)
+          .where({ project_id: projectId });
+        
+        if (tasksToUpdate.length !== parsedCommand.targetTasks.taskIds.length) {
+          return res.status(404).json({ error: 'Some tasks not found' });
+        }
+        
+        await db('tasks')
+          .whereIn('id', parsedCommand.targetTasks.taskIds)
+          .update({
+            ...parsedCommand.updates,
+            updated_at: new Date().toISOString()
+          });
+        
+        result = { 
+          action: 'updated', 
+          count: parsedCommand.targetTasks.taskIds.length,
+          taskIds: parsedCommand.targetTasks.taskIds 
+        };
+        break;
+        
+      case 'delete':
+        if (!parsedCommand.targetTasks?.taskIds?.length) {
+          return res.status(400).json({ error: 'Task IDs are required for deletion' });
+        }
+        
+        // Verify user owns all tasks
+        const tasksToDelete = await db('tasks')
+          .whereIn('id', parsedCommand.targetTasks.taskIds)
+          .where({ project_id: projectId });
+        
+        if (tasksToDelete.length !== parsedCommand.targetTasks.taskIds.length) {
+          return res.status(404).json({ error: 'Some tasks not found' });
+        }
+        
+        await db('tasks')
+          .whereIn('id', parsedCommand.targetTasks.taskIds)
+          .delete();
+        
+        result = { 
+          action: 'deleted', 
+          count: parsedCommand.targetTasks.taskIds.length 
+        };
+        break;
+        
+      case 'bulk':
+        if (!parsedCommand.targetTasks?.filter || !parsedCommand.updates) {
+          return res.status(400).json({ error: 'Filter and updates are required for bulk operations' });
+        }
+        
+        let query = db('tasks').where({ project_id: projectId });
+        
+        if (parsedCommand.targetTasks.filter.status) {
+          query = query.where('status', parsedCommand.targetTasks.filter.status);
+        }
+        if (parsedCommand.targetTasks.filter.priority) {
+          query = query.where('priority', parsedCommand.targetTasks.filter.priority);
+        }
+        if (parsedCommand.targetTasks.filter.overdue) {
+          query = query.where('due_date', '<', new Date().toISOString());
+        }
+        
+        const affectedTasks = await query.select('id');
+        const affectedIds = affectedTasks.map(t => t.id);
+        
+        if (affectedIds.length > 0) {
+          await db('tasks')
+            .whereIn('id', affectedIds)
+            .update({
+              ...parsedCommand.updates,
+              updated_at: new Date().toISOString()
+            });
+        }
+        
+        result = { 
+          action: 'bulk_updated', 
+          count: affectedIds.length,
+          taskIds: affectedIds 
+        };
+        break;
+        
+      case 'query':
+        // For queries, just return the parsed command for the frontend to handle
+        result = { action: 'query', parsedCommand };
+        break;
+        
+      default:
+        return res.status(400).json({ error: 'Unsupported action' });
+    }
+    
+    res.json({ 
+      success: true, 
+      parsedCommand,
+      result 
+    });
+  } catch (error) {
+    console.error('Error processing natural language command:', error);
+    res.status(500).json({ error: 'Failed to process command' });
   }
 });
 
