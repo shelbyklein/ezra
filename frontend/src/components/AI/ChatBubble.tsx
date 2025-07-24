@@ -80,36 +80,12 @@ export const ChatBubble: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  // Focus input when chat opens and set context-aware greeting
+  // Focus input when chat opens
   useEffect(() => {
-    if (isOpen) {
-      if (inputRef.current) {
-        setTimeout(() => inputRef.current?.focus(), 100);
-      }
-      
-      // Only add greeting if no messages exist
-      if (messages.length === 0) {
-        let greeting = `Hi! I'm Ezra. `;
-        
-        if (currentContext?.currentPageId && currentPage) {
-          greeting += `I see you're editing "${currentPage.title}". How can I help you with this page?`;
-        } else if (currentContext?.currentNotebookId && currentNotebook) {
-          greeting += `I see you're in the "${currentNotebook.title}" notebook. What would you like to do?`;
-        } else if (currentContext?.currentProjectId) {
-          greeting += `I see you're working on ${currentContext.currentProjectName || 'your project'}. How can I assist you?`;
-        } else {
-          greeting += `How can I help you today?`;
-        }
-        
-        setMessages([{
-          id: '1',
-          role: 'assistant',
-          content: greeting,
-          timestamp: new Date(),
-        }]);
-      }
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [isOpen, currentContext, currentPage, currentNotebook]);
+  }, [isOpen]);
 
   // Fetch user's projects for context
   const { data: projects } = useQuery({
@@ -180,6 +156,30 @@ export const ChatBubble: React.FC = () => {
       projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
     });
   }, [location.pathname, projects]);
+
+  // Set context-aware greeting when chat opens
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      let greeting = `Hi! I'm Ezra. `;
+      
+      if (currentContext?.currentPageId && currentPage) {
+        greeting += `I see you're editing "${currentPage.title}". How can I help you with this page?`;
+      } else if (currentContext?.currentNotebookId && currentNotebook) {
+        greeting += `I see you're in the "${currentNotebook.title}" notebook. What would you like to do?`;
+      } else if (currentContext?.currentProjectId) {
+        greeting += `I see you're working on ${currentContext.currentProjectName || 'your project'}. How can I assist you?`;
+      } else {
+        greeting += `How can I help you today?`;
+      }
+      
+      setMessages([{
+        id: '1',
+        role: 'assistant',
+        content: greeting,
+        timestamp: new Date(),
+      }]);
+    }
+  }, [isOpen, currentContext, currentPage, currentNotebook]);
 
   // Process message with AI
   const processChatMutation = useMutation({
