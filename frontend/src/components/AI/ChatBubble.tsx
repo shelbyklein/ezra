@@ -26,6 +26,7 @@ import {
   FaRobot, 
   FaUser, 
   FaComment,
+  FaBook,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -42,6 +43,7 @@ interface Message {
     action?: string;
     result?: any;
     error?: boolean;
+    hasContext?: boolean;
   };
 }
 
@@ -52,6 +54,7 @@ export const ChatBubble: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [currentContext, setCurrentContext] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -177,6 +180,14 @@ export const ChatBubble: React.FC = () => {
   // Process message with AI
   const processChatMutation = useMutation({
     mutationFn: async (message: string) => {
+      // Show searching indicator for questions
+      const questionWords = ['what', 'where', 'when', 'how', 'which', 'who', 'did', 'was', 'find', 'show', 'tell', 'remember', 'recall'];
+      const isQuestion = questionWords.some(word => message.toLowerCase().includes(word));
+      
+      if (isQuestion) {
+        setIsSearching(true);
+      }
+      
       const response = await api.post('/ai/chat', {
         message,
         context: currentContext,
@@ -194,6 +205,7 @@ export const ChatBubble: React.FC = () => {
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsTyping(false);
+      setIsSearching(false);
 
       // Handle any actions that were performed
       if (data.metadata?.action) {
@@ -203,6 +215,7 @@ export const ChatBubble: React.FC = () => {
     },
     onError: (error: any) => {
       setIsTyping(false);
+      setIsSearching(false);
       const errorMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
@@ -468,6 +481,15 @@ export const ChatBubble: React.FC = () => {
                                 {message.metadata.action.replace(/_/g, ' ')}
                               </Badge>
                             )}
+                            
+                            {message.metadata?.hasContext && (
+                              <HStack mt={1} spacing={1}>
+                                <FaBook size={10} />
+                                <Text fontSize="xs" opacity={0.7}>
+                                  From your knowledge base
+                                </Text>
+                              </HStack>
+                            )}
                           </Box>
                           
                           {message.role === 'user' && (
@@ -483,7 +505,7 @@ export const ChatBubble: React.FC = () => {
                     ))}
                   </AnimatePresence>
                   
-                  {isTyping && (
+                  {(isTyping || isSearching) && (
                     <HStack>
                       <Avatar icon={<FaRobot />} bg="purple.500" size="xs" />
                       <Box
@@ -492,7 +514,12 @@ export const ChatBubble: React.FC = () => {
                         py={2}
                         borderRadius="lg"
                       >
-                        <Spinner size="xs" />
+                        <HStack spacing={2}>
+                          <Spinner size="xs" />
+                          <Text fontSize="xs" opacity={0.8}>
+                            {isSearching ? 'Searching your knowledge base...' : 'Thinking...'}
+                          </Text>
+                        </HStack>
                       </Box>
                     </HStack>
                   )}

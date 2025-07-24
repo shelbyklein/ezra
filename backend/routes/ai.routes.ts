@@ -6,6 +6,7 @@ import { Router, Request, Response } from 'express';
 import authenticate from '../middleware/auth.middleware';
 import { enhanceTaskWithAI, createAnthropicClient, parseNaturalLanguageCommand } from '../utils/anthropic';
 import db from '../src/db';
+import { searchUserContent, formatContextForAI, generateSourceCitations, extractTextFromTipTap } from '../utils/contextSearch';
 
 const router = Router();
 
@@ -197,6 +198,31 @@ router.post('/suggest-tasks', authenticate, async (req: Request, res: Response) 
   }
 });
 
+// Search user's content for context
+router.post('/search-context', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { query, options = {} } = req.body;
+    const userId = req.user!.userId;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    const results = await searchUserContent(query, userId, options);
+    
+    res.json({
+      results,
+      formattedContext: formatContextForAI(results),
+      citations: generateSourceCitations(results)
+    });
+  } catch (error: any) {
+    console.error('Context search error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to search content' 
+    });
+  }
+});
+
 // Main chat endpoint for conversational interface
 router.post('/chat', authenticate, async (req: Request, res: Response) => {
   try {
@@ -214,6 +240,28 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
         response: 'I need your Anthropic API key to help you. Please go to Settings and add your API key.',
         metadata: { action: 'api_key_required' }
       });
+    }
+
+    // Search for relevant context based on the user's message
+    let searchResults: any[] = [];
+    let searchContext = '';
+    let citations = '';
+    
+    // Perform context search for questions that seem to be asking about past content
+    const questionWords = ['what', 'where', 'when', 'how', 'which', 'who', 'did', 'was', 'find', 'show', 'tell', 'remember', 'recall'];
+    const isQuestion = questionWords.some(word => message.toLowerCase().includes(word));
+    
+    if (isQuestion) {
+      try {
+        searchResults = await searchUserContent(message, userId, { limit: 5 });
+        if (searchResults.length > 0) {
+          searchContext = formatContextForAI(searchResults);
+          citations = generateSourceCitations(searchResults);
+        }
+      } catch (searchError) {
+        console.error('Context search failed:', searchError);
+        // Continue without search context
+      }
     }
 
     // Build comprehensive context
@@ -237,7 +285,9 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
         .first() : null;
 
     // Create a comprehensive prompt
-    const systemPrompt = `You are Ezra, an AI assistant for a project management app. You help users manage projects, tasks, and notes through natural conversation.
+    const systemPrompt = `You are Ezra, an AI assistant for a project management app with full access to the user's knowledge base. You help users manage projects, tasks, and notes through natural conversation.
+
+${searchContext ? `## Relevant Information from User's Knowledge Base:\n${searchContext}\n` : ''}
 
 Current context:
 - User has ${userProjects.length} projects
@@ -247,9 +297,19 @@ ${recentTasks.length > 0 ? `- Recent tasks in current project:\n${recentTasks.ma
 ${notebookContext ? `- Current notebook: "${notebookContext.name}" (ID: ${notebookContext.id})` : ''}
 ${pageContext ? `- Current page: "${pageContext.title}" (ID: ${pageContext.id})\n- You CAN edit this page using the update_page action` : ''}
 
-IMPORTANT: When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
+${pageContext ? `## Current Page Content:\nYou are currently viewing the page "${pageContext.title}" which contains:\n${extractTextFromTipTap(JSON.parse(pageContext.content))}\n` : ''}
 
-When on a notebook page, you CAN:
+IMPORTANT INSTRUCTIONS:
+1. When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
+
+2. When answering questions using information from the knowledge base:
+   - FIRST check if the answer is in the current page content (if viewing a page)
+   - Then use the provided search context to give accurate, specific answers
+   - If you reference information from the knowledge base, mention the source naturally in your response
+   - Be clear when information comes from the user's own content vs general knowledge
+   - If no relevant information is found in the knowledge base or current page, say so clearly
+
+3. When on a notebook page, you CAN:
 - Add content to the current page (append mode)
 - Replace the entire page content
 - Edit the page title
@@ -413,9 +473,19 @@ ALWAYS respond with a JSON object when the user requests an action. The response
             metadata: parsed.metadata || {}
           });
           
+          // Add citations if we used search context
+          let finalResponse = parsed.response || content.text;
+          if (searchResults.length > 0 && !parsed.action) {
+            // Only add citations for informational responses, not action responses
+            finalResponse += citations;
+          }
+          
           res.json({
-            response: parsed.response || content.text,
-            metadata: parsed.metadata || {}
+            response: finalResponse,
+            metadata: {
+              ...(parsed.metadata || {}),
+              hasContext: searchResults.length > 0
+            }
           });
         } catch (parseError) {
           console.error('JSON parse error:', parseError);
@@ -460,16 +530,30 @@ ALWAYS respond with a JSON object when the user requests an action. The response
           }
           
           // Otherwise, fallback to plain text response
+          let finalResponse = content.text;
+          if (searchResults.length > 0) {
+            finalResponse += citations;
+          }
+          
           res.json({
-            response: content.text,
-            metadata: {}
+            response: finalResponse,
+            metadata: {
+              hasContext: searchResults.length > 0
+            }
           });
         }
       } else {
         // Fallback to plain text response
+        let finalResponse = content.text;
+        if (searchResults.length > 0) {
+          finalResponse += citations;
+        }
+        
         res.json({
-          response: content.text,
-          metadata: {}
+          response: finalResponse,
+          metadata: {
+            hasContext: searchResults.length > 0
+          }
         });
       }
     } else {

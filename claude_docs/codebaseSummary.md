@@ -126,6 +126,9 @@ Ezra/
     - Shows current context in header (page/notebook name) ✅
     - Dynamic greeting based on location ✅
     - Tracks navigation changes with useLocation ✅
+    - Knowledge base search integration ✅
+    - Visual indicators for search status ✅
+    - Source attribution for recalled information ✅
   - Chat - Dedicated full-page chat interface (/app/chat) ✅
     - Full conversation history with user/assistant avatars ✅
     - Markdown rendering for AI responses ✅
@@ -156,6 +159,9 @@ Ezra/
     - Action execution (task CRUD, page updates, navigation)
     - Markdown to TipTap conversion for page editing
     - Support for highlight parameter in update_page action
+    - Knowledge base search integration (/search-context endpoint)
+    - Automatic context retrieval for questions
+    - Source citation generation
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -168,6 +174,12 @@ Ezra/
   - anthropic.ts - Claude API integration, task enhancement, and natural language parsing
   - parseMarkdownToTipTap() - Converts markdown to TipTap JSON format
     - Now supports highlight parameter for marking new content
+  - contextSearch.ts - Knowledge base search functionality
+    - Full-text search across all content types
+    - Keyword extraction and relevance scoring
+    - Snippet extraction for context
+    - Format context for AI consumption
+    - Generate source citations
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
@@ -319,6 +331,12 @@ Ezra/
 - Real-time content updates after AI actions
 - Fixed React hooks errors in chat component
 - Navigation header reorganized (Home, Chat, Projects, Notebooks)
+- **Knowledge Base Search Integration** ✅
+  - Full-text search across notebooks, projects, and tasks
+  - Context retrieval based on user questions
+  - Automatic source citations in AI responses
+  - Visual indicators for context search and knowledge base usage
+  - Search relevance scoring and snippet extraction
 
 ### Keyboard Shortcuts Phase ✅ COMPLETED
 - useKeyboardShortcuts hook for global keyboard handling
