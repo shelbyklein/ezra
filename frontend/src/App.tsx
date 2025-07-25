@@ -42,32 +42,25 @@ const AppWithSystemColorMode = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        
         {/* App routes with layout */}
         <Route
-          path="/app"
+          path="/"
           element={
             <ProtectedRoute>
               <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/app/chat" replace />} />
-          <Route path="projects" element={<ProjectList />} />
-          <Route path="board/:projectId?" element={<Board />} />
-          <Route path="chat" element={<Chat />} />
-          <Route path="notebooks" element={<NotebooksHome />} />
-          <Route path="notebooks/:notebookId/:pageId?" element={<NotebookLayout />} />
-          <Route path="settings" element={<Settings />} />
+          <Route index element={<Dashboard />} />
+          <Route path="app">
+            <Route index element={<Navigate to="/app/chat" replace />} />
+            <Route path="projects" element={<ProjectList />} />
+            <Route path="board/:projectId?" element={<Board />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="notebooks" element={<NotebooksHome />} />
+            <Route path="notebooks/:notebookId/:pageId?" element={<NotebookLayout />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
         </Route>
         
         {/* Catch all */}

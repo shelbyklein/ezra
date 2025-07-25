@@ -99,7 +99,7 @@ export const AppLayout: React.FC = () => {
                 cursor="pointer"
                 minW={0}
               >
-                <Avatar size="sm" name={user?.username} />
+                <Avatar size="sm" name={user?.username} src={user?.avatar_url} />
               </MenuButton>
               <MenuList>
                 <MenuItem>

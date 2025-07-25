@@ -10,6 +10,7 @@ interface User {
   email: string;
   username: string;
   full_name?: string;
+  avatar_url?: string;
 }
 
 interface AuthContextType {
@@ -41,6 +42,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('authToken');
+    delete api.defaults.headers.common['Authorization'];
+  };
+
   // Load token from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -48,9 +56,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(storedToken);
       // Set the token in axios defaults
       api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-      // TODO: Validate token and fetch user data
+      // Fetch user data
+      api.get('/users/profile')
+        .then(response => {
+          setUser(response.data);
+        })
+        .catch(() => {
+          // Token is invalid, clear it
+          logout();
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -81,12 +101,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('authToken');
-    delete api.defaults.headers.common['Authorization'];
-  };
 
   const value = {
     user,
