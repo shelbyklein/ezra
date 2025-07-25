@@ -109,9 +109,9 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <Flex className="chat-container" bg={bgColor} flex="1" flexDirection="column" minH="0">
+    <Flex id="chat-page-container" className="chat-container" bg={bgColor} flex="1" flexDirection="column" minH="0">
       {/* Chat Header */}
-      <Box w="full" bg={cardBg} p={4} borderBottomWidth={1} flexShrink={0}>
+      <Box id="chat-page-header" className="chat-header" w="full" bg={cardBg} p={4} borderBottomWidth={1} flexShrink={0}>
         <HStack justify="space-between">
           <Box>
             <Text fontSize="xl" fontWeight="bold">AI Assistant</Text>
@@ -120,6 +120,7 @@ export const Chat: React.FC = () => {
             </Text>
           </Box>
           <Button
+            id="chat-history-button"
             leftIcon={<FaHistory />}
             variant="outline"
             size="sm"
@@ -132,6 +133,8 @@ export const Chat: React.FC = () => {
 
       {/* Messages Area */}
       <Box
+        id="chat-messages-area"
+        className="chat-messages-container"
         flex={1}
         w="full"
         overflowY="auto"
@@ -153,6 +156,7 @@ export const Chat: React.FC = () => {
             {messages.map((message) => (
               <Flex
                 key={message.id}
+                className={`chat-message-wrapper chat-message-${message.role}`}
                 justify={message.role === 'user' ? 'flex-end' : 'flex-start'}
               >
                 <HStack
@@ -167,6 +171,7 @@ export const Chat: React.FC = () => {
                     bg={message.role === 'user' ? 'blue.500' : 'purple.500'}
                   />
                   <Card
+                    className={`chat-message-content chat-message-content-${message.role}`}
                     bg={message.role === 'user' ? userMessageBg : assistantMessageBg}
                     p={4}
                     borderRadius="lg"
@@ -228,9 +233,10 @@ export const Chat: React.FC = () => {
         </Box>
 
       {/* Input Area */}
-      <Box w="full" bg={cardBg} p={4} borderTopWidth={1} flexShrink={0}>
+      <Box id="chat-input-area" className="chat-input-container" w="full" bg={cardBg} p={4} borderTopWidth={1} flexShrink={0}>
         <HStack maxW="3xl" mx="auto">
           <Input
+            id="chat-page-input"
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -241,6 +247,7 @@ export const Chat: React.FC = () => {
             disabled={sendMessage.isPending}
           />
           <IconButton
+            id="chat-page-send-button"
             aria-label="Send message"
             icon={<FaPaperPlane />}
             onClick={handleSend}

@@ -77,6 +77,8 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
 
   return (
     <Box
+      id={`board-column-${status}`}
+      className={`board-column board-column-${status}`}
       ref={setNodeRef}
       bg={isOver ? activeBg : 'bg.tertiary'}
       borderRadius="lg"
@@ -90,9 +92,9 @@ export const BoardColumn: React.FC<BoardColumnProps> = ({
     >
       {/* Column Header */}
       <VStack spacing={2} align="stretch" mb={4}>
-        <Heading size="sm" display="flex" alignItems="center" gap={2}>
+        <Heading id={`column-title-${status}`} size="sm" display="flex" alignItems="center" gap={2}>
           {title}
-          <Badge colorScheme={getColumnColor()} borderRadius="full" px={2}>
+          <Badge id={`column-count-${status}`} colorScheme={getColumnColor()} borderRadius="full" px={2}>
             {tasks.length}
           </Badge>
         </Heading>

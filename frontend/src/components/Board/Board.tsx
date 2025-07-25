@@ -512,11 +512,12 @@ export const Board: React.FC = () => {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <VStack spacing={6} align="stretch" h="full">
+      <VStack id="kanban-board" className="kanban-board" spacing={6} align="stretch" h="full">
         {/* Header */}
-        <HStack justify="space-between">
+        <HStack id="board-header" className="board-header" justify="space-between">
           <HStack spacing={4}>
             <Button
+              id="board-back-button"
               leftIcon={<ArrowLeftIcon />}
               variant="ghost"
               onClick={() => navigate('/projects')}
@@ -534,7 +535,7 @@ export const Board: React.FC = () => {
                   borderColor="border.primary"
                 />
               )}
-              <Heading size="lg">{project?.name || 'Loading...'}</Heading>
+              <Heading id="board-title" size="lg">{project?.name || 'Loading...'}</Heading>
               {!notebooksLoading && projectNotebooks.length > 0 && (
                 <HStack spacing={2}>
                   {projectNotebooks.map((notebook: any) => (
@@ -572,6 +573,7 @@ export const Board: React.FC = () => {
           <HStack spacing={2}>
             <Tooltip label="⌘K / Ctrl+K" placement="bottom">
               <Button 
+                id="board-ai-command-button"
                 leftIcon={<FaMagic />} 
                 colorScheme="purple" 
                 variant="outline"
@@ -581,12 +583,13 @@ export const Board: React.FC = () => {
               </Button>
             </Tooltip>
             <Tooltip label="Press N" placement="bottom">
-              <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
+              <Button id="board-new-task-button" leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
                 New Task
               </Button>
             </Tooltip>
             <Tooltip label="Keyboard Shortcuts" placement="bottom">
               <Button 
+                id="board-help-button"
                 variant="ghost"
                 onClick={() => onOpenHelp()}
                 size="sm"

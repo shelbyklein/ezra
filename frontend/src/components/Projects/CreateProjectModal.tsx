@@ -172,17 +172,18 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    <Modal id={isEditing ? "edit-project-modal" : "create-project-modal"} isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{isEditing ? 'Edit Project' : 'Create New Project'}</ModalHeader>
         <ModalCloseButton />
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form id="project-form" onSubmit={handleSubmit(onSubmit)}>
           <ModalBody>
             <VStack spacing={4}>
               <FormControl isInvalid={!!errors.name}>
-                <FormLabel>Project Name</FormLabel>
+                <FormLabel htmlFor="project-name">Project Name</FormLabel>
                 <Input
+                  id="project-name"
                   {...register('name', {
                     required: 'Project name is required',
                     minLength: {
@@ -196,8 +197,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               </FormControl>
 
               <FormControl isInvalid={!!errors.description}>
-                <FormLabel>Description (Optional)</FormLabel>
+                <FormLabel htmlFor="project-description">Description (Optional)</FormLabel>
                 <Textarea
+                  id="project-description"
                   {...register('description')}
                   placeholder="Enter project description"
                   rows={4}
@@ -226,10 +228,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
+            <Button id="project-cancel-button" variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
             <Button
+              id="project-submit-button"
               colorScheme="blue"
               type="submit"
               isLoading={isSubmitting || createMutation.isPending}

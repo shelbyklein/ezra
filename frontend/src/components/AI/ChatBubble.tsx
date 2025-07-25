@@ -240,6 +240,7 @@ export const ChatBubble: React.FC = () => {
         break;
       
       case 'created_task':
+      case 'created_multiple_tasks':
       case 'updated_task':
       case 'deleted_task':
       case 'bulk_updated_tasks':
@@ -354,6 +355,8 @@ export const ChatBubble: React.FC = () => {
           >
             <Tooltip label="Chat with Ezra" placement="left">
               <IconButton
+                id="chat-bubble-button"
+                className="chat-bubble-toggle"
                 aria-label="Open chat"
                 icon={<FaComment />}
                 size="lg"
@@ -386,6 +389,8 @@ export const ChatBubble: React.FC = () => {
             zIndex={20}
           >
             <Card
+              id="chat-window"
+              className="ai-chat-window"
               height="full"
               shadow={shadowColor}
               borderWidth={1}
@@ -394,6 +399,8 @@ export const ChatBubble: React.FC = () => {
             >
               {/* Header */}
               <Flex
+                id="chat-header"
+                className="chat-window-header"
                 p={4}
                 borderBottomWidth={1}
                 borderColor={borderColor}
@@ -441,11 +448,13 @@ export const ChatBubble: React.FC = () => {
                     </Text>
                   )}
                 </VStack>
-                <CloseButton onClick={() => setIsOpen(false)} />
+                <CloseButton id="chat-close-button" onClick={() => setIsOpen(false)} />
               </Flex>
 
               {/* Messages */}
               <Box
+                id="chat-messages-container"
+                className="chat-messages"
                 flex={1}
                 overflowY="auto"
                 p={4}
@@ -456,6 +465,7 @@ export const ChatBubble: React.FC = () => {
                     {messages.map((message) => (
                       <MotionBox
                         key={message.id}
+                        className={`chat-message chat-message-${message.role}`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
@@ -507,7 +517,7 @@ export const ChatBubble: React.FC = () => {
                               </Badge>
                             )}
                             
-                            {message.metadata?.hasContext && (
+                            {message.metadata?.hasContext && message.metadata?.action !== 'navigate' && (
                               <HStack mt={1} spacing={1}>
                                 <FaBook size={10} />
                                 <Text fontSize="xs" opacity={0.7}>
@@ -555,6 +565,8 @@ export const ChatBubble: React.FC = () => {
 
               {/* Input */}
               <Box
+                id="chat-input-container"
+                className="chat-input-section"
                 p={3}
                 borderTopWidth={1}
                 borderColor={borderColor}
@@ -562,6 +574,7 @@ export const ChatBubble: React.FC = () => {
               >
                 <InputGroup size="md">
                   <Input
+                    id="chat-input"
                     ref={inputRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -576,6 +589,7 @@ export const ChatBubble: React.FC = () => {
                   />
                   <InputRightElement height="auto">
                     <IconButton
+                      id="chat-send-button"
                       aria-label="Send message"
                       icon={<FaPaperPlane />}
                       onClick={handleSend}

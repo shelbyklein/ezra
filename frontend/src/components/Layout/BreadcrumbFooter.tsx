@@ -164,6 +164,8 @@ export const BreadcrumbFooter: React.FC = () => {
 
   return (
     <Box
+      id="breadcrumb-footer"
+      className="breadcrumb-navigation"
       position="fixed"
       bottom={0}
       left={0}

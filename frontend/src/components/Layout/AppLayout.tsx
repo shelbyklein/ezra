@@ -49,9 +49,10 @@ export const AppLayout: React.FC = () => {
 
   return (
     <Flex direction="column" minH="100vh" bg="bg.secondary">
-      <Box bg="bg.primary" px={4} boxShadow="sm" flexShrink={0}>
+      <Box id="main-navigation" className="app-navigation" bg="bg.primary" px={4} boxShadow="sm" flexShrink={0}>
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <IconButton
+            id="mobile-menu-toggle"
             size="md"
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
             aria-label="Open Menu"
@@ -60,6 +61,8 @@ export const AppLayout: React.FC = () => {
           />
           <HStack spacing={8} alignItems="center">
             <Box
+              id="app-logo"
+              className="app-logo"
               fontWeight="bold"
               fontSize="xl"
               color="blue.500"
@@ -69,22 +72,23 @@ export const AppLayout: React.FC = () => {
               Ezra
             </Box>
             <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-              <Button variant="ghost" onClick={() => navigate('/')}>
+              <Button id="nav-home" variant="ghost" onClick={() => navigate('/')}>
                 Home
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/chat')}>
+              <Button id="nav-chat" variant="ghost" onClick={() => navigate('/app/chat')}>
                 Chat
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/projects')}>
+              <Button id="nav-projects" variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
+              <Button id="nav-notebooks" variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
               </Button>
             </HStack>
           </HStack>
           <Flex alignItems="center" gap={2}>
             <IconButton
+              id="theme-toggle-button"
               aria-label="Toggle theme"
               icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               onClick={toggleColorMode}
@@ -93,6 +97,7 @@ export const AppLayout: React.FC = () => {
             />
             <Menu>
               <MenuButton
+                id="user-menu-button"
                 as={Button}
                 rounded="full"
                 variant="link"
@@ -101,7 +106,7 @@ export const AppLayout: React.FC = () => {
               >
                 <Avatar size="sm" name={user?.username} src={user?.avatar_url} />
               </MenuButton>
-              <MenuList>
+              <MenuList id="user-menu-list">
                 <MenuItem>
                   <Stack spacing={0}>
                     <Text fontWeight="medium">{user?.username}</Text>
@@ -111,26 +116,26 @@ export const AppLayout: React.FC = () => {
                   </Stack>
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={() => navigate('/app/settings')}>Settings</MenuItem>
-                <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+                <MenuItem id="menu-settings" onClick={() => navigate('/app/settings')}>Settings</MenuItem>
+                <MenuItem id="menu-signout" onClick={handleLogout}>Sign out</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
         </Flex>
 
         {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
+          <Box id="mobile-menu" className="mobile-navigation" pb={4} display={{ md: 'none' }}>
             <Stack as="nav" spacing={4}>
-              <Button variant="ghost" onClick={() => navigate('/')}>
+              <Button id="mobile-nav-home" variant="ghost" onClick={() => navigate('/')}>
                 Home
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/chat')}>
+              <Button id="mobile-nav-chat" variant="ghost" onClick={() => navigate('/app/chat')}>
                 Chat
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/projects')}>
+              <Button id="mobile-nav-projects" variant="ghost" onClick={() => navigate('/app/projects')}>
                 Projects
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/app/notebooks')}>
+              <Button id="mobile-nav-notebooks" variant="ghost" onClick={() => navigate('/app/notebooks')}>
                 Notebooks
               </Button>
             </Stack>

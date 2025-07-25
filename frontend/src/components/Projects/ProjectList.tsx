@@ -119,10 +119,10 @@ export const ProjectList: React.FC = () => {
   }
 
   return (
-    <VStack spacing={8} align="stretch">
+    <VStack id="projects-list-container" className="projects-list" spacing={8} align="stretch">
       <HStack justify="space-between">
-        <Heading>My Projects</Heading>
-        <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={handleCreateNew}>
+        <Heading id="projects-heading">My Projects</Heading>
+        <Button id="new-project-button" leftIcon={<AddIcon />} colorScheme="blue" onClick={handleCreateNew}>
           New Project
         </Button>
       </HStack>
@@ -133,15 +133,17 @@ export const ProjectList: React.FC = () => {
             <Text fontSize="lg" color="gray.500">
               No projects yet
             </Text>
-            <Button colorScheme="blue" onClick={handleCreateNew}>
+            <Button id="first-project-button" colorScheme="blue" onClick={handleCreateNew}>
               Create your first project
             </Button>
           </VStack>
         </Center>
       ) : (
-        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+        <Grid id="projects-grid" className="projects-grid" templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
           {projects?.map((project) => (
             <Card
+              id={`project-card-${project.id}`}
+              className="project-card"
               key={project.id}
               cursor="pointer"
               onClick={() => navigate(`/app/board/${project.id}`)}
@@ -152,9 +154,11 @@ export const ProjectList: React.FC = () => {
             >
               <CardHeader pb={2}>
                 <HStack justify="space-between">
-                  <Heading size="md">{project.name}</Heading>
+                  <Heading id={`project-name-${project.id}`} className="project-name" size="md">{project.name}</Heading>
                   <HStack spacing={1}>
                     <IconButton
+                      id={`edit-project-${project.id}`}
+                      className="project-edit-button"
                       aria-label="Edit project"
                       icon={<EditIcon />}
                       size="sm"
@@ -165,6 +169,8 @@ export const ProjectList: React.FC = () => {
                       }}
                     />
                     <IconButton
+                      id={`delete-project-${project.id}`}
+                      className="project-delete-button"
                       aria-label="Delete project"
                       icon={<DeleteIcon />}
                       size="sm"

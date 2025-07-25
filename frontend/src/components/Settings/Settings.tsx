@@ -56,11 +56,13 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <Container maxW="container.lg" py={8}>
+    <Container id="settings-container" className="settings-page" maxW="container.lg" py={8}>
       <VStack align="stretch" spacing={6}>
-        <Heading size="lg">Settings</Heading>
+        <Heading id="settings-heading" size="lg">Settings</Heading>
         
         <Box
+          id="settings-content"
+          className="settings-tabs-container"
           bg="bg.card"
           borderRadius="lg"
           borderWidth="1px"
@@ -69,23 +71,23 @@ export const Settings: React.FC = () => {
         >
           <Tabs>
             <TabList>
-              <Tab>General</Tab>
-              <Tab>Account</Tab>
-              <Tab>Tags</Tab>
-              {isDevelopment && <Tab>Developer Tools</Tab>}
+              <Tab id="general-tab">General</Tab>
+              <Tab id="account-tab">Account</Tab>
+              <Tab id="tags-tab">Tags</Tab>
+              {isDevelopment && <Tab id="developer-tab">Developer Tools</Tab>}
             </TabList>
 
             <TabPanels>
-              <TabPanel>
+              <TabPanel id="general-panel" className="settings-panel">
                 <VStack align="stretch" spacing={6}>
-                  <Heading size="md">General Settings</Heading>
+                  <Heading id="general-settings-heading" size="md">General Settings</Heading>
                   
                   {/* Theme Preferences */}
-                  <FormControl>
-                    <FormLabel>Theme Preference</FormLabel>
-                    <RadioGroup value={themePreference} onChange={handleThemeChange}>
+                  <FormControl id="theme-control">
+                    <FormLabel htmlFor="theme-preference">Theme Preference</FormLabel>
+                    <RadioGroup id="theme-preference" value={themePreference} onChange={handleThemeChange}>
                       <Stack spacing={3}>
-                        <Radio value="system">
+                        <Radio id="theme-system" value="system">
                           <HStack spacing={2}>
                             <Text>System</Text>
                             <Text fontSize="sm" color="text.secondary">
@@ -93,13 +95,13 @@ export const Settings: React.FC = () => {
                             </Text>
                           </HStack>
                         </Radio>
-                        <Radio value="light">
+                        <Radio id="theme-light" value="light">
                           <HStack spacing={2}>
                             <Icon as={SunIcon} />
                             <Text>Light</Text>
                           </HStack>
                         </Radio>
-                        <Radio value="dark">
+                        <Radio id="theme-dark" value="dark">
                           <HStack spacing={2}>
                             <Icon as={MoonIcon} />
                             <Text>Dark</Text>
@@ -118,20 +120,20 @@ export const Settings: React.FC = () => {
                 </VStack>
               </TabPanel>
 
-              <TabPanel>
+              <TabPanel id="account-panel" className="settings-panel">
                 <VStack align="stretch" spacing={6}>
-                  <Heading size="md">Account Settings</Heading>
+                  <Heading id="account-settings-heading" size="md">Account Settings</Heading>
                   <ProfileSettings />
                   <ApiKeySettings />
                 </VStack>
               </TabPanel>
 
-              <TabPanel>
+              <TabPanel id="tags-panel" className="settings-panel">
                 <TagsManagement />
               </TabPanel>
 
               {isDevelopment && (
-                <TabPanel>
+                <TabPanel id="developer-panel" className="settings-panel">
                   <DeveloperTools />
                 </TabPanel>
               )}

@@ -93,6 +93,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging = false, on
 
   return (
     <Box
+      id={`task-card-${task.id}`}
+      className={`task-card task-priority-${task.priority} task-status-${task.status}`}
+      data-testid={`task-card-${task.id}`}
       ref={setNodeRef}
       style={style}
       bg="bg.card"

@@ -299,7 +299,8 @@ ${pageContext ? `## Current Page Content:\nYou are currently viewing the page "$
 IMPORTANT INSTRUCTIONS:
 1. When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
 2. When creating tasks, ALWAYS provide a clear, specific title. Never send null or empty titles. If parsing an email or text, extract meaningful task titles from the content.
-3. When answering questions using information from the knowledge base:
+3. When navigating to a project, find the project ID from the userProjects list and use the path "/app/board/[projectId]" replacing [projectId] with the actual ID number.
+4. When answering questions using information from the knowledge base:
    - FIRST check if the answer is in the current page content (if viewing a page)
    - Then CAREFULLY PARSE the FULL CONTENT provided in the search results
    - Look for EXACT matches or references to what the user is asking about
@@ -308,7 +309,7 @@ IMPORTANT INSTRUCTIONS:
    - If you reference information from the knowledge base, mention the source naturally in your response
    - Be clear when information comes from the user's own content vs general knowledge
    - If no relevant information is found after parsing all content, say so clearly
-4. When on a notebook page, you CAN:
+5. When on a notebook page, you CAN:
 - Add content to the current page (append mode)
 - Replace the entire page content
 - Edit the page title
@@ -369,6 +370,17 @@ You must analyze the email content and create separate tasks for each actionable
     "projectId": ${projectContext?.id || 'null'}
   }
 }
+
+User: "What tasks do I have for Shelby Klein Design?" or "Show me the Shelby Klein Design project"
+You must respond with:
+{
+  "response": "I'll navigate to the Shelby Klein Design project to show you the tasks.",
+  "action": "navigate",
+  "parameters": {
+    "path": "/app/board/[projectId]"
+  }
+}
+Note: Replace [projectId] with the actual project ID from the userProjects list.
 
 User: "Add a dragon to the story"
 You must respond with:

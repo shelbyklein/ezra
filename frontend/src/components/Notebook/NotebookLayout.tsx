@@ -134,10 +134,12 @@ export const NotebookLayout: React.FC = () => {
   );
 
   return (
-    <Flex h="full" position="relative" flex="1">
+    <Flex id="notebook-layout" className="notebook-container" h="full" position="relative" flex="1">
       {/* Desktop Sidebar */}
       {!isMobile && (
         <Box
+          id="notebook-sidebar-desktop"
+          className="notebook-sidebar"
           w="280px"
           borderRightWidth="1px"
           borderColor="border.primary"
@@ -152,6 +154,7 @@ export const NotebookLayout: React.FC = () => {
       {isMobile && (
         <>
           <IconButton
+            id="notebook-mobile-menu-button"
             aria-label="Open sidebar"
             icon={<HamburgerIcon />}
             position="absolute"
@@ -160,19 +163,19 @@ export const NotebookLayout: React.FC = () => {
             zIndex={1}
             onClick={onOpen}
           />
-          <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <Drawer id="notebook-mobile-drawer" isOpen={isOpen} placement="left" onClose={onClose}>
             <DrawerOverlay />
             <DrawerContent>
               <DrawerCloseButton />
-              <DrawerHeader>Notebooks</DrawerHeader>
-              <DrawerBody p={0}>{sidebarContent}</DrawerBody>
+              <DrawerHeader id="notebook-drawer-header">Notebooks</DrawerHeader>
+              <DrawerBody id="notebook-drawer-body" className="notebook-sidebar-mobile" p={0}>{sidebarContent}</DrawerBody>
             </DrawerContent>
           </Drawer>
         </>
       )}
 
       {/* Editor Area */}
-      <Box flex={1} bg="bg.secondary" position="relative">
+      <Box id="notebook-editor-area" className="notebook-content-area" flex={1} bg="bg.secondary" position="relative">
         {selectedPageId ? (
           <NotebookEditor
             pageId={selectedPageId}

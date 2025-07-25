@@ -181,8 +181,9 @@ export const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
     const isExpanded = expandedFolders.has(folder.id);
 
     return (
-      <Box key={folder.id} w="full">
+      <Box key={folder.id} id={`notebook-folder-${folder.id}`} className="notebook-folder" w="full">
         <HStack
+          className="folder-header"
           w="full"
           px={4}
           py={2}
@@ -256,14 +257,15 @@ export const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
   };
 
   return (
-    <VStack align="stretch" spacing={0} h="full">
+    <VStack id="notebook-sidebar-content" className="notebook-sidebar-container" align="stretch" spacing={0} h="full">
       {/* Notebooks List */}
-      <VStack align="stretch" spacing={1} p={4}>
+      <VStack id="notebooks-list" className="notebooks-section" align="stretch" spacing={1} p={4}>
         <HStack justify="space-between" mb={2}>
           <Text fontSize="sm" fontWeight="semibold" color="text.muted">
             NOTEBOOKS
           </Text>
           <IconButton
+            id="new-notebook-button"
             aria-label="New notebook"
             icon={<AddIcon />}
             size="xs"
@@ -274,6 +276,8 @@ export const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
         {notebooks.map((notebook) => (
           <Button
             key={notebook.id}
+            id={`notebook-item-${notebook.id}`}
+            className={`notebook-nav-item ${currentNotebook?.id === notebook.id ? 'active' : ''}`}
             variant={currentNotebook?.id === notebook.id ? 'solid' : 'ghost'}
             size="sm"
             justifyContent="flex-start"

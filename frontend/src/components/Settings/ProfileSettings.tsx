@@ -155,18 +155,20 @@ export const ProfileSettings: React.FC = () => {
   }
 
   return (
-    <VStack align="stretch" spacing={6}>
+    <VStack id="profile-settings" className="profile-settings-section" align="stretch" spacing={6}>
       {/* Profile Picture Section */}
-      <Box>
+      <Box id="profile-picture-section">
         <FormLabel>Profile Picture</FormLabel>
         <HStack spacing={4} align="center">
           <Box position="relative">
             <Avatar
+              id="user-avatar"
               size="2xl"
               name={profile?.username}
               src={profile?.avatar_url}
             />
             <IconButton
+              id="avatar-camera-button"
               aria-label="Upload photo"
               icon={<FaCamera />}
               size="sm"
@@ -179,6 +181,7 @@ export const ProfileSettings: React.FC = () => {
               isLoading={uploadAvatarMutation.isPending}
             />
             <Input
+              id="avatar-file-input"
               ref={fileInputRef}
               type="file"
               accept="image/*"
@@ -188,6 +191,7 @@ export const ProfileSettings: React.FC = () => {
           </Box>
           <VStack align="start" spacing={2}>
             <Button
+              id="upload-avatar-button"
               size="sm"
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
@@ -197,6 +201,7 @@ export const ProfileSettings: React.FC = () => {
             </Button>
             {profile?.avatar_url && (
               <Button
+                id="remove-avatar-button"
                 size="sm"
                 variant="ghost"
                 colorScheme="red"
@@ -212,16 +217,18 @@ export const ProfileSettings: React.FC = () => {
       </Box>
 
       {/* Username Section */}
-      <FormControl>
-        <FormLabel>Username</FormLabel>
+      <FormControl id="username-section">
+        <FormLabel htmlFor="username-display">Username</FormLabel>
         {isEditingName ? (
           <HStack>
             <Input
+              id="username-input"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
               placeholder="Enter username"
             />
             <Button
+              id="save-username-button"
               size="sm"
               colorScheme="blue"
               onClick={handleSaveUsername}
@@ -230,6 +237,7 @@ export const ProfileSettings: React.FC = () => {
               Save
             </Button>
             <Button
+              id="cancel-username-button"
               size="sm"
               variant="ghost"
               onClick={() => setIsEditingName(false)}

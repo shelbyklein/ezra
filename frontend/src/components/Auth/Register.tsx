@@ -73,14 +73,16 @@ export const Register: React.FC = () => {
 
   return (
     <>
-      <Container maxW="lg" py={{ base: '12', md: '24' }}>
+      <Container id="register-container" className="auth-container" maxW="lg" py={{ base: '12', md: '24' }}>
       <VStack spacing="8">
         <VStack spacing="2">
-          <Heading size="xl">Create an account</Heading>
+          <Heading id="register-heading" size="xl">Create an account</Heading>
           <Text color="text.secondary">Start managing your projects with AI assistance</Text>
         </VStack>
 
         <Box
+          id="register-form-container"
+          className="auth-form-container"
           py="8"
           px={{ base: '4', sm: '10' }}
           bg="bg.card"
@@ -88,11 +90,12 @@ export const Register: React.FC = () => {
           borderRadius="xl"
           w="full"
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form id="register-form" onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing="6">
               <FormControl isInvalid={!!errors.email}>
-                <FormLabel>Email</FormLabel>
+                <FormLabel htmlFor="register-email">Email</FormLabel>
                 <Input
+                  id="register-email"
                   type="email"
                   {...register('email', {
                     required: 'Email is required',
@@ -106,8 +109,9 @@ export const Register: React.FC = () => {
               </FormControl>
 
               <FormControl isInvalid={!!errors.username}>
-                <FormLabel>Username</FormLabel>
+                <FormLabel htmlFor="register-username">Username</FormLabel>
                 <Input
+                  id="register-username"
                   {...register('username', {
                     required: 'Username is required',
                     minLength: {
@@ -124,9 +128,10 @@ export const Register: React.FC = () => {
               </FormControl>
 
               <FormControl isInvalid={!!errors.password}>
-                <FormLabel>Password</FormLabel>
+                <FormLabel htmlFor="register-password">Password</FormLabel>
                 <InputGroup>
                   <Input
+                    id="register-password"
                     type={showPassword ? 'text' : 'password'}
                     {...register('password', {
                       required: 'Password is required',
@@ -138,6 +143,7 @@ export const Register: React.FC = () => {
                   />
                   <InputRightElement>
                     <IconButton
+                      id="register-password-toggle"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                       onClick={() => setShowPassword(!showPassword)}
@@ -150,9 +156,10 @@ export const Register: React.FC = () => {
               </FormControl>
 
               <FormControl isInvalid={!!errors.confirmPassword}>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel htmlFor="register-confirm-password">Confirm Password</FormLabel>
                 <InputGroup>
                   <Input
+                    id="register-confirm-password"
                     type={showConfirmPassword ? 'text' : 'password'}
                     {...register('confirmPassword', {
                       required: 'Please confirm your password',
@@ -162,6 +169,7 @@ export const Register: React.FC = () => {
                   />
                   <InputRightElement>
                     <IconButton
+                      id="register-confirm-password-toggle"
                       aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                       icon={showConfirmPassword ? <ViewOffIcon /> : <ViewIcon />}
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -174,6 +182,7 @@ export const Register: React.FC = () => {
               </FormControl>
 
               <Button
+                id="register-submit-button"
                 type="submit"
                 colorScheme="blue"
                 size="lg"

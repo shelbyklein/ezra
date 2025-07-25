@@ -152,15 +152,16 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal id="create-task-modal" isOpen={isOpen} onClose={handleClose} size="lg">
       <ModalOverlay />
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form id="create-task-form" onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader>
             <HStack justify="space-between" w="full">
               <span>Create New Task</span>
               <Tooltip label="Enhance with AI" placement="left">
                 <IconButton
+                  id="task-enhance-button"
                   aria-label="Enhance with AI"
                   icon={<FaMagic />}
                   size="sm"
@@ -177,8 +178,9 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
           <ModalBody>
             <VStack spacing={4}>
               <FormControl isRequired isInvalid={!!errors.title}>
-                <FormLabel>Title</FormLabel>
+                <FormLabel htmlFor="task-title">Title</FormLabel>
                 <Input
+                  id="task-title"
                   {...register('title', {
                     required: 'Title is required',
                     minLength: { value: 3, message: 'Title must be at least 3 characters' },
@@ -191,8 +193,9 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
               </FormControl>
 
               <FormControl>
-                <FormLabel>Description</FormLabel>
+                <FormLabel htmlFor="task-description">Description</FormLabel>
                 <Textarea
+                  id="task-description"
                   {...register('description')}
                   placeholder="Enter task description (optional)"
                   rows={3}
@@ -201,8 +204,8 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
 
               <HStack spacing={4} width="full">
                 <FormControl>
-                  <FormLabel>Priority</FormLabel>
-                  <Select {...register('priority')}>
+                  <FormLabel htmlFor="task-priority">Priority</FormLabel>
+                  <Select id="task-priority" {...register('priority')}>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -210,8 +213,8 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Status</FormLabel>
-                  <Select {...register('status')}>
+                  <FormLabel htmlFor="task-status">Status</FormLabel>
+                  <Select id="task-status" {...register('status')}>
                     <option value="todo">To Do</option>
                     <option value="in_progress">In Progress</option>
                     <option value="done">Done</option>
@@ -220,8 +223,9 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
               </HStack>
 
               <FormControl>
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel htmlFor="task-due-date">Due Date</FormLabel>
                 <Input
+                  id="task-due-date"
                   {...register('due_date')}
                   type="date"
                   min={new Date().toISOString().split('T')[0]}
@@ -237,10 +241,11 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={handleClose}>
+            <Button id="task-cancel-button" variant="ghost" mr={3} onClick={handleClose}>
               Cancel
             </Button>
             <Button
+              id="task-submit-button"
               colorScheme="blue"
               type="submit"
               isLoading={isSubmitting || createTaskMutation.isPending}
@@ -252,7 +257,7 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       </ModalContent>
 
       {/* AI Enhancement Modal */}
-      <Modal isOpen={showEnhancer} onClose={() => setShowEnhancer(false)} size="xl">
+      <Modal id="task-enhancer-modal" isOpen={showEnhancer} onClose={() => setShowEnhancer(false)} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>AI Task Enhancement</ModalHeader>

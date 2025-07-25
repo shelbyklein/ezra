@@ -69,14 +69,16 @@ export const Login: React.FC = () => {
 
   return (
     <>
-      <Container maxW="lg" py={{ base: '12', md: '24' }}>
+      <Container id="login-container" className="auth-container" maxW="lg" py={{ base: '12', md: '24' }}>
         <VStack spacing="8">
         <VStack spacing="2">
-          <Heading size="xl">Welcome back</Heading>
+          <Heading id="login-heading" size="xl">Welcome back</Heading>
           <Text color="text.secondary">Sign in to your account to continue</Text>
         </VStack>
 
         <Box
+          id="login-form-container"
+          className="auth-form-container"
           py="8"
           px={{ base: '4', sm: '10' }}
           bg="bg.card"
@@ -84,11 +86,12 @@ export const Login: React.FC = () => {
           borderRadius="xl"
           w="full"
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form id="login-form" onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing="6">
               <FormControl isInvalid={!!errors.email}>
-                <FormLabel>Email</FormLabel>
+                <FormLabel htmlFor="login-email">Email</FormLabel>
                 <Input
+                  id="login-email"
                   type="email"
                   {...register('email', {
                     required: 'Email is required',
@@ -102,9 +105,10 @@ export const Login: React.FC = () => {
               </FormControl>
 
               <FormControl isInvalid={!!errors.password}>
-                <FormLabel>Password</FormLabel>
+                <FormLabel htmlFor="login-password">Password</FormLabel>
                 <InputGroup>
                   <Input
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     {...register('password', {
                       required: 'Password is required',
@@ -116,6 +120,7 @@ export const Login: React.FC = () => {
                   />
                   <InputRightElement>
                     <IconButton
+                      id="login-password-toggle"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                       onClick={() => setShowPassword(!showPassword)}
@@ -128,6 +133,7 @@ export const Login: React.FC = () => {
               </FormControl>
 
               <Button
+                id="login-submit-button"
                 type="submit"
                 colorScheme="blue"
                 size="lg"
