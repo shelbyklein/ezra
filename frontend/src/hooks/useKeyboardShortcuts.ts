@@ -22,6 +22,7 @@ export const useKeyboardShortcuts = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const { isOpen: isHelpOpen, onOpen: onOpenHelp, onClose: onCloseHelp } = useDisclosure();
   const { isOpen: isNewTaskOpen, onOpen: onOpenNewTask, onClose: onCloseNewTask } = useDisclosure();
+  const { isOpen: isSearchOpen, onOpen: onOpenSearch, onClose: onCloseSearch } = useDisclosure();
 
   // Check if we're on the board page
   const isOnBoard = location.pathname.includes('/board/');
@@ -122,14 +123,11 @@ export const useKeyboardShortcuts = () => {
     },
     {
       key: '/',
-      description: 'Search tasks',
+      description: 'Search',
       action: () => {
-        if (isOnBoard) {
-          const event = new CustomEvent('openSearch');
-          window.dispatchEvent(event);
-        }
+        onOpenSearch();
       },
-      enabled: isOnBoard,
+      enabled: true,
     },
     {
       key: '?',
@@ -219,5 +217,8 @@ export const useKeyboardShortcuts = () => {
     onCloseHelp,
     isNewTaskOpen,
     onCloseNewTask,
+    isSearchOpen,
+    onOpenSearch,
+    onCloseSearch,
   };
 };

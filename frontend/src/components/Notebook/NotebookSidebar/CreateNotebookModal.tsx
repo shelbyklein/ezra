@@ -1,5 +1,5 @@
 /**
- * Modal for creating a new notebook
+ * Modal for creating or editing a notebook
  */
 
 import React from 'react';
@@ -26,6 +26,12 @@ import { api } from '../../../services/api';
 interface CreateNotebookModalProps {
   isOpen: boolean;
   onClose: () => void;
+  notebook?: {
+    id: number;
+    title: string;
+    description: string | null;
+    icon: string | null;
+  } | null;
 }
 
 interface NotebookFormData {
@@ -34,10 +40,21 @@ interface NotebookFormData {
   icon: string;
 }
 
-export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen, onClose }) => {
+export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen, onClose, notebook }) => {
   const toast = useToast();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<NotebookFormData>();
+  const { register, handleSubmit, reset, formState: { isSubmitting }, setValue } = useForm<NotebookFormData>();
+
+  // Set form values when editing
+  React.useEffect(() => {
+    if (notebook) {
+      setValue('title', notebook.title);
+      setValue('description', notebook.description || '');
+      setValue('icon', notebook.icon || '');
+    } else {
+      reset();
+    }
+  }, [notebook, setValue, reset]);
 
   const createNotebook = useMutation({
     mutationFn: async (data: NotebookFormData) => {
@@ -63,8 +80,37 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen
     },
   });
 
+  const updateNotebook = useMutation({
+    mutationFn: async (data: NotebookFormData) => {
+      const response = await api.put(`/notebooks/${notebook!.id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['notebook', notebook!.id] });
+      toast({
+        title: 'Notebook updated',
+        status: 'success',
+        duration: 3000,
+      });
+      reset();
+      onClose();
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to update notebook',
+        status: 'error',
+        duration: 5000,
+      });
+    },
+  });
+
   const onSubmit = (data: NotebookFormData) => {
-    createNotebook.mutate(data);
+    if (notebook) {
+      updateNotebook.mutate(data);
+    } else {
+      createNotebook.mutate(data);
+    }
   };
 
   return (
@@ -72,7 +118,7 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>Create New Notebook</ModalHeader>
+          <ModalHeader>{notebook ? 'Edit Notebook' : 'Create New Notebook'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
@@ -111,9 +157,9 @@ export const CreateNotebookModal: React.FC<CreateNotebookModalProps> = ({ isOpen
             <Button
               colorScheme="blue"
               type="submit"
-              isLoading={isSubmitting || createNotebook.isPending}
+              isLoading={isSubmitting || createNotebook.isPending || updateNotebook.isPending}
             >
-              Create
+              {notebook ? 'Update' : 'Create'}
             </Button>
           </ModalFooter>
         </form>

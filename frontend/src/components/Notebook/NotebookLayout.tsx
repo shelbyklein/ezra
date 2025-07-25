@@ -73,6 +73,13 @@ export const NotebookLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, lg: false });
 
+  // Redirect to notebooks home if no notebook is selected
+  useEffect(() => {
+    if (!notebookId) {
+      navigate('/app/notebooks');
+    }
+  }, [notebookId, navigate]);
+
   // Update selectedPageId when URL changes
   useEffect(() => {
     if (pageId) {

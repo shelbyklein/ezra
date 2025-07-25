@@ -40,7 +40,10 @@ Implement a comprehensive notebook system with WYSIWYG editing
 - [x] Auto-save functionality
 - [x] Slash commands for quick formatting
 - [x] Drag pages/folders to notebook root
-- [ ] Attach notebooks/pages to projects and tasks
+- [x] Notebook-project associations (linking notebooks to projects)
+- [x] Notebook cover page with metadata display
+- [x] Notebook tags support
+- [ ] Attach pages to specific tasks
 - [ ] AI-powered content generation and summarization
 - [ ] Full-text search capabilities
 - [ ] Export functionality (PDF, Markdown)
@@ -325,3 +328,20 @@ Develop mind mapping capabilities for knowledge management
 - [x] Visual selection indicator on tasks
 - [x] Keyboard shortcut tooltips on buttons
 - [x] Escape key to deselect/close modals
+
+### Notebook-Project Integration Phase
+- [x] Added project_id field to notebooks table
+- [x] Updated notebook API routes to include project information
+- [x] Created notebook cover page with metadata display
+- [x] Project dropdown selector in notebook edit mode
+- [x] Display linked notebooks as clickable pills on project board
+- [x] Made project links clickable on notebook cover page
+- [x] Added notebook tags support (many-to-many relationship)
+- [x] Visual design improvements with project color indicators
+
+### UI/UX Polish Phase
+- [x] Fixed overlapping buttons in task detail modal
+- [x] Moved action buttons to modal footers
+- [x] Removed unnecessary "Close" buttons
+- [x] Added edit button to project board header
+- [x] Improved modal layouts for better user experience

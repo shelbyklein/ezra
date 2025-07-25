@@ -143,7 +143,21 @@ Finalize MVP features and prepare for production deployment with comprehensive t
 - Add comprehensive test coverage
 
 ## Recent Changes
-- Keyboard Shortcuts Implementation:
+- Notebook-Project Associations:
+  - Added project_id field to notebooks table via migration
+  - Updated notebook API routes to include project information
+  - Created notebook cover page with metadata display
+  - Added project dropdown selector to notebook cover page
+  - Display linked notebooks as clickable pills on project board
+  - Made project links clickable on notebook cover page
+  - Added notebook tags support (many-to-many relationship)
+- UI/UX Improvements:
+  - Fixed overlapping buttons in task detail modal by moving to footer
+  - Removed unnecessary "Close" buttons from modal footers
+  - Added edit button to project board header
+  - Improved visual design with project color indicators
+  - Enhanced notebook cover page with description and tags
+- Previous Keyboard Shortcuts Implementation:
   - Created useKeyboardShortcuts hook for global keyboard handling
   - Added keyboard shortcuts: N (new task), E (edit), Delete, Space (status change)
   - Arrow keys for task navigation (up/down) and movement (left/right)
@@ -152,37 +166,12 @@ Finalize MVP features and prepare for production deployment with comprehensive t
   - Visual selection indicator on tasks with blue border
   - Tooltips on buttons showing keyboard shortcuts
   - KeyboardShortcutsHelp modal component
-- Navigation & UI Updates:
+- Previous Navigation & UI Updates:
   - Reorganized navigation header: Home, Chat, Projects, Notebooks
   - Created dedicated Chat page component (/app/chat)
   - Removed "Board" from navigation (access via project cards)
   - Updated default /app redirect to go to Chat page
   - Chat page features full conversation history and markdown rendering
-- Previous UI/UX Enhancements:
-  - Added breadcrumb footer showing navigation hierarchy
-  - Fixed navigation context updates when clicking pages
-  - Fixed page creation redirect (missing /app prefix)
-  - Chat bubble now shows current context in header
-  - Dynamic greeting messages based on location
-  - Fixed React hooks initialization errors
-- AI Feature Improvements:
-  - Added highlight parameter for AI-created content
-  - Enhanced parseMarkdownToTipTap with highlight support
-  - Updated AI prompt to explain highlight usage
-  - Fixed context awareness to update on navigation
-  - Chat now tracks location changes in real-time
-- Previous AI Updates:
-  - Fixed React hooks order error (useColorModeValue)
-  - Added task CRUD operations to chat bubble
-  - Implemented delete_task action
-  - Improved AI response parsing with fallback patterns
-  - Added debug logging throughout
-- Previous Notebook Integration:
-  - Made chat bubble context-aware of current page
-  - Added update_page and create_page actions
-  - Created markdown to TipTap converter
-  - Fixed query invalidation for real-time updates
-  - Resolved TipTap duplicate extension warning
 
 ## Progress Reference
 - Phase 1: MVP Kanban Board - 98% complete (Only keyboard shortcuts remaining)

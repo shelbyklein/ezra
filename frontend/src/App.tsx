@@ -15,6 +15,7 @@ import { ProjectList } from './components/Projects/ProjectList';
 import { Board } from './components/Board/Board';
 import { Settings } from './components/Settings/Settings';
 import { NotebookLayout } from './components/Notebook/NotebookLayout';
+import { NotebooksHome } from './pages/NotebooksHome';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { Chat } from './components/Chat/Chat';
 import theme from './theme';
@@ -64,7 +65,8 @@ const AppWithSystemColorMode = () => {
           <Route path="projects" element={<ProjectList />} />
           <Route path="board/:projectId?" element={<Board />} />
           <Route path="chat" element={<Chat />} />
-          <Route path="notebooks/:notebookId?/:pageId?" element={<NotebookLayout />} />
+          <Route path="notebooks" element={<NotebooksHome />} />
+          <Route path="notebooks/:notebookId/:pageId?" element={<NotebookLayout />} />
           <Route path="settings" element={<Settings />} />
         </Route>
         

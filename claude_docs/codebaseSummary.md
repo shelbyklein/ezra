@@ -54,7 +54,9 @@ Ezra/
 │   │   ├── 006_add_project_tags.ts
 │   │   ├── 007_add_task_attachments.ts
 │   │   ├── 008_create_notebooks.ts
-│   │   └── 009_add_user_api_key.ts
+│   │   ├── 009_add_user_api_key.ts
+│   │   ├── 011_add_notebook_tags.ts
+│   │   └── 012_add_notebook_project_association.ts
 │   ├── tests/
 │   │   └── api.test.ts    # API endpoint tests
 │   ├── knexfile.ts        # Database configuration
@@ -114,6 +116,7 @@ Ezra/
   - NotebookLayout - Main notebook interface
   - NotebookSidebar/DraggableNotebookSidebar - Hierarchical file browser with drag-and-drop
   - NotebookEditor - TipTap WYSIWYG editor with toolbar
+  - NotebookCoverPage - Cover page with metadata, description, tags, and project association
   - CreateNotebookModal - New notebook creation
   - CreatePageModal - New page creation
   - CreateFolderModal - New folder creation
@@ -152,7 +155,7 @@ Ezra/
   - notes.routes.ts - Notes CRUD operations
   - tags.routes.ts - Tags CRUD + task/project assignment
   - attachments.routes.ts - Task attachments CRUD
-  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint
+  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint + project associations
   - users.routes.ts - User profile + API key management
   - ai.routes.ts - AI chat endpoint (/chat) for conversational interface
     - Context-aware processing (current notebook/page/project)
@@ -308,6 +311,9 @@ Ezra/
 - Auto-save with debouncing
 - Slash commands for formatting
 - Visual file/folder icons
+- Notebook-project associations
+- Notebook cover page with metadata
+- Notebook tags support
 
 ### Phase 3: API Key Management ✅ COMPLETED
 - Database field for encrypted API keys
@@ -354,6 +360,23 @@ Ezra/
 - Tooltips showing keyboard shortcuts
 - KeyboardShortcutsHelp modal component
 - Event-driven architecture for component communication
+
+### Notebook-Project Integration Phase ✅ COMPLETED
+- Added project_id field to notebooks table
+- Updated notebook API routes to include project information
+- Created notebook cover page with metadata display
+- Project dropdown selector in notebook edit mode
+- Display linked notebooks as clickable pills on project board
+- Made project links clickable on notebook cover page
+- Added notebook tags support (many-to-many relationship)
+- Visual design improvements with project color indicators
+
+### UI/UX Polish Phase ✅ COMPLETED
+- Fixed overlapping buttons in task detail modal
+- Moved action buttons to modal footers
+- Removed unnecessary "Close" buttons
+- Added edit button to project board header
+- Improved modal layouts for better user experience
 
 ### MVP Status
 ✅ **100% COMPLETE** - All MVP features have been successfully implemented!

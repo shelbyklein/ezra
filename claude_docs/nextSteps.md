@@ -40,6 +40,16 @@
   - ✅ `Escape` - Deselect task / close modals
   - ✅ Visual indicators for shortcuts (tooltips and help modal)
   - ✅ Task selection highlighting with blue border
+- ✅ Notebook-Project Integration:
+  - ✅ Notebooks can be associated with projects
+  - ✅ Notebook cover page with metadata display
+  - ✅ Project links are clickable for navigation
+  - ✅ Linked notebooks appear as pills on project boards
+  - ✅ Notebook tags support
+- ✅ UI/UX Polish:
+  - ✅ Fixed modal button overlap issues
+  - ✅ Improved modal layouts
+  - ✅ Added edit button to project board
 
 ## Next Priority: Testing & Deployment Preparation
 
@@ -225,28 +235,41 @@ Visual knowledge management:
    - Clean up TypeScript warnings and unused imports
    - Begin writing critical unit tests
    - Set up Jest and React Testing Library
-   - Document the keyboard shortcuts in user-facing documentation
+   - Document all features in user-facing documentation:
+     - Keyboard shortcuts guide
+     - Notebook-project associations
+     - AI chat capabilities
+   - Create onboarding flow for new users
 
 2. **Short-term (Next 2 Weeks)**:
    - Complete test suite for all major features
    - Performance optimization pass
-   - Create comprehensive user documentation
+   - Implement search functionality (currently placeholder)
+   - Add file upload support for task attachments
    - Set up CI/CD pipeline with GitHub Actions
    - Prepare production environment
+   - Add data export features (CSV, JSON)
 
 3. **Medium-term (Next Month)**:
    - Deploy MVP to production
    - Gather user feedback on all features
    - Monitor performance and fix bottlenecks
+   - Implement advanced filtering and sorting
+   - Add bulk operations for tasks
    - Begin Phase 2 feature planning
    - Implement analytics tracking
+   - Add notebook export to PDF/Markdown
 
 4. **Long-term (3+ Months)**:
    - Implement collaboration features
    - Launch mind mapping capabilities
    - Build integration ecosystem (Zapier, etc.)
    - Scale infrastructure for growth
-   - Advanced AI capabilities (voice, multi-modal)
+   - Advanced AI capabilities:
+     - Voice commands
+     - Multi-modal inputs
+     - Predictive task creation
+     - Smart scheduling
 
 ## Risk Mitigation
 

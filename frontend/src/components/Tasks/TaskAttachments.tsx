@@ -39,6 +39,8 @@ import {
 } from '@chakra-ui/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { FileUpload } from './FileUpload';
+import { AttachmentsList } from './AttachmentsList';
 
 interface Attachment {
   id: number;
@@ -253,7 +255,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
   };
 
   return (
-    <VStack align="stretch" spacing={3}>
+    <VStack align="stretch" spacing={4}>
       <HStack justify="space-between">
         <Text fontWeight="semibold">Attachments</Text>
         {isEditing && (
@@ -262,52 +264,19 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
             leftIcon={<AddIcon />}
             onClick={() => handleOpenModal()}
           >
-            Add
+            Add Link/Note
           </Button>
         )}
       </HStack>
 
-      {attachments.length === 0 ? (
-        <Text fontSize="sm" color="gray.500">No attachments</Text>
-      ) : (
-        <VStack align="stretch" spacing={2} divider={<Divider />}>
-          {attachments.map((attachment) => (
-            <HStack key={attachment.id} justify="space-between">
-              <HStack flex={1}>
-                <AttachmentIcon type={attachment.type} />
-                {renderAttachmentContent(attachment)}
-                <Badge colorScheme="gray" fontSize="xs">
-                  {attachment.type}
-                </Badge>
-                {attachment.size && (
-                  <Text fontSize="xs" color="gray.500">
-                    {formatSize(attachment.size)}
-                  </Text>
-                )}
-              </HStack>
-              {isEditing && (
-                <HStack>
-                  <IconButton
-                    aria-label="Edit attachment"
-                    icon={<EditIcon />}
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleOpenModal(attachment)}
-                  />
-                  <IconButton
-                    aria-label="Delete attachment"
-                    icon={<DeleteIcon />}
-                    size="sm"
-                    variant="ghost"
-                    colorScheme="red"
-                    onClick={() => handleDelete(attachment.id)}
-                  />
-                </HStack>
-              )}
-            </HStack>
-          ))}
-        </VStack>
+      {isEditing && (
+        <Box>
+          <Text fontSize="sm" fontWeight="medium" mb={2}>Upload Files</Text>
+          <FileUpload taskId={taskId} />
+        </Box>
       )}
+
+      <AttachmentsList taskId={taskId} />
 
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
@@ -327,7 +296,6 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
                 >
                   <option value="url">URL</option>
                   <option value="note">Note</option>
-                  <option value="file">File</option>
                 </Select>
               </FormControl>
 
@@ -346,9 +314,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
 
               <FormControl>
                 <FormLabel>
-                  {formData.type === 'url' ? 'URL' :
-                   formData.type === 'note' ? 'Note Content' :
-                   'File Path'}
+                  {formData.type === 'url' ? 'URL' : 'Note Content'}
                 </FormLabel>
                 {formData.type === 'note' ? (
                   <Textarea
@@ -361,10 +327,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
                   <Input
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder={
-                      formData.type === 'url' ? 'https://example.com' :
-                      '/path/to/file'
-                    }
+                    placeholder="https://example.com"
                   />
                 )}
               </FormControl>

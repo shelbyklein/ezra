@@ -26,12 +26,15 @@ import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { ChatBubble } from '../AI/ChatBubble';
 import { BreadcrumbFooter } from './BreadcrumbFooter';
+import { SearchModal } from '../Search/SearchModal';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 export const AppLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
+  const { isSearchOpen, onCloseSearch } = useKeyboardShortcuts();
 
   const handleLogout = () => {
     logout();
@@ -138,6 +141,9 @@ export const AppLayout: React.FC = () => {
       
       {/* Breadcrumb Footer */}
       <BreadcrumbFooter />
+      
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={onCloseSearch} />
     </Box>
   );
 };
