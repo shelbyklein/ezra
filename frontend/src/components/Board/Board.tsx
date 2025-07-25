@@ -13,14 +13,16 @@ import {
   VStack,
   Text,
   Button,
+  IconButton,
+  Icon,
   Spinner,
   Center,
   useToast,
   useDisclosure,
   Tooltip,
 } from '@chakra-ui/react';
-import { AddIcon, ArrowLeftIcon } from '@chakra-ui/icons';
-import { FaMagic } from 'react-icons/fa';
+import { AddIcon, ArrowLeftIcon, EditIcon } from '@chakra-ui/icons';
+import { FaMagic, FaBook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {
   DndContext,
@@ -47,6 +49,7 @@ import { TaskDetailModal } from '../Tasks/TaskDetailModal';
 import { NaturalLanguageInput } from '../AI/NaturalLanguageInput';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { KeyboardShortcutsHelp } from '../common/KeyboardShortcutsHelp';
+import { CreateProjectModal } from '../Projects/CreateProjectModal';
 
 interface Task {
   id: number;
@@ -87,6 +90,7 @@ export const Board: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure();
   const { isOpen: isNLOpen, onOpen: onNLOpen, onClose: onNLClose } = useDisclosure();
+  const { isOpen: isProjectEditOpen, onOpen: onProjectEditOpen, onClose: onProjectEditClose } = useDisclosure();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   
   // Initialize keyboard shortcuts
@@ -131,6 +135,18 @@ export const Board: React.FC = () => {
       if (!projectId) throw new Error('No project ID');
       const response = await api.get(`/tasks/project/${projectId}`);
       return response.data;
+    },
+    enabled: !!projectId,
+  });
+
+  // Check if this project has notebooks
+  const { data: projectNotebooks = [], isLoading: notebooksLoading } = useQuery({
+    queryKey: ['project-notebooks', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const response = await api.get('/notebooks');
+      // Filter notebooks for this project
+      return response.data.filter((notebook: any) => notebook.project_id === Number(projectId));
     },
     enabled: !!projectId,
   });
@@ -519,6 +535,38 @@ export const Board: React.FC = () => {
                 />
               )}
               <Heading size="lg">{project?.name || 'Loading...'}</Heading>
+              {!notebooksLoading && projectNotebooks.length > 0 && (
+                <HStack spacing={2}>
+                  {projectNotebooks.map((notebook: any) => (
+                    <Button
+                      key={notebook.id}
+                      size="sm"
+                      variant="solid"
+                      colorScheme="blue"
+                      leftIcon={<FaBook />}
+                      onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
+                      borderRadius="full"
+                      px={3}
+                      py={1}
+                      fontSize="sm"
+                      fontWeight="medium"
+                    >
+                      {notebook.title}
+                    </Button>
+                  ))}
+                </HStack>
+              )}
+              {project && (
+                <Tooltip label="Edit project" placement="top">
+                  <IconButton
+                    aria-label="Edit project"
+                    icon={<EditIcon />}
+                    size="sm"
+                    variant="ghost"
+                    onClick={onProjectEditOpen}
+                  />
+                </Tooltip>
+              )}
             </HStack>
           </HStack>
           <HStack spacing={2}>
@@ -629,6 +677,15 @@ export const Board: React.FC = () => {
         onClose={onCloseNewTask}
         projectId={Number(projectId)}
       />
+      
+      {/* Edit Project Modal */}
+      {project && (
+        <CreateProjectModal
+          isOpen={isProjectEditOpen}
+          onClose={onProjectEditClose}
+          project={project}
+        />
+      )}
     </DndContext>
   );
 };

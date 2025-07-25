@@ -26,6 +26,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { DraggableNotebookSidebar } from './NotebookSidebar/DraggableNotebookSidebar';
 import { NotebookEditor } from './Editor/NotebookEditor';
+import { NotebookCoverPage } from './NotebookCoverPage';
 
 interface Notebook {
   id: number;
@@ -170,11 +171,13 @@ export const NotebookLayout: React.FC = () => {
             pageId={selectedPageId}
             notebookId={currentNotebook?.id || parseInt(notebookId || '0')}
           />
+        ) : currentNotebook ? (
+          <NotebookCoverPage notebook={currentNotebook} />
         ) : (
           <Center h="full">
             <VStack spacing={4}>
               <Text fontSize="lg" color="gray.500">
-                {currentNotebook ? 'Select a page to start editing' : 'Select a notebook'}
+                Select a notebook
               </Text>
             </VStack>
           </Center>

@@ -49,8 +49,14 @@ router.get('/recent', authenticate, async (req, res) => {
 router.get('/', authenticate, async (req, res) => {
   try {
     const notebooks = await db('notebooks')
-      .where({ user_id: req.user!.userId })
-      .orderBy('position', 'asc');
+      .leftJoin('projects', 'notebooks.project_id', 'projects.id')
+      .where({ 'notebooks.user_id': req.user!.userId })
+      .select(
+        'notebooks.*',
+        'projects.name as project_name',
+        'projects.color as project_color'
+      )
+      .orderBy('notebooks.position', 'asc');
     
     res.json(notebooks);
   } catch (error) {
@@ -63,10 +69,16 @@ router.get('/', authenticate, async (req, res) => {
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const notebook = await db('notebooks')
+      .leftJoin('projects', 'notebooks.project_id', 'projects.id')
       .where({ 
-        id: req.params.id,
-        user_id: req.user!.userId 
+        'notebooks.id': req.params.id,
+        'notebooks.user_id': req.user!.userId 
       })
+      .select(
+        'notebooks.*',
+        'projects.name as project_name',
+        'projects.color as project_color'
+      )
       .first();
     
     if (!notebook) {
@@ -137,7 +149,7 @@ router.post('/', authenticate, async (req, res) => {
 // Update notebook
 router.put('/:id', authenticate, async (req, res) => {
   try {
-    const { title, description, icon, position } = req.body;
+    const { title, description, icon, position, project_id } = req.body;
     
     const updateData: any = {
       updated_at: new Date().toISOString()
@@ -147,6 +159,7 @@ router.put('/:id', authenticate, async (req, res) => {
     if (description !== undefined) updateData.description = description;
     if (icon !== undefined) updateData.icon = icon;
     if (position !== undefined) updateData.position = position;
+    if (project_id !== undefined) updateData.project_id = project_id;
     
     const updated = await db('notebooks')
       .where({ 

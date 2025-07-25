@@ -243,41 +243,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>
-            <HStack justify="space-between">
-              <Text>Task Details</Text>
-              <HStack>
-                {!isEditing && (
-                  <IconButton
-                    aria-label="Edit task"
-                    icon={<EditIcon />}
-                    size="sm"
-                    onClick={() => setIsEditing(true)}
-                  />
-                )}
-                {isEditing && (
-                  <Tooltip label="Enhance with AI" placement="left">
-                    <IconButton
-                      aria-label="Enhance with AI"
-                      icon={<FaMagic />}
-                      size="sm"
-                      colorScheme="purple"
-                      variant="ghost"
-                      onClick={() => setShowEnhancer(true)}
-                    />
-                  </Tooltip>
-                )}
-                <IconButton
-                  aria-label="Delete task"
-                  icon={<DeleteIcon />}
-                  size="sm"
-                  colorScheme="red"
-                  onClick={handleDelete}
-                  isLoading={deleteTaskMutation.isPending}
-                />
-              </HStack>
-            </HStack>
-          </ModalHeader>
+          <ModalHeader>Task Details</ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
@@ -413,6 +379,26 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           <ModalFooter>
             {isEditing ? (
               <>
+                <IconButton
+                  aria-label="Delete task"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  colorScheme="red"
+                  onClick={handleDelete}
+                  isLoading={deleteTaskMutation.isPending}
+                  mr="auto"
+                />
+                <Tooltip label="Enhance with AI" placement="top">
+                  <IconButton
+                    aria-label="Enhance with AI"
+                    icon={<FaMagic />}
+                    size="sm"
+                    colorScheme="purple"
+                    variant="ghost"
+                    onClick={() => setShowEnhancer(true)}
+                    mr={3}
+                  />
+                </Tooltip>
                 <Button variant="ghost" mr={3} onClick={handleCancel}>
                   <CloseIcon mr={2} />
                   Cancel
@@ -427,7 +413,22 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 </Button>
               </>
             ) : (
-              <Button onClick={onClose}>Close</Button>
+              <HStack spacing={3}>
+                <IconButton
+                  aria-label="Edit task"
+                  icon={<EditIcon />}
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                />
+                <IconButton
+                  aria-label="Delete task"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  colorScheme="red"
+                  onClick={handleDelete}
+                  isLoading={deleteTaskMutation.isPending}
+                />
+              </HStack>
             )}
           </ModalFooter>
         </form>

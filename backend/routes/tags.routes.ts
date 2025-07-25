@@ -314,4 +314,92 @@ router.post('/project/:projectId', authenticate, async (req, res) => {
   }
 });
 
+// Get tags for a specific notebook
+router.get('/notebook/:notebookId', authenticate, async (req, res) => {
+  try {
+    // First verify the notebook belongs to the user
+    const notebook = await db('notebooks')
+      .where({ 
+        id: req.params.notebookId,
+        user_id: req.user!.userId 
+      })
+      .first();
+    
+    if (!notebook) {
+      return res.status(404).json({ error: 'Notebook not found' });
+    }
+    
+    // Get tags for the notebook
+    const tags = await db('tags')
+      .join('notebook_tags', 'tags.id', 'notebook_tags.tag_id')
+      .where({ 'notebook_tags.notebook_id': req.params.notebookId })
+      .select('tags.*');
+    
+    res.json(tags);
+  } catch (error) {
+    console.error('Error fetching notebook tags:', error);
+    res.status(500).json({ error: 'Failed to fetch notebook tags' });
+  }
+});
+
+// Assign tags to a notebook
+router.post('/notebook/:notebookId', authenticate, async (req, res) => {
+  try {
+    const { tagIds } = req.body;
+    
+    if (!Array.isArray(tagIds)) {
+      return res.status(400).json({ error: 'tagIds must be an array' });
+    }
+    
+    // Verify the notebook belongs to the user
+    const notebook = await db('notebooks')
+      .where({ 
+        id: req.params.notebookId,
+        user_id: req.user!.userId 
+      })
+      .first();
+    
+    if (!notebook) {
+      return res.status(404).json({ error: 'Notebook not found' });
+    }
+    
+    // Verify all tags belong to the user
+    const userTags = await db('tags')
+      .where({ user_id: req.user!.userId })
+      .whereIn('id', tagIds)
+      .pluck('id');
+    
+    if (userTags.length !== tagIds.length) {
+      return res.status(400).json({ error: 'One or more tags not found' });
+    }
+    
+    // Remove existing tags and add new ones
+    await db.transaction(async (trx) => {
+      await trx('notebook_tags')
+        .where({ notebook_id: req.params.notebookId })
+        .delete();
+      
+      if (tagIds.length > 0) {
+        const notebookTags = tagIds.map(tagId => ({
+          notebook_id: parseInt(req.params.notebookId),
+          tag_id: tagId
+        }));
+        
+        await trx('notebook_tags').insert(notebookTags);
+      }
+    });
+    
+    // Return updated tags
+    const tags = await db('tags')
+      .join('notebook_tags', 'tags.id', 'notebook_tags.tag_id')
+      .where({ 'notebook_tags.notebook_id': req.params.notebookId })
+      .select('tags.*');
+    
+    res.json(tags);
+  } catch (error) {
+    console.error('Error assigning notebook tags:', error);
+    res.status(500).json({ error: 'Failed to assign notebook tags' });
+  }
+});
+
 export default router;
