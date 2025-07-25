@@ -132,9 +132,9 @@ export const AppLayout: React.FC = () => {
         ) : null}
       </Box>
 
-      <Container maxW="container.xl" py={8} pb={16}>
+      <Box w="full" py={8} pb={16}>
         <Outlet />
-      </Container>
+      </Box>
       
       {/* Floating Chat Bubble */}
       <ChatBubble />

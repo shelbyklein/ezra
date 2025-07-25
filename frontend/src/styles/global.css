@@ -2,8 +2,10 @@
  * Global CSS overrides
  */
 
-/* Remove padding and margin from Chakra Container component */
+/* Remove padding and margin from Chakra Container component and make it full width */
 .chakra-container {
   padding: 0 !important;
   margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
 }

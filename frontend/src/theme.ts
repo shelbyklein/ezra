@@ -151,6 +151,8 @@ const components = {
     baseStyle: {
       px: 0,
       mx: 0,
+      maxW: '100%',
+      w: 'full',
     },
   },
   Modal: {
