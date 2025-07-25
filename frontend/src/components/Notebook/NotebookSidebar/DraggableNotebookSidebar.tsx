@@ -158,6 +158,11 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [isNotebooksCollapsed, setIsNotebooksCollapsed] = useState(() => {
+    // Get saved state from localStorage
+    const saved = localStorage.getItem('notebooks-list-collapsed');
+    return saved === 'true';
+  });
   
   const { isOpen: isNotebookModalOpen, onOpen: onNotebookModalOpen, onClose: onNotebookModalClose } = useDisclosure();
   const { isOpen: isPageModalOpen, onOpen: onPageModalOpen, onClose: onPageModalClose } = useDisclosure();
@@ -214,6 +219,12 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
       newExpanded.add(folderId);
     }
     setExpandedFolders(newExpanded);
+  };
+
+  const toggleNotebooksList = () => {
+    const newState = !isNotebooksCollapsed;
+    setIsNotebooksCollapsed(newState);
+    localStorage.setItem('notebooks-list-collapsed', newState.toString());
   };
 
   const deletePage = useMutation({
@@ -602,9 +613,18 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
           {/* Notebooks List */}
           <VStack align="stretch" spacing={1} p={4}>
             <HStack justify="space-between" mb={2}>
-              <Text fontSize="sm" fontWeight="semibold" color="text.muted">
-                NOTEBOOKS
-              </Text>
+              <HStack>
+                <IconButton
+                  aria-label={isNotebooksCollapsed ? 'Expand notebooks' : 'Collapse notebooks'}
+                  icon={isNotebooksCollapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}
+                  size="xs"
+                  variant="ghost"
+                  onClick={toggleNotebooksList}
+                />
+                <Text fontSize="sm" fontWeight="semibold" color="text.muted">
+                  NOTEBOOKS
+                </Text>
+              </HStack>
               <IconButton
                 aria-label="New notebook"
                 icon={<AddIcon />}
@@ -613,17 +633,21 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
                 onClick={onNotebookModalOpen}
               />
             </HStack>
-            {notebooks.map((notebook) => (
-              <Button
-                key={notebook.id}
-                variant={currentNotebook?.id === notebook.id ? 'solid' : 'ghost'}
-                size="sm"
-                justifyContent="flex-start"
-                onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
-              >
-                {notebook.icon} {notebook.title}
-              </Button>
-            ))}
+            <Collapse in={!isNotebooksCollapsed}>
+              <VStack align="stretch" spacing={1}>
+                {notebooks.map((notebook) => (
+                  <Button
+                    key={notebook.id}
+                    variant={currentNotebook?.id === notebook.id ? 'solid' : 'ghost'}
+                    size="sm"
+                    justifyContent="flex-start"
+                    onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
+                  >
+                    {notebook.icon} {notebook.title}
+                  </Button>
+                ))}
+              </VStack>
+            </Collapse>
           </VStack>
 
           {/* Current Notebook Structure */}

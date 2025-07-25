@@ -72,18 +72,6 @@ export const NotebookLayout: React.FC = () => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, lg: false });
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    // Get saved state from localStorage
-    const saved = localStorage.getItem('notebook-sidebar-collapsed');
-    return saved === 'true';
-  });
-
-  // Toggle sidebar collapse state
-  const toggleSidebar = () => {
-    const newState = !isSidebarCollapsed;
-    setIsSidebarCollapsed(newState);
-    localStorage.setItem('notebook-sidebar-collapsed', newState.toString());
-  };
 
   // Redirect to notebooks home if no notebook is selected
   useEffect(() => {
@@ -150,52 +138,13 @@ export const NotebookLayout: React.FC = () => {
       {/* Desktop Sidebar */}
       {!isMobile && (
         <Box
-          w={isSidebarCollapsed ? '50px' : '280px'}
+          w="280px"
           borderRightWidth="1px"
           borderColor="border.primary"
           bg="bg.primary"
           overflowY="auto"
-          transition="width 0.3s ease"
-          position="relative"
         >
-          {/* Collapse/Expand Button */}
-          <IconButton
-            aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            icon={isSidebarCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            size="sm"
-            variant="ghost"
-            position="absolute"
-            top={2}
-            right={2}
-            zIndex={10}
-            onClick={toggleSidebar}
-          />
-          
-          {/* Sidebar Content */}
-          <Box
-            opacity={isSidebarCollapsed ? 0 : 1}
-            visibility={isSidebarCollapsed ? 'hidden' : 'visible'}
-            transition="opacity 0.3s ease"
-          >
-            {sidebarContent}
-          </Box>
-          
-          {/* Collapsed State - Show icons only */}
-          {isSidebarCollapsed && (
-            <VStack py={4} spacing={3}>
-              {notebooks.map((notebook) => (
-                <IconButton
-                  key={notebook.id}
-                  aria-label={notebook.title}
-                  icon={<Text fontSize="lg">{notebook.icon || '📓'}</Text>}
-                  variant={currentNotebook?.id === notebook.id ? 'solid' : 'ghost'}
-                  colorScheme={currentNotebook?.id === notebook.id ? 'blue' : undefined}
-                  size="sm"
-                  onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
-                />
-              ))}
-            </VStack>
-          )}
+          {sidebarContent}
         </Box>
       )}
 
