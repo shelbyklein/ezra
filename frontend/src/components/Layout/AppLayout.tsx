@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Flex,
@@ -33,8 +33,12 @@ export const AppLayout: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
   const { isSearchOpen, onCloseSearch } = useKeyboardShortcuts();
+  
+  // Determine if current route should have padding
+  const shouldHavePadding = !location.pathname.includes('/chat');
 
   const handleLogout = () => {
     logout();
@@ -132,7 +136,12 @@ export const AppLayout: React.FC = () => {
         ) : null}
       </Box>
 
-      <Box w="full" py={8} pb={16}>
+      <Box 
+        w="full" 
+        py={shouldHavePadding ? 8 : 0} 
+        pb={shouldHavePadding ? 16 : 0}
+        px={shouldHavePadding ? { base: 4, md: 8 } : 0}
+      >
         <Outlet />
       </Box>
       

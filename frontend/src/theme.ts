@@ -147,14 +147,6 @@ const components = {
       },
     },
   },
-  Container: {
-    baseStyle: {
-      px: 0,
-      mx: 0,
-      maxW: '100%',
-      w: 'full',
-    },
-  },
   Modal: {
     baseStyle: {
       dialog: {
