@@ -105,6 +105,7 @@ Ezra/
   - DeveloperTools - Data reset and testing tools (dev only)
   - TagsManagement - Tags CRUD interface with color picker
   - ApiKeySettings - Anthropic API key management interface
+  - ProfileSettings - User profile management with avatar upload
 - **Tasks/** - Task management
   - CreateTaskForm - Quick task creation modal with tag selector
   - TaskDetailModal - View/edit/delete task details with tags
@@ -156,7 +157,7 @@ Ezra/
   - tags.routes.ts - Tags CRUD + task/project assignment
   - attachments.routes.ts - Task attachments CRUD
   - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint + project associations
-  - users.routes.ts - User profile + API key management
+  - users.routes.ts - User profile + API key management + avatar upload
   - ai.routes.ts - AI chat endpoint (/chat) for conversational interface
     - Context-aware processing (current notebook/page/project)
     - Action execution (task CRUD, page updates, navigation)
@@ -225,6 +226,7 @@ Ezra/
 - cors - Cross-origin support
 - dotenv - Environment variables
 - crypto - API key encryption
+- multer - File upload handling (avatars)
 
 ### Development Dependencies
 - vite - Frontend build tool
@@ -377,6 +379,15 @@ Ezra/
 - Removed unnecessary "Close" buttons
 - Added edit button to project board header
 - Improved modal layouts for better user experience
+
+### User Profile Management Phase ✅ COMPLETED
+- User profile endpoints (GET /profile, PUT /profile, POST /profile/avatar)
+- Avatar upload with multer (5MB limit, image files only)
+- ProfileSettings component in Settings page
+- Avatar storage in uploads/avatars directory
+- Automatic cleanup of old avatars on new upload
+- Dashboard personalized welcome message
+- UI layout fixes for proper flex height in Chat/Notebook views
 
 ### MVP Status
 ✅ **100% COMPLETE** - All MVP features have been successfully implemented!

@@ -34,6 +34,7 @@ import { api } from '../../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useChat, Message } from '../../contexts/ChatContext';
+import { useWebSocket } from '../../contexts/WebSocketContext';
 
 const MotionBox = motion(Box);
 
@@ -49,6 +50,7 @@ export const ChatBubble: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
+  const { isConnected, backendVersion } = useWebSocket();
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
@@ -403,7 +405,23 @@ export const ChatBubble: React.FC = () => {
                   <HStack>
                     <Avatar icon={<FaRobot />} bg="purple.500" size="sm" />
                     <VStack align="start" spacing={0}>
-                      <Text fontWeight="bold">Ezra</Text>
+                      <HStack align="center" spacing={2}>
+                        <Text fontWeight="bold">Ezra</Text>
+                        {process.env.NODE_ENV === 'development' && (
+                          <Tooltip 
+                            label={isConnected ? 'Connected to backend' : 'Disconnected from backend'} 
+                            placement="top"
+                          >
+                            <Box
+                              w={2}
+                              h={2}
+                              borderRadius="full"
+                              bg={isConnected ? 'green.400' : 'red.400'}
+                              animation={isConnected ? undefined : 'pulse 2s infinite'}
+                            />
+                          </Tooltip>
+                        )}
+                      </HStack>
                       <Text fontSize="xs" opacity={0.8}>AI Assistant</Text>
                     </VStack>
                   </HStack>

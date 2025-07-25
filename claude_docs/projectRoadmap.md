@@ -345,3 +345,15 @@ Develop mind mapping capabilities for knowledge management
 - [x] Removed unnecessary "Close" buttons
 - [x] Added edit button to project board header
 - [x] Improved modal layouts for better user experience
+
+### User Profile Management Phase
+- [x] User profile view endpoint with avatar support
+- [x] User profile update endpoint (username, avatar)
+- [x] Avatar upload with multer (5MB limit, image files only)
+- [x] ProfileSettings component with avatar display/upload
+- [x] Display user email, username, and member since date
+- [x] Avatar storage in uploads/avatars directory
+- [x] Automatic cleanup of old avatars on new upload
+- [x] Dashboard personalized welcome message with settings button
+- [x] UI layout fixes for Chat and Notebook views
+- [x] Full-width layout for individual notebook views

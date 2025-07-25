@@ -9,3 +9,16 @@
   max-width: 100% !important;
   width: 100% !important;
 }
+
+/* Pulse animation for WebSocket status indicator */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -7,6 +7,7 @@ import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { Login } from './components/Auth/Login';
 import { Register } from './components/Auth/Register';
@@ -77,9 +78,11 @@ function App() {
       <ChakraProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <ChatProvider>
-              <AppWithSystemColorMode />
-            </ChatProvider>
+            <WebSocketProvider>
+              <ChatProvider>
+                <AppWithSystemColorMode />
+              </ChatProvider>
+            </WebSocketProvider>
           </AuthProvider>
         </QueryClientProvider>
       </ChakraProvider>

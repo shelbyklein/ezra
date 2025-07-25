@@ -298,8 +298,8 @@ ${pageContext ? `## Current Page Content:\nYou are currently viewing the page "$
 
 IMPORTANT INSTRUCTIONS:
 1. When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
-
-2. When answering questions using information from the knowledge base:
+2. When creating tasks, ALWAYS provide a clear, specific title. Never send null or empty titles. If parsing an email or text, extract meaningful task titles from the content.
+3. When answering questions using information from the knowledge base:
    - FIRST check if the answer is in the current page content (if viewing a page)
    - Then CAREFULLY PARSE the FULL CONTENT provided in the search results
    - Look for EXACT matches or references to what the user is asking about
@@ -308,8 +308,7 @@ IMPORTANT INSTRUCTIONS:
    - If you reference information from the knowledge base, mention the source naturally in your response
    - Be clear when information comes from the user's own content vs general knowledge
    - If no relevant information is found after parsing all content, say so clearly
-
-3. When on a notebook page, you CAN:
+4. When on a notebook page, you CAN:
 - Add content to the current page (append mode)
 - Replace the entire page content
 - Edit the page title
@@ -317,6 +316,7 @@ IMPORTANT INSTRUCTIONS:
 
 Available actions:
 - create_task: Creates a new task (requires: title, optional: description, status, priority)
+- create_multiple_tasks: Creates multiple tasks at once (requires: tasks array with title for each, optional: description, status, priority for each)
 - create_project: Creates a new project (requires: name, optional: description, color)
 - update_task: Updates existing tasks (requires: taskIds array, updates object)
 - delete_task: Deletes tasks (requires: taskIds array)
@@ -344,6 +344,28 @@ You must respond with:
   "action": "create_task", 
   "parameters": {
     "title": "Fix the login bug",
+    "projectId": ${projectContext?.id || 'null'}
+  }
+}
+
+User: "I got an email and would like you to parse it into tasks. Here's the email: [email content]"
+You must analyze the email content and create separate tasks for each actionable item. Each task MUST have a clear, specific title. You must respond with:
+{
+  "response": "I'll create tasks based on the email. I've identified X action items that need to be tracked.",
+  "action": "create_multiple_tasks",
+  "parameters": {
+    "tasks": [
+      {
+        "title": "Upload PDF labeled 'Master Site Plan'",
+        "description": "Upload the PDF file and label it 'Master Site Plan'. It should appear in the 'About Us' dropdown menu, below 'Strategic Plan'.",
+        "priority": "high"
+      },
+      {
+        "title": "Rename 'Mitzvah Day 2025' page to 'Mitzvah Day'",
+        "description": "Remove the year (2025) from the page name so it doesn't need yearly updates.",
+        "priority": "medium"
+      }
+    ],
     "projectId": ${projectContext?.id || 'null'}
   }
 }
@@ -854,6 +876,77 @@ async function executeAction(action: string, parameters: any, userId: number, co
             taskId: createdTask.id,
             taskTitle: createdTask.title,
             projectId: projectId
+          }
+        };
+
+      case 'create_multiple_tasks':
+        const batchProjectId = parameters.projectId || context?.currentProjectId;
+        if (!batchProjectId) {
+          throw new Error('No project selected. Please specify a project or navigate to a project board first.');
+        }
+
+        // Verify user owns the project
+        const batchProjectCheck = await db('projects')
+          .where({ 
+            id: batchProjectId,
+            user_id: userId 
+          })
+          .first();
+        
+        if (!batchProjectCheck) {
+          throw new Error('Project not found or you don\'t have access to it');
+        }
+
+        if (!parameters.tasks || !Array.isArray(parameters.tasks) || parameters.tasks.length === 0) {
+          throw new Error('No tasks provided to create');
+        }
+
+        const createdTasks = [];
+        
+        for (const task of parameters.tasks) {
+          if (!task.title) {
+            throw new Error('Each task must have a title');
+          }
+
+          const maxPos = await db('tasks')
+            .where({ 
+              project_id: batchProjectId,
+              status: task.status || 'todo' 
+            })
+            .max('position as max')
+            .first();
+          
+          const newBatchTask = {
+            project_id: batchProjectId,
+            title: task.title,
+            description: task.description || null,
+            status: task.status || 'todo',
+            priority: task.priority || 'medium',
+            position: (maxPos?.max || 0) + 1,
+            due_date: task.due_date || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          
+          await db('tasks').insert(newBatchTask);
+          
+          const created = await db('tasks')
+            .where({ project_id: batchProjectId })
+            .orderBy('id', 'desc')
+            .first();
+          
+          createdTasks.push({
+            id: created.id,
+            title: created.title
+          });
+        }
+        
+        return {
+          action: 'created_multiple_tasks',
+          result: { 
+            count: createdTasks.length,
+            tasks: createdTasks,
+            projectId: batchProjectId
           }
         };
 

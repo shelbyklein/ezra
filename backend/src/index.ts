@@ -2,6 +2,8 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 import db from './db'
 
 // Load environment variables
@@ -9,6 +11,20 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 5001
+
+// Create HTTP server and Socket.IO instance
+const httpServer = createServer(app)
+const io = new Server(httpServer, {
+  cors: {
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      process.env.FRONTEND_URL
+    ].filter((url): url is string => Boolean(url)),
+    credentials: true
+  }
+})
 
 // Middleware
 app.use(cors({
@@ -48,9 +64,16 @@ import chatHistoryRoutes from '../routes/chat-history.routes'
 import searchRoutes from '../routes/search.routes'
 import uploadRoutes from '../routes/upload.routes'
 
+// Track backend start time for version detection
+const backendStartTime = new Date().toISOString()
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    startTime: backendStartTime
+  })
 })
 
 // Auth routes
@@ -109,10 +132,27 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   })
 })
 
+// Socket.IO connection handling (development only)
+if (process.env.NODE_ENV !== 'production') {
+  io.on('connection', (socket) => {
+    console.log('🔌 Client connected:', socket.id)
+    
+    socket.on('disconnect', () => {
+      console.log('🔌 Client disconnected:', socket.id)
+    })
+  })
+  
+  // Export io for use in other modules (like nodemon hooks)
+  ;(global as any).io = io
+}
+
 // Start server
-app.listen(PORT, async () => {
+httpServer.listen(PORT, async () => {
   console.log(`✨ Server running on port ${PORT}`)
   console.log(`🚀 Environment: ${process.env.NODE_ENV}`)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`🔌 WebSocket server enabled for development`)
+  }
   
   // Test database connection
   try {
