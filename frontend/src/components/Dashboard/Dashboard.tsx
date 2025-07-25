@@ -28,6 +28,8 @@ import { FaProjectDiagram, FaBook, FaClock, FaPlus, FaFolder } from 'react-icons
 import { api } from '../../services/api';
 import { formatDistanceToNow } from 'date-fns';
 import { ChatBubble } from '../AI/ChatBubble';
+import { useAuth } from '../../contexts/AuthContext';
+import { SettingsIcon } from '@chakra-ui/icons';
 
 interface Project {
   id: number;
@@ -54,6 +56,7 @@ interface Notebook {
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const cardBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -93,12 +96,24 @@ export const Dashboard: React.FC = () => {
         <VStack spacing={8} align="stretch">
           {/* Header */}
           <Box>
-            <Heading size="xl" color={headingColor} mb={2}>
-              Welcome back to Ezra
-            </Heading>
-            <Text color="gray.500" fontSize="lg">
-              Here's what you've been working on recently
-            </Text>
+            <HStack justify="space-between" align="start">
+              <Box>
+                <Heading size="xl" color={headingColor} mb={2}>
+                  Welcome back, {user?.username || 'User'}
+                </Heading>
+                <Text color="gray.500" fontSize="lg">
+                  Here's what you've been working on recently
+                </Text>
+              </Box>
+              <Button
+                leftIcon={<SettingsIcon />}
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/app/settings')}
+              >
+                Settings
+              </Button>
+            </HStack>
           </Box>
 
           {/* Recent Projects Section */}

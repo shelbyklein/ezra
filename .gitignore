@@ -80,3 +80,4 @@ lerna-debug.log*
 # Uploaded files
 backend/uploads/
 uploads/
+backend/uploads/avatars/
