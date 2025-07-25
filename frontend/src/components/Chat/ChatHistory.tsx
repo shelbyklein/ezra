@@ -59,7 +59,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ isOpen, onClose }) => 
   
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
+  const hoverBg = useColorModeValue('gray.50', 'whiteAlpha.50');
   const userMsgBg = useColorModeValue('blue.50', 'blue.900');
   const assistantMsgBg = useColorModeValue('gray.50', 'gray.700');
 

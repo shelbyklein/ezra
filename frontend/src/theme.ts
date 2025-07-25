@@ -61,7 +61,7 @@ const semanticTokens = {
     },
     'bg.hover': {
       default: 'gray.50',
-      _dark: 'gray.700',
+      _dark: 'whiteAlpha.100',
     },
     
     // Border colors
@@ -130,6 +130,11 @@ const components = {
         color: props.colorScheme === 'brand' ? 'white' : undefined,
         _hover: {
           bg: props.colorScheme === 'brand' ? 'brand.600' : undefined,
+        },
+      }),
+      ghost: (props: any) => ({
+        _hover: {
+          bg: props.colorMode === 'dark' ? 'whiteAlpha.100' : 'gray.100',
         },
       }),
     },

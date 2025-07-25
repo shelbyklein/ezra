@@ -14,6 +14,7 @@ import {
   Icon,
   useToast,
   Badge,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { DeleteIcon, DownloadIcon } from '@chakra-ui/icons';
 import {
@@ -142,7 +143,7 @@ export const AttachmentsList: React.FC<AttachmentsListProps> = ({ taskId }) => {
           p={3}
           borderWidth={1}
           borderRadius="md"
-          _hover={{ bg: 'gray.50' }}
+          _hover={{ bg: useColorModeValue('gray.50', 'whiteAlpha.50') }}
           spacing={3}
         >
           <Icon as={getFileIcon(attachment)} color="gray.400" />

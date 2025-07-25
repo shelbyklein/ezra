@@ -57,7 +57,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   
   const bg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
+  const hoverBg = useColorModeValue('gray.50', 'whiteAlpha.50');
   const selectedBg = useColorModeValue('blue.50', 'blue.900');
 
   // Search mutation
