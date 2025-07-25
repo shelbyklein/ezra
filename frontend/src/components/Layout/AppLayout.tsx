@@ -38,7 +38,9 @@ export const AppLayout: React.FC = () => {
   const { isSearchOpen, onCloseSearch } = useKeyboardShortcuts();
   
   // Determine if current route should have padding
-  const shouldHavePadding = !location.pathname.includes('/chat');
+  // Chat and individual notebook views should have no padding
+  const shouldHavePadding = !location.pathname.includes('/chat') && 
+                           !location.pathname.match(/\/notebooks\/\d+/);
 
   const handleLogout = () => {
     logout();
