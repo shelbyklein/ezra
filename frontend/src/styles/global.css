@@ -1,0 +1,9 @@
+/**
+ * Global CSS overrides
+ */
+
+/* Remove padding and margin from Chakra Container component */
+.chakra-container {
+  padding: 0 !important;
+  margin: 0 !important;
+}

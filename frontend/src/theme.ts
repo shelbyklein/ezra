@@ -147,6 +147,12 @@ const components = {
       },
     },
   },
+  Container: {
+    baseStyle: {
+      px: 0,
+      mx: 0,
+    },
+  },
   Modal: {
     baseStyle: {
       dialog: {
