@@ -63,6 +63,7 @@ import devRoutes from '../routes/dev.routes'
 import chatHistoryRoutes from '../routes/chat-history.routes'
 import searchRoutes from '../routes/search.routes'
 import uploadRoutes from '../routes/upload.routes'
+import backupRoutes from '../routes/backup.routes'
 
 // Track backend start time for version detection
 const backendStartTime = new Date().toISOString()
@@ -113,6 +114,9 @@ app.use('/api/search', searchRoutes)
 
 // Upload routes
 app.use('/api/upload', uploadRoutes)
+
+// Backup routes
+app.use('/api/backup', backupRoutes)
 
 // Development routes (only in development)
 if (process.env.NODE_ENV !== 'production') {

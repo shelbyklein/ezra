@@ -18,6 +18,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithToken: (token: string, user: User) => void;
   register: (email: string, username: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -101,12 +102,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithToken = (token: string, user: User) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem('authToken', token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  };
 
   const value = {
     user,
     token,
     isLoading,
     login,
+    loginWithToken,
     register,
     logout,
     isAuthenticated: !!token,

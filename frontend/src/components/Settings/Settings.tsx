@@ -28,6 +28,7 @@ import { DeveloperTools } from './DeveloperTools';
 import { TagsManagement } from './TagsManagement';
 import { ApiKeySettings } from './ApiKeySettings';
 import { ProfileSettings } from './ProfileSettings';
+import { BackupSettings } from './BackupSettings';
 
 export const Settings: React.FC = () => {
   const { colorMode, setColorMode } = useColorMode();
@@ -74,6 +75,7 @@ export const Settings: React.FC = () => {
               <Tab id="general-tab">General</Tab>
               <Tab id="account-tab">Account</Tab>
               <Tab id="tags-tab">Tags</Tab>
+              <Tab id="backup-tab">Backup</Tab>
               {isDevelopment && <Tab id="developer-tab">Developer Tools</Tab>}
             </TabList>
 
@@ -130,6 +132,10 @@ export const Settings: React.FC = () => {
 
               <TabPanel id="tags-panel" className="settings-panel">
                 <TagsManagement />
+              </TabPanel>
+
+              <TabPanel id="backup-panel" className="settings-panel">
+                <BackupSettings />
               </TabPanel>
 
               {isDevelopment && (

@@ -106,6 +106,7 @@ Ezra/
   - TagsManagement - Tags CRUD interface with color picker
   - ApiKeySettings - Anthropic API key management interface
   - ProfileSettings - User profile management with avatar upload
+  - BackupSettings - Data export/import functionality with preview
 - **Tasks/** - Task management
   - CreateTaskForm - Quick task creation modal with tag selector
   - TaskDetailModal - View/edit/delete task details with tags
@@ -166,6 +167,10 @@ Ezra/
     - Knowledge base search integration (/search-context endpoint)
     - Automatic context retrieval for questions
     - Source citation generation
+  - backup.routes.ts - Data backup and restore endpoints
+    - /export - Export all user data as JSON
+    - /import - Import data with validation and ID mapping
+    - /import/preview - Preview import data before processing
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model
@@ -388,6 +393,15 @@ Ezra/
 - Automatic cleanup of old avatars on new upload
 - Dashboard personalized welcome message
 - UI layout fixes for proper flex height in Chat/Notebook views
+
+### Data Backup & Import Phase ✅ COMPLETED
+- Backend endpoints for data export/import with validation
+- Export all user data as JSON file (projects, tasks, notebooks, tags, etc.)
+- Import preview functionality to validate data before importing
+- BackupSettings component in Settings page
+- Transaction-based import with proper ID mapping
+- Maintains all relationships between entities
+- Non-destructive import (adds data without overwriting)
 
 ### MVP Status
 ✅ **100% COMPLETE** - All MVP features have been successfully implemented!

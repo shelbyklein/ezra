@@ -357,3 +357,13 @@ Develop mind mapping capabilities for knowledge management
 - [x] Dashboard personalized welcome message with settings button
 - [x] UI layout fixes for Chat and Notebook views
 - [x] Full-width layout for individual notebook views
+
+### Data Backup & Import Phase
+- [x] Backend endpoints for data export (JSON format)
+- [x] Backend endpoints for data import with validation
+- [x] Import preview functionality
+- [x] BackupSettings component in Settings page
+- [x] Export all user data (projects, tasks, notebooks, tags, attachments)
+- [x] Import with proper ID mapping and relationship preservation
+- [x] Transaction-based import for data integrity
+- [x] User-friendly UI with clear warnings and previews

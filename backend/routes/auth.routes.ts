@@ -167,4 +167,123 @@ router.post('/login', loginValidation, async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint to check environment
+router.get('/debug-env', (req: Request, res: Response) => {
+  res.json({
+    NODE_ENV: process.env.NODE_ENV,
+    ADMIN_SECRET_EXISTS: !!process.env.ADMIN_SECRET,
+    ADMIN_SECRET_LENGTH: process.env.ADMIN_SECRET?.length || 0
+  });
+});
+
+// Admin override endpoints (development only)
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) {
+  // Get list of all users (dev only)
+  router.get('/users-list', async (req: Request, res: Response) => {
+    try {
+      // Check admin secret
+      const adminSecret = req.headers['x-admin-secret'];
+      if (adminSecret !== process.env.ADMIN_SECRET) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Invalid admin secret'
+          }
+        });
+      }
+
+      // Get all users
+      const users = await UserModel.getAllUsers();
+      
+      res.json({
+        success: true,
+        data: {
+          users: users.map(user => ({
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            full_name: user.full_name
+          }))
+        }
+      });
+    } catch (error) {
+      console.error('Users list error:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'FETCH_FAILED',
+          message: 'Failed to fetch users'
+        }
+      });
+    }
+  });
+
+  // Admin login as any user (dev only)
+  router.post('/admin-login', async (req: Request, res: Response) => {
+    try {
+      // Check admin secret
+      const adminSecret = req.headers['x-admin-secret'];
+      if (adminSecret !== process.env.ADMIN_SECRET) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Invalid admin secret'
+          }
+        });
+      }
+
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'MISSING_USER_ID',
+            message: 'User ID is required'
+          }
+        });
+      }
+
+      // Find user by ID
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: 'User not found'
+          }
+        });
+      }
+
+      // Generate token
+      const token = generateToken(user);
+
+      res.json({
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            full_name: user.full_name
+          },
+          token,
+          adminOverride: true
+        }
+      });
+    } catch (error) {
+      console.error('Admin login error:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'ADMIN_LOGIN_FAILED',
+          message: 'Failed to login as user'
+        }
+      });
+    }
+  });
+}
+
 export default router;

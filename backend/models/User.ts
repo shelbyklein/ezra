@@ -72,4 +72,16 @@ export class UserModel {
     delete updatedUser.password_hash;
     return updatedUser;
   }
+
+  static async getAllUsers(): Promise<User[]> {
+    const users = await db('users')
+      .select('*')
+      .orderBy('created_at', 'desc');
+    
+    return users.map(user => {
+      delete user.password_hash;
+      delete user.api_key;
+      return user;
+    });
+  }
 }

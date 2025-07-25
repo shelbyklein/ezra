@@ -8,4 +8,3 @@
 
 - why is there a board tab
 - staring doesnt do anything
-- when im in a project the breadcrumb reads home > board, it should read home > [project name]
