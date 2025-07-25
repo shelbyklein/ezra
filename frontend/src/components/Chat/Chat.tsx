@@ -109,47 +109,46 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <Box className="chat-container" bg={bgColor} h="full" display="flex" flexDirection="column" flex="1">
-      <VStack h="full" spacing={0}>
-        {/* Chat Header */}
-        <Box w="full" bg={cardBg} p={4} borderBottomWidth={1}>
-          <HStack justify="space-between">
-            <Box>
-              <Text fontSize="xl" fontWeight="bold">AI Assistant</Text>
-              <Text fontSize="sm" color="gray.500">
-                Ask me anything about your projects, tasks, or notebooks
-              </Text>
-            </Box>
-            <Button
-              leftIcon={<FaHistory />}
-              variant="outline"
-              size="sm"
-              onClick={onOpen}
-            >
-              Chat History
-            </Button>
-          </HStack>
-        </Box>
+    <Flex className="chat-container" bg={bgColor} flex="1" flexDirection="column" minH="0">
+      {/* Chat Header */}
+      <Box w="full" bg={cardBg} p={4} borderBottomWidth={1} flexShrink={0}>
+        <HStack justify="space-between">
+          <Box>
+            <Text fontSize="xl" fontWeight="bold">AI Assistant</Text>
+            <Text fontSize="sm" color="gray.500">
+              Ask me anything about your projects, tasks, or notebooks
+            </Text>
+          </Box>
+          <Button
+            leftIcon={<FaHistory />}
+            variant="outline"
+            size="sm"
+            onClick={onOpen}
+          >
+            Chat History
+          </Button>
+        </HStack>
+      </Box>
 
-        {/* Messages Area */}
-        <Box
-          flex={1}
-          w="full"
-          overflowY="auto"
-          p={4}
-          css={{
-            '&::-webkit-scrollbar': {
-              width: '8px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: 'transparent',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: useColorModeValue('#CBD5E0', '#4A5568'),
-              borderRadius: '4px',
-            },
-          }}
-        >
+      {/* Messages Area */}
+      <Box
+        flex={1}
+        w="full"
+        overflowY="auto"
+        p={4}
+        css={{
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: useColorModeValue('#CBD5E0', '#4A5568'),
+            borderRadius: '4px',
+          },
+        }}
+      >
           <VStack spacing={4} align="stretch" maxW="3xl" mx="auto">
             {messages.map((message) => (
               <Flex
@@ -228,34 +227,33 @@ export const Chat: React.FC = () => {
           </VStack>
         </Box>
 
-        {/* Input Area */}
-        <Box w="full" bg={cardBg} p={4} borderTopWidth={1}>
-          <HStack maxW="3xl" mx="auto">
-            <Input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              size="lg"
-              flex={1}
-              disabled={sendMessage.isPending}
-            />
-            <IconButton
-              aria-label="Send message"
-              icon={<FaPaperPlane />}
-              onClick={handleSend}
-              colorScheme="blue"
-              size="lg"
-              isLoading={sendMessage.isPending}
-              isDisabled={!input.trim()}
-            />
-          </HStack>
-        </Box>
-      </VStack>
+      {/* Input Area */}
+      <Box w="full" bg={cardBg} p={4} borderTopWidth={1} flexShrink={0}>
+        <HStack maxW="3xl" mx="auto">
+          <Input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message..."
+            size="lg"
+            flex={1}
+            disabled={sendMessage.isPending}
+          />
+          <IconButton
+            aria-label="Send message"
+            icon={<FaPaperPlane />}
+            onClick={handleSend}
+            colorScheme="blue"
+            size="lg"
+            isLoading={sendMessage.isPending}
+            isDisabled={!input.trim()}
+          />
+        </HStack>
+      </Box>
 
       {/* Chat History Modal */}
       <ChatHistory isOpen={isOpen} onClose={onClose} />
-    </Box>
+    </Flex>
   );
 };

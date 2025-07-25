@@ -141,11 +141,12 @@ export const AppLayout: React.FC = () => {
       <Box 
         flex="1"
         w="full" 
-        py={shouldHavePadding ? 8 : 0} 
-        pb={shouldHavePadding ? 16 : 0}
+        pt={shouldHavePadding ? 8 : 0} 
+        pb={shouldHavePadding ? 16 : '44px'}
         px={shouldHavePadding ? { base: 4, md: 8 } : 0}
         display="flex"
         flexDirection="column"
+        minH="0"
       >
         <Outlet />
       </Box>
