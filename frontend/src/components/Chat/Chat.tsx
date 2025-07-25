@@ -109,7 +109,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <Box className="chat-container" bg={bgColor} h="calc(100vh - 200px)" display="flex" flexDirection="column">
+    <Box className="chat-container" bg={bgColor} h="full" display="flex" flexDirection="column" flex="1">
       <VStack h="full" spacing={0}>
         {/* Chat Header */}
         <Box w="full" bg={cardBg} p={4} borderBottomWidth={1}>

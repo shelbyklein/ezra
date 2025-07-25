@@ -48,8 +48,8 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <Box minH="100vh" bg="bg.secondary">
-      <Box bg="bg.primary" px={4} boxShadow="sm">
+    <Flex direction="column" minH="100vh" bg="bg.secondary">
+      <Box bg="bg.primary" px={4} boxShadow="sm" flexShrink={0}>
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <IconButton
             size="md"
@@ -139,10 +139,13 @@ export const AppLayout: React.FC = () => {
       </Box>
 
       <Box 
+        flex="1"
         w="full" 
         py={shouldHavePadding ? 8 : 0} 
         pb={shouldHavePadding ? 16 : 0}
         px={shouldHavePadding ? { base: 4, md: 8 } : 0}
+        display="flex"
+        flexDirection="column"
       >
         <Outlet />
       </Box>
@@ -155,6 +158,6 @@ export const AppLayout: React.FC = () => {
       
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={onCloseSearch} />
-    </Box>
+    </Flex>
   );
 };
