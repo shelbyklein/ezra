@@ -476,17 +476,20 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
                 role="group"
               >
                 <HStack spacing={2} flex={1}>
-                  <Icon
-                    as={MdDragIndicator}
-                    boxSize={4}
-                    color="text.muted"
+                  <Box
+                    as="span"
                     cursor="grab"
                     opacity={0}
                     _groupHover={{ opacity: 0.5 }}
                     {...attributes}
                     {...listeners}
-                    onClick={(e) => e.stopPropagation()}
-                  />
+                  >
+                    <Icon
+                      as={MdDragIndicator}
+                      boxSize={4}
+                      color="text.muted"
+                    />
+                  </Box>
                   <Icon as={FaFile} boxSize={3} color="text.muted" />
                   <Text fontSize="sm" noOfLines={1}>
                     {page.title}
@@ -553,17 +556,20 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
               role="group"
             >
               <HStack flex={1}>
-                <Icon
-                  as={MdDragIndicator}
-                  boxSize={4}
-                  color="text.muted"
+                <Box
+                  as="span"
                   cursor="grab"
                   opacity={0}
                   _groupHover={{ opacity: 0.5 }}
                   {...attributes}
                   {...listeners}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                >
+                  <Icon
+                    as={MdDragIndicator}
+                    boxSize={4}
+                    color="text.muted"
+                  />
+                </Box>
                 <IconButton
                   aria-label="Toggle folder"
                   icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
