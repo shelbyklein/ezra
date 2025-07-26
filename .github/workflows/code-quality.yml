@@ -1,0 +1,107 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run every Monday at 9am UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: |
+        npm run lint:frontend -- --format=json --output-file=frontend-eslint-report.json || true
+        npm run lint:backend -- --format=json --output-file=backend-eslint-report.json || true
+        
+    - name: Annotate with ESLint results
+      uses: ataylorme/eslint-annotate-action@v2
+      if: always()
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        report-json: |
+          frontend-eslint-report.json
+          backend-eslint-report.json
+
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check formatting
+      run: npx prettier --check "**/*.{js,jsx,ts,tsx,json,md,yml,yaml}"
+
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check TypeScript
+      run: |
+        npm run type-check:frontend
+        npm run type-check:backend
+
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build frontend
+      run: npm run build:frontend
+      
+    - name: Analyze bundle size
+      uses: ai/size-limit-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        directory: frontend/dist

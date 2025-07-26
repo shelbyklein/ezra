@@ -21,7 +21,13 @@
     "build:shared": "npm run build --workspace=shared",
     "install:all": "npm install",
     "test": "npm run test --workspaces",
+    "test:frontend": "npm run test --workspace=frontend",
+    "test:backend": "npm run test --workspace=backend",
     "lint": "npm run lint --workspaces",
+    "lint:frontend": "npm run lint --workspace=frontend",
+    "lint:backend": "npm run lint --workspace=backend",
+    "type-check:frontend": "npm run type-check --workspace=frontend",
+    "type-check:backend": "npm run type-check --workspace=backend",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "devDependencies": {
@@ -35,7 +41,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/ezra.git"
+    "url": "git+https://github.com/shelbyklein/ezra.git"
   },
   "keywords": [
     "kanban",

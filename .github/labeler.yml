@@ -1,0 +1,39 @@
+# Configuration for labeler action
+
+frontend:
+  - frontend/**/*
+
+backend:
+  - backend/**/*
+
+documentation:
+  - '**/*.md'
+  - docs/**/*
+  - claude_docs/**/*
+
+tests:
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+  - '**/tests/**/*'
+  - '**/__tests__/**/*'
+
+dependencies:
+  - '**/package.json'
+  - '**/package-lock.json'
+  - '**/yarn.lock'
+
+github-actions:
+  - '.github/**/*'
+
+database:
+  - '**/migrations/**/*'
+  - backend/knexfile.ts
+  - backend/src/db/**/*
+
+ai:
+  - '**/ai.routes.ts'
+  - '**/anthropic.ts'
+  - frontend/src/components/AI/**/*
+  - backend/routes/ai.routes.ts

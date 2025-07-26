@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "shelbyklein"
+    labels:
+      - "dependencies"
+      - "frontend"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    
+  # Backend dependencies
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "shelbyklein"
+    labels:
+      - "dependencies"
+      - "backend"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    
+  # Root dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "shelbyklein"
+    labels:
+      - "dependencies"
+      - "infrastructure"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    reviewers:
+      - "shelbyklein"
+    labels:
+      - "github-actions"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
