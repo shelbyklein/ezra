@@ -79,6 +79,20 @@ Ezra/
 ├── tsconfig.json          # Root TypeScript config
 ├── package.json           # Root workspace configuration
 └── README.md              # Project documentation
+
+### Testing Structure
+- **Frontend Testing**:
+  - `frontend/jest.config.cjs` - Jest configuration
+  - `frontend/src/setupTests.ts` - Test environment setup
+  - `frontend/src/utils/test-utils.tsx` - Custom render with providers
+  - `frontend/src/__tests__/` - Component test files
+  - `frontend/src/components/*/tests/` - Component-specific tests
+- **Backend Testing**:
+  - `backend/jest.config.js` - Jest configuration
+  - `backend/tests/setup.ts` - Test environment setup
+  - `backend/tests/helpers.ts` - Test utilities and helpers
+  - `backend/tests/*.test.ts` - API integration tests
+  - `backend/.env.test` - Test environment variables
 ```
 
 ## Key Components and Their Interactions
@@ -244,6 +258,15 @@ Ezra/
 - @types/* - TypeScript definitions
 
 ## Recent Significant Changes
+
+### Testing Infrastructure Implementation ✅
+- Configured Jest for both frontend and backend
+- Set up React Testing Library with custom test utilities
+- Created authentication component tests (Login, Register)
+- Configured Supertest for API integration testing
+- Created test database setup and migration support
+- Implemented test helpers for user creation and auth
+- Added comprehensive mock implementations
 
 ### Phase 1: MVP Kanban Board ✅ 100% COMPLETE
 

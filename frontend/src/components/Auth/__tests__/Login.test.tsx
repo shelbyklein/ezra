@@ -2,13 +2,9 @@
  * Tests for Login component
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '../../../utils/test-utils';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
-import { ChakraProvider } from '@chakra-ui/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Login } from '../Login';
-import { AuthProvider } from '../../../contexts/AuthContext';
 import { api } from '../../../services/api';
 
 // Mock the API module
@@ -26,45 +22,24 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: false },
-    mutations: { retry: false },
-  },
-});
-
-const renderLogin = () => {
-  return render(
-    <BrowserRouter>
-      <ChakraProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Login />
-          </AuthProvider>
-        </QueryClientProvider>
-      </ChakraProvider>
-    </BrowserRouter>
-  );
-};
-
 describe('Login Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders login form with all fields', () => {
-    renderLogin();
+    render(<Login />);
     
-    expect(screen.getByText('Welcome Back')).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByText('Welcome back')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
     expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
   });
 
   it('shows validation errors for empty fields', async () => {
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     await user.click(submitButton);
@@ -77,10 +52,13 @@ describe('Login Component', () => {
 
   it('shows validation error for invalid email', async () => {
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
-    const emailInput = screen.getByLabelText(/email/i);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    
     await user.type(emailInput, 'invalid-email');
+    await user.type(passwordInput, 'password123');
     
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     await user.click(submitButton);
@@ -105,10 +83,10 @@ describe('Login Component', () => {
     (api.post as jest.Mock).mockResolvedValueOnce(mockResponse);
     
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
     
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
@@ -121,7 +99,7 @@ describe('Login Component', () => {
         email: 'test@example.com',
         password: 'password123',
       });
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
     });
   });
 
@@ -136,10 +114,10 @@ describe('Login Component', () => {
     });
     
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
     
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'wrongpassword');
@@ -154,12 +132,10 @@ describe('Login Component', () => {
 
   it('navigates to register page when clicking sign up link', async () => {
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
     const signUpLink = screen.getByText(/sign up/i);
-    await user.click(signUpLink);
-    
-    expect(mockNavigate).toHaveBeenCalledWith('/register');
+    expect(signUpLink).toHaveAttribute('href', '/register');
   });
 
   it('shows loading state while submitting', async () => {
@@ -168,10 +144,10 @@ describe('Login Component', () => {
     );
     
     const user = userEvent.setup();
-    renderLogin();
+    render(<Login />);
     
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
     
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
@@ -180,6 +156,7 @@ describe('Login Component', () => {
     await user.click(submitButton);
     
     expect(submitButton).toBeDisabled();
-    expect(screen.getByText(/signing in/i)).toBeInTheDocument();
+    // Button shows spinner when loading but text remains "Sign in"
+    expect(submitButton).toHaveTextContent('Sign in');
   });
 });

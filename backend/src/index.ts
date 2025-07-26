@@ -150,19 +150,24 @@ if (process.env.NODE_ENV !== 'production') {
   ;(global as any).io = io
 }
 
-// Start server
-httpServer.listen(PORT, async () => {
-  console.log(`✨ Server running on port ${PORT}`)
-  console.log(`🚀 Environment: ${process.env.NODE_ENV}`)
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`🔌 WebSocket server enabled for development`)
-  }
-  
-  // Test database connection
-  try {
-    await db.raw('SELECT 1')
-    console.log('📚 Database connected successfully')
-  } catch (error) {
-    console.error('❌ Database connection failed:', error)
-  }
-})
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(PORT, async () => {
+    console.log(`✨ Server running on port ${PORT}`)
+    console.log(`🚀 Environment: ${process.env.NODE_ENV}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`🔌 WebSocket server enabled for development`)
+    }
+    
+    // Test database connection
+    try {
+      await db.raw('SELECT 1')
+      console.log('📚 Database connected successfully')
+    } catch (error) {
+      console.error('❌ Database connection failed:', error)
+    }
+  })
+}
+
+// Export for testing
+export { app, httpServer }

@@ -6,5 +6,4 @@
 
 # Bugs
 
-- why is there a board tab
 - staring doesnt do anything
