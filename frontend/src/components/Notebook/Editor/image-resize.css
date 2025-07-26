@@ -1,0 +1,272 @@
+/* Image Resize Styles for TipTap Editor */
+
+/* Image wrapper for resize functionality */
+.notebook-editor .image-resizer {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+/* Selected image state */
+.notebook-editor .image-resizer.ProseMirror-selectednode {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Image inside resizer */
+.notebook-editor .image-resizer img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 0;
+}
+
+/* Resize handles */
+.notebook-editor .image-resizer .resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #3182ce;
+  border: 2px solid white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+/* Show handles on hover or selection */
+.notebook-editor .image-resizer:hover .resize-handle,
+.notebook-editor .image-resizer.ProseMirror-selectednode .resize-handle {
+  opacity: 1;
+}
+
+/* Handle positions */
+.notebook-editor .image-resizer .resize-handle.nw {
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.ne {
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.sw {
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.se {
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.n {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.s {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.e {
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.notebook-editor .image-resizer .resize-handle.w {
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+
+/* Size indicator during resize */
+.notebook-editor .image-resizer .size-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.notebook-editor .image-resizer.resizing .size-indicator {
+  opacity: 1;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .notebook-editor .image-resizer.ProseMirror-selectednode {
+    outline-color: #63b3ed;
+  }
+  
+  .notebook-editor .image-resizer .resize-handle {
+    background-color: #63b3ed;
+    border-color: #1a202c;
+  }
+  
+  .notebook-editor .image-resizer .size-indicator {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1a202c;
+  }
+}
+
+/* Mobile touch targets */
+@media (max-width: 768px) {
+  .notebook-editor .image-resizer .resize-handle {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .notebook-editor .image-resizer .resize-handle.nw,
+  .notebook-editor .image-resizer .resize-handle.ne,
+  .notebook-editor .image-resizer .resize-handle.sw,
+  .notebook-editor .image-resizer .resize-handle.se {
+    top: -8px;
+    left: -8px;
+  }
+  
+  .notebook-editor .image-resizer .resize-handle.ne {
+    left: auto;
+    right: -8px;
+  }
+  
+  .notebook-editor .image-resizer .resize-handle.sw {
+    top: auto;
+    bottom: -8px;
+  }
+  
+  .notebook-editor .image-resizer .resize-handle.se {
+    top: auto;
+    bottom: -8px;
+    left: auto;
+    right: -8px;
+  }
+}
+
+/* Accessibility - focus states */
+.notebook-editor .image-resizer:focus-within {
+  outline: 3px solid #3182ce;
+  outline-offset: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .notebook-editor .image-resizer .resize-handle,
+  .notebook-editor .image-resizer .size-indicator {
+    transition: none;
+  }
+}
+
+/* Alignment classes */
+.notebook-editor .image-resizer.align-left {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.notebook-editor .image-resizer.align-center {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.notebook-editor .image-resizer.align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Floating toolbar styles */
+.image-toolbar {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.notebook-editor .image-resizer.ProseMirror-selectednode .image-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.image-toolbar button {
+  padding: 6px 10px;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #4a5568;
+  transition: background-color 0.2s ease;
+}
+
+.image-toolbar button:hover {
+  background-color: #f7fafc;
+}
+
+.image-toolbar button.active {
+  background-color: #e6f3ff;
+  color: #3182ce;
+}
+
+.image-toolbar .divider {
+  width: 1px;
+  background-color: #e2e8f0;
+  margin: 4px 2px;
+}
+
+/* Dark mode toolbar */
+@media (prefers-color-scheme: dark) {
+  .image-toolbar {
+    background-color: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .image-toolbar button {
+    color: #cbd5e0;
+  }
+  
+  .image-toolbar button:hover {
+    background-color: #374151;
+  }
+  
+  .image-toolbar button.active {
+    background-color: #2c5282;
+    color: #90cdf4;
+  }
+  
+  .image-toolbar .divider {
+    background-color: #4a5568;
+  }
+}

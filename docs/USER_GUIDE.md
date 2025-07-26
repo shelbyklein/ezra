@@ -147,6 +147,16 @@ Three ways to add images:
 
 Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
 
+### Manipulating Images
+
+Once an image is inserted:
+- **Resize**: Click on the image to show resize handles, then drag any handle to resize
+- **Maintain aspect ratio**: Resize handles automatically maintain the image's aspect ratio
+- **Alignment**: Use the floating toolbar to align images left, center, or right
+- **Size presets**: Quick buttons for 25%, 50%, 75%, or 100% width
+- **Reset**: Return image to its original size
+- **Delete**: Remove the image from the document
+
 ### Editor Shortcuts
 
 | Shortcut | Action |

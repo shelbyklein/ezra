@@ -10,6 +10,10 @@
   width: 100% !important;
 }
 
+.board-column {
+  height:fit-content !important;
+}
+
 /* Pulse animation for WebSocket status indicator */
 @keyframes pulse {
   0% {

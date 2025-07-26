@@ -24,7 +24,8 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 // import { TableRow } from '@tiptap/extension-table-row';
 // import { TableCell } from '@tiptap/extension-table-cell';
 // import { TableHeader } from '@tiptap/extension-table-header';
-import Image from '@tiptap/extension-image';
+// import Image from '@tiptap/extension-image';
+import ImageResize from 'tiptap-extension-resize-image';
 import Link from '@tiptap/extension-link';
 import { createLowlight } from 'lowlight';
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -48,6 +49,7 @@ lowlight.register('html', html);
 lowlight.register('css', css);
 lowlight.register('python', python);
 import './editor.css';
+import './image-resize.css';
 
 interface Page {
   id: number;
@@ -119,7 +121,13 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
       // TableRow,
       // TableCell,
       // TableHeader,
-      Image,
+      ImageResize.configure({
+        inline: true,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: 'notebook-image',
+        },
+      }),
       Link.configure({
         openOnClick: false,
       }),
