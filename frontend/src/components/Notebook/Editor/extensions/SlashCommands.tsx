@@ -128,6 +128,21 @@ export const SlashCommands = Extension.create({
                   .run();
               },
             },
+            {
+              title: 'Image',
+              description: 'Insert an image',
+              command: ({ editor, range }: any) => {
+                editor
+                  .chain()
+                  .focus()
+                  .deleteRange(range)
+                  .run();
+                
+                // Trigger image upload
+                const event = new CustomEvent('openImageUpload');
+                window.dispatchEvent(event);
+              },
+            },
           ];
 
           return commands.filter((item) =>

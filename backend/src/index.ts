@@ -1,6 +1,7 @@
 // Main backend entry point
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
 import dotenv from 'dotenv'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
@@ -48,6 +49,9 @@ app.use(cors({
   credentials: true
 }))
 app.use(express.json())
+
+// Serve static files from uploads directory
+app.use('/api/uploads', express.static(path.join(__dirname, '../../uploads')))
 
 // Import routes
 import authRoutes from '../routes/auth.routes'

@@ -134,8 +134,18 @@ Notebooks provide a powerful way to organize documentation, meeting notes, and p
 
 - **Hierarchical Organization**: Create folders and nested pages
 - **Rich Text Editor**: Full Markdown support with live preview
+- **Image Support**: Upload images directly into your notes
 - **Slash Commands**: Type `/` in the editor for quick formatting
 - **AI Integration**: Use AI to generate content, summarize, or organize pages
+
+### Adding Images to Notes
+
+Three ways to add images:
+1. **Click the image button** in the toolbar and select "Upload Image"
+2. **Drag and drop** image files directly into the upload modal
+3. **Paste from clipboard** (Cmd/Ctrl + V) when the upload modal is open
+
+Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
 
 ### Editor Shortcuts
 

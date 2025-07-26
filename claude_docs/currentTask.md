@@ -51,6 +51,7 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 ✅ Detailed AI features guide (AI_FEATURES_GUIDE.md)
 ✅ Covered all major features and workflows
 ✅ Added troubleshooting sections
+✅ Updated documentation with image upload feature
 
 ### User Profile Management
 ✅ Profile settings page with avatar upload functionality
@@ -78,6 +79,10 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 ✅ Visual file/folder icons for better UX
 ✅ Batch update API for efficient position changes
 ✅ Drag pages/folders to notebook root with DroppableRootZone
+✅ Image upload functionality with drag-and-drop, paste, and file selection
+✅ 5MB image size limit with JPEG, PNG, GIF, WebP support
+✅ Dedicated uploads/notebooks directory for image storage
+✅ Static file serving for uploaded images
 
 ### API Key Management
 ✅ Database migration for anthropic_api_key field
@@ -226,6 +231,7 @@ MVP features are now complete! Focus on testing, performance optimization, docum
    - Export notebooks to PDF/Markdown
    - Full-text search in notebooks
    - AI-powered content generation for notebooks
+   - ✅ Image upload for notebooks (Completed)
 
 ## Technical Debt
 - Table functionality in TipTap editor (temporarily disabled)

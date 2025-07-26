@@ -11,10 +11,15 @@ import db from '../src/db';
 
 const router = express.Router();
 
-// Create uploads directory if it doesn't exist
+// Create uploads directories if they don't exist
 const uploadsDir = path.join(__dirname, '../../uploads');
+const notebooksDir = path.join(uploadsDir, 'notebooks');
+
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(notebooksDir)) {
+  fs.mkdirSync(notebooksDir, { recursive: true });
 }
 
 // Configure multer for file uploads
@@ -59,6 +64,83 @@ const upload = multer({
     }
   }
 });
+
+// Configure multer for notebook image uploads
+const notebookImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, notebooksDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    const name = path.basename(file.originalname, ext);
+    cb(null, `${name}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const uploadNotebookImage = multer({
+  storage: notebookImageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for images
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image types
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+    ];
+
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Only image files are allowed. Received: ${file.mimetype}`));
+    }
+  }
+});
+
+// Upload image for a notebook
+router.post('/notebook/:notebookId/image', authenticate, uploadNotebookImage.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image uploaded' });
+    }
+
+    const { notebookId } = req.params;
+
+    // Verify the notebook belongs to the user
+    const notebook = await db('notebooks')
+      .where({ 
+        id: notebookId,
+        user_id: req.user!.userId 
+      })
+      .first();
+    
+    if (!notebook) {
+      // Delete the uploaded file
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ error: 'Notebook not found' });
+    }
+
+    // Return the image URL
+    res.status(201).json({
+      url: `/api/uploads/notebooks/${req.file.filename}`,
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      size: req.file.size,
+      mimeType: req.file.mimetype
+    });
+  } catch (error) {
+    // Clean up uploaded file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    console.error('Error uploading notebook image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
 
 // Upload file for a task
 router.post('/task/:taskId', authenticate, upload.single('file'), async (req, res) => {

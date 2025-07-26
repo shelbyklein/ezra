@@ -2,7 +2,7 @@
  * Toolbar for the notebook editor
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   HStack,
   IconButton,
@@ -14,6 +14,7 @@ import {
   MenuItem,
   Button,
   Tooltip,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Editor } from '@tiptap/react';
 import {
@@ -31,12 +32,16 @@ import {
   RiTable2,
 } from 'react-icons/ri';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { ImageUpload } from './ImageUpload';
 
 interface EditorToolbarProps {
   editor: Editor;
+  notebookId?: number;
 }
 
-export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
+export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor, notebookId }) => {
+  const { isOpen: isImageUploadOpen, onOpen: onImageUploadOpen, onClose: onImageUploadClose } = useDisclosure();
+
   const setLink = () => {
     const previousUrl = editor.getAttributes('link').href;
     const url = window.prompt('URL', previousUrl);
@@ -53,7 +58,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
-  const addImage = () => {
+  const addImageFromUrl = () => {
     const url = window.prompt('Image URL');
 
     if (url) {
@@ -61,12 +66,29 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
     }
   };
 
+  const handleImageUploaded = (url: string) => {
+    editor.chain().focus().setImage({ src: url }).run();
+  };
+
+  // Listen for image upload event from slash commands
+  useEffect(() => {
+    const handleOpenImageUpload = () => {
+      onImageUploadOpen();
+    };
+
+    window.addEventListener('openImageUpload', handleOpenImageUpload);
+    return () => {
+      window.removeEventListener('openImageUpload', handleOpenImageUpload);
+    };
+  }, [onImageUploadOpen]);
+
   const addTable = () => {
     // Table functionality temporarily disabled
     // editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
 
   return (
+    <>
     <HStack spacing={1} p={2} borderTopWidth={1} flexWrap="wrap">
       {/* Text Style */}
       <ButtonGroup size="sm" variant="ghost" spacing={1}>
@@ -191,13 +213,19 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
             colorScheme={editor.isActive('link') ? 'blue' : undefined}
           />
         </Tooltip>
-        <Tooltip label="Image">
-          <IconButton
-            aria-label="Image"
-            icon={<RiImageLine />}
-            onClick={addImage}
-          />
-        </Tooltip>
+        <Menu>
+          <Tooltip label="Image">
+            <MenuButton
+              as={IconButton}
+              aria-label="Image"
+              icon={<RiImageLine />}
+            />
+          </Tooltip>
+          <MenuList>
+            <MenuItem onClick={onImageUploadOpen}>Upload Image</MenuItem>
+            <MenuItem onClick={addImageFromUrl}>Image from URL</MenuItem>
+          </MenuList>
+        </Menu>
         <Tooltip label="Table">
           <IconButton
             aria-label="Table"
@@ -207,5 +235,16 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
         </Tooltip>
       </ButtonGroup>
     </HStack>
+
+    {/* Image Upload Modal */}
+    {notebookId && (
+      <ImageUpload
+        isOpen={isImageUploadOpen}
+        onClose={onImageUploadClose}
+        onImageUploaded={handleImageUploaded}
+        notebookId={notebookId}
+      />
+    )}
+  </>
   );
 };

@@ -228,7 +228,7 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
             {updatePage.isPending ? 'Saving...' : 'All changes saved'}
           </Text>
         </VStack>
-        <EditorToolbar editor={editor} />
+        <EditorToolbar editor={editor} notebookId={notebookId} />
       </Box>
 
       {/* Editor */}
