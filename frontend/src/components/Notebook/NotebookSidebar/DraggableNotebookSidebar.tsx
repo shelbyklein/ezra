@@ -372,16 +372,47 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
           });
         }
       } else if (overItem?.type === 'page') {
-        // Dropping on another page - place in the same folder as that page
+        // Dropping on another page
         const overPage = overItem.data as Page;
         
+        // Get all pages in the target folder
+        const targetFolderPages = currentNotebook.pages
+          .filter(p => p.folder_id === overPage.folder_id)
+          .sort((a, b) => a.position - b.position);
+        
+        // Find the over page index
+        const overIndex = targetFolderPages.findIndex(p => p.id === overPage.id);
+        
         if (activePage.folder_id !== overPage.folder_id) {
+          // Moving to a different folder
           updates.push({
             type: 'page',
             id: activePage.id,
             folder_id: overPage.folder_id,
             position: overPage.position,
           });
+        } else {
+          // Reordering within the same folder
+          const activeIndex = targetFolderPages.findIndex(p => p.id === activePage.id);
+          
+          if (activeIndex !== overIndex) {
+            // Calculate new positions for all affected pages
+            const newPages = [...targetFolderPages];
+            const [removed] = newPages.splice(activeIndex, 1);
+            newPages.splice(overIndex, 0, removed);
+            
+            // Update positions for all pages that changed
+            newPages.forEach((page, index) => {
+              if (page.position !== index) {
+                updates.push({
+                  type: 'page',
+                  id: page.id,
+                  folder_id: page.folder_id,
+                  position: index,
+                });
+              }
+            });
+          }
         }
       } else if (!overItem) {
         // Dropping in empty space - move to root
@@ -421,6 +452,7 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
   const renderPages = (pages: Page[], folderId: number | null = null, level: number = 0) => {
     return pages
       .filter((page) => page.folder_id === folderId)
+      .sort((a, b) => a.position - b.position)
       .map((page) => {
         const item: DraggableItem = {
           id: `page-${page.id}`,
@@ -487,7 +519,7 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
   const renderFolder = (folder: Folder, level: number = 0) => {
     const childFolders = currentNotebook?.folders.filter(
       (f) => f.parent_folder_id === folder.id
-    ) || [];
+    ).sort((a, b) => a.position - b.position) || [];
     const folderPages = currentNotebook?.pages.filter(
       (p) => p.folder_id === folder.id
     ) || [];
@@ -693,6 +725,7 @@ export const DraggableNotebookSidebar: React.FC<DraggableNotebookSidebarProps> =
                   {/* Render root-level folders */}
                   {currentNotebook.folders
                     .filter((folder) => !folder.parent_folder_id)
+                    .sort((a, b) => a.position - b.position)
                     .map((folder) => renderFolder(folder))}
 
                   {/* Render root-level pages */}
