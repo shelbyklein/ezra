@@ -399,3 +399,15 @@ Develop mind mapping capabilities for knowledge management
 - [x] Added troubleshooting sections
 - [x] API documentation in user guide
 - [x] Settings and profile management documentation
+
+### Notebook Enhancement Phase
+- [x] Image upload functionality for notebooks
+- [x] Image resize and manipulation controls using tiptap-extension-resize-image
+- [x] Visual resize handles and hover effects for images
+- [x] Image toolbar with alignment and size presets
+- [x] Two-column sections implementation for flexible layouts
+- [x] Column extensions (ColumnBlock, Column) for TipTap
+- [x] Tab/Shift-Tab navigation between columns
+- [x] Column toolbar for layout switching (50/50, 70/30, 30/70)
+- [x] Responsive column design that stacks on mobile
+- [x] Slash commands for column insertion

@@ -30,6 +30,7 @@ import {
   RiLinkUnlink,
   RiImageLine,
   RiTable2,
+  RiLayoutColumnLine,
 } from 'react-icons/ri';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { ImageUpload } from './ImageUpload';
@@ -233,6 +234,32 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor, notebookId
             onClick={addTable}
           />
         </Tooltip>
+        <Menu>
+          <Tooltip label="Columns">
+            <MenuButton
+              as={IconButton}
+              aria-label="Columns"
+              icon={<RiLayoutColumnLine />}
+            />
+          </Tooltip>
+          <MenuList>
+            <MenuItem onClick={() => editor.chain().focus().setColumnBlock().run()}>
+              Equal Columns (50/50)
+            </MenuItem>
+            <MenuItem onClick={() => {
+              editor.chain().focus().setColumnBlock().run();
+              // We'll implement layout switching after initial creation
+            }}>
+              Left Heavy (70/30)
+            </MenuItem>
+            <MenuItem onClick={() => {
+              editor.chain().focus().setColumnBlock().run();
+              // We'll implement layout switching after initial creation
+            }}>
+              Right Heavy (30/70)
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </ButtonGroup>
     </HStack>
 

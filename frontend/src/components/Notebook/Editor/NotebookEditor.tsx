@@ -38,6 +38,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../services/api';
 import { EditorToolbar } from './EditorToolbar';
 import { SlashCommands } from './extensions/SlashCommands';
+import { ColumnBlock } from './extensions/columns/ColumnBlock';
+import { Column } from './extensions/columns/Column';
+import { ColumnToolbar } from './ColumnToolbar';
 
 // Create lowlight instance
 const lowlight = createLowlight();
@@ -50,6 +53,7 @@ lowlight.register('css', css);
 lowlight.register('python', python);
 import './editor.css';
 import './image-resize.css';
+import './extensions/columns/columns.css';
 
 interface Page {
   id: number;
@@ -132,9 +136,17 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
         openOnClick: false,
       }),
       Placeholder.configure({
-        placeholder: 'Type / for commands...',
+        placeholder: ({ node }) => {
+          if (node.type.name === 'paragraph') {
+            return 'Type / for commands...';
+          }
+          return '';
+        },
+        includeChildren: true,
       }),
       SlashCommands,
+      ColumnBlock,
+      Column,
     ],
     content: page?.content ? JSON.parse(page.content) : '',
     onUpdate: ({ editor }) => {
@@ -241,8 +253,9 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
 
       {/* Editor */}
       <Box flex={1} overflowY="auto" bg="white" _dark={{ bg: 'gray.800' }}>
-        <Box maxW="4xl" mx="auto" p={8}>
+        <Box maxW="4xl" mx="auto" p={8} position="relative">
           <EditorContent editor={editor} className="notebook-editor" />
+          {editor && <ColumnToolbar editor={editor} />}
         </Box>
       </Box>
     </VStack>

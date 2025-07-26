@@ -157,6 +157,16 @@ Once an image is inserted:
 - **Reset**: Return image to its original size
 - **Delete**: Remove the image from the document
 
+### Working with Columns
+
+You can create two-column layouts in your notebooks:
+
+1. **Insert columns**: Type `/` and select "Columns" or use the column button in the toolbar
+2. **Column layouts**: Choose from 50/50, 70/30, or 30/70 width ratios
+3. **Navigate between columns**: Use Tab to move to the next column, Shift+Tab to go back
+4. **Adjust alignment**: Use the column toolbar to set vertical (top/middle/bottom) and horizontal (left/center/right) alignment for each column
+5. **Mobile responsive**: Columns automatically stack on smaller screens
+
 ### Editor Shortcuts
 
 | Shortcut | Action |
@@ -165,6 +175,8 @@ Once an image is inserted:
 | `Cmd/Ctrl + I` | Italic |
 | `Cmd/Ctrl + K` | Insert link |
 | `/` | Show formatting menu |
+| `Tab` (in columns) | Move to next column |
+| `Shift+Tab` (in columns) | Move to previous column |
 
 ## Search
 

@@ -143,6 +143,18 @@ export const SlashCommands = Extension.create({
                 window.dispatchEvent(event);
               },
             },
+            {
+              title: 'Columns',
+              description: 'Add two equal columns',
+              command: ({ editor, range }: any) => {
+                editor
+                  .chain()
+                  .focus()
+                  .deleteRange(range)
+                  .setColumnBlock()
+                  .run();
+              },
+            },
           ];
 
           return commands.filter((item) =>

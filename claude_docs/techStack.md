@@ -32,10 +32,11 @@
   - Typography extension
   - Highlight extension
   - CodeBlockLowlight with syntax highlighting
-  - Image extension
+  - ImageResize extension (tiptap-extension-resize-image)
   - Link extension
   - Placeholder extension
   - Custom slash commands
+  - Custom ColumnBlock and Column extensions for multi-column layouts
 - **Lowlight** - Syntax highlighting for code blocks ✅
   - JavaScript, TypeScript, HTML, CSS, Python support
 

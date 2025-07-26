@@ -186,6 +186,24 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 ✅ Proper ID mapping for maintaining relationships
 ✅ Transaction-based import for data integrity
 
+### Notebook Editor Enhancements
+✅ Image resize and manipulation controls
+  - Added tiptap-extension-resize-image package
+  - Implemented visual resize handles
+  - Created floating ImageToolbar with alignment/size presets
+  - Added hover effects and selection states
+✅ Two-column sections implementation
+  - Created custom TipTap extensions (ColumnBlock, Column)
+  - Tab/Shift-Tab keyboard navigation
+  - Slash commands for column insertion
+  - ColumnToolbar for layout switching (50/50, 70/30, 30/70)
+  - Responsive design (stacks on mobile)
+  - Added subtle borders to columns for visual distinction
+  - Implemented vertical and horizontal alignment controls
+  - Converted layout from flexbox to CSS Grid
+  - Fixed placeholder positioning bug in columns
+  - Added alignment menus for each column (top/middle/bottom, left/center/right)
+
 ## Active Tasks
 ### Production Readiness
 - ✅ Testing & Quality Assurance
