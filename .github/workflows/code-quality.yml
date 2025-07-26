@@ -32,7 +32,7 @@ jobs:
         npm run lint:backend -- --format=json --output-file=backend-eslint-report.json || true
         
     - name: Annotate with ESLint results
-      uses: ataylorme/eslint-annotate-action@v2
+      uses: ataylorme/eslint-annotate-action@v3
       if: always()
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
