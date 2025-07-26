@@ -154,7 +154,7 @@ describe('useKeyboardShortcuts', () => {
   });
 
   it('triggers command bar event on Cmd+K', () => {
-    const { result } = renderHook(() => useKeyboardShortcuts(), { wrapper });
+    renderHook(() => useKeyboardShortcuts(), { wrapper });
     
     // Mock event listener
     const mockEventListener = jest.fn();

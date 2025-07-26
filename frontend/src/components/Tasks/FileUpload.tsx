@@ -5,16 +5,14 @@
 import React, { useCallback } from 'react';
 import {
   Box,
-  Button,
   Text,
   VStack,
-  HStack,
   Icon,
   useToast,
   Progress,
 } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
-import { FaUpload, FaFile } from 'react-icons/fa';
+import { FaUpload } from 'react-icons/fa';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
 

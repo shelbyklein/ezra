@@ -50,7 +50,7 @@ export const ChatBubble: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
-  const { isConnected, backendVersion } = useWebSocket();
+  const { isConnected } = useWebSocket();
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');

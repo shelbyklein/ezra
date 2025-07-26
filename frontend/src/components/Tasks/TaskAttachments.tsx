@@ -8,7 +8,6 @@ import {
   HStack,
   Text,
   Button,
-  IconButton,
   Input,
   Textarea,
   Select,
@@ -24,18 +23,9 @@ import {
   ModalCloseButton,
   useDisclosure,
   Box,
-  Link,
-  Badge,
-  Divider,
 } from '@chakra-ui/react';
 import { 
   AddIcon, 
-  DeleteIcon, 
-  ExternalLinkIcon, 
-  AttachmentIcon as ChakraAttachmentIcon,
-  EditIcon,
-  LinkIcon,
-  ChatIcon,
 } from '@chakra-ui/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
@@ -66,16 +56,6 @@ interface AttachmentFormData {
   content: string;
 }
 
-const AttachmentIcon = ({ type }: { type: string }) => {
-  switch (type) {
-    case 'url':
-      return <LinkIcon />;
-    case 'note':
-      return <ChatIcon />;
-    default:
-      return <ChakraAttachmentIcon />;
-  }
-};
 
 export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEditing }) => {
   const toast = useToast();
@@ -89,7 +69,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
   });
 
   // Fetch attachments
-  const { data: attachments = [] } = useQuery<Attachment[]>({
+  useQuery<Attachment[]>({
     queryKey: ['attachments', taskId],
     queryFn: async () => {
       const response = await api.get(`/attachments/task/${taskId}`);
@@ -148,27 +128,6 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
     },
   });
 
-  // Delete attachment mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await api.delete(`/attachments/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attachments', taskId] });
-      toast({
-        title: 'Attachment deleted',
-        status: 'success',
-        duration: 3000,
-      });
-    },
-    onError: () => {
-      toast({
-        title: 'Failed to delete attachment',
-        status: 'error',
-        duration: 5000,
-      });
-    },
-  });
 
   const handleOpenModal = (attachment?: Attachment) => {
     if (attachment) {
@@ -219,40 +178,8 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId, isEdit
     }
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this attachment?')) {
-      deleteMutation.mutate(id);
-    }
-  };
 
-  const formatSize = (bytes: number | null) => {
-    if (!bytes) return '';
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
-  };
 
-  const renderAttachmentContent = (attachment: Attachment) => {
-    switch (attachment.type) {
-      case 'url':
-        return (
-          <Link href={attachment.content} isExternal color="blue.500">
-            {attachment.name} <ExternalLinkIcon mx="2px" />
-          </Link>
-        );
-      case 'note':
-        return (
-          <Box>
-            <Text fontWeight="medium">{attachment.name}</Text>
-            <Text fontSize="sm" color="gray.600" whiteSpace="pre-wrap">
-              {attachment.content}
-            </Text>
-          </Box>
-        );
-      default:
-        return <Text>{attachment.name}</Text>;
-    }
-  };
 
   return (
     <VStack align="stretch" spacing={4}>

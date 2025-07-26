@@ -14,7 +14,6 @@ import {
   Text,
   Button,
   IconButton,
-  Icon,
   Spinner,
   Center,
   useToast,
@@ -686,7 +685,17 @@ export const Board: React.FC = () => {
         <CreateProjectModal
           isOpen={isProjectEditOpen}
           onClose={onProjectEditClose}
-          project={project}
+          project={project ? {
+            id: project.id,
+            name: project.name,
+            description: project.description,
+            color: project.color || '#3182CE',
+            user_id: 0, // Not available in this interface
+            is_archived: false, // Not available in this interface
+            position: 0, // Not available in this interface
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } : null}
         />
       )}
     </DndContext>

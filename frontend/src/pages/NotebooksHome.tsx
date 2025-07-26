@@ -148,7 +148,6 @@ const NotebookCard: React.FC<{ notebook: Notebook; onEdit: () => void; onDelete:
 };
 
 export const NotebooksHome: React.FC = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingNotebook, setEditingNotebook] = React.useState<Notebook | null>(null);

@@ -20,7 +20,6 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { FaCamera } from 'react-icons/fa';
-import { useAuth } from '../../contexts/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
 
@@ -33,7 +32,6 @@ interface UserProfile {
 }
 
 export const ProfileSettings: React.FC = () => {
-  const { user } = useAuth();
   const toast = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);

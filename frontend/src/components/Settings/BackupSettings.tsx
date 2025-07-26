@@ -25,7 +25,6 @@ import {
   List,
   ListItem,
   ListIcon,
-  Spinner,
   Icon,
   Heading,
   Input,
@@ -35,10 +34,8 @@ import {
   FaDownload, 
   FaUpload, 
   FaCheckCircle, 
-  FaExclamationCircle,
   FaDatabase,
   FaFile,
-  FaCalendar,
 } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { format } from 'date-fns';

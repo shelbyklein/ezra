@@ -21,7 +21,7 @@ import {
   Center,
   Text,
 } from '@chakra-ui/react';
-import { HamburgerIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { HamburgerIcon } from '@chakra-ui/icons';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { DraggableNotebookSidebar } from './NotebookSidebar/DraggableNotebookSidebar';

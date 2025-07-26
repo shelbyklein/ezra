@@ -20,7 +20,6 @@ import {
   Stack,
   Avatar,
   Text,
-  Container,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../contexts/AuthContext';
