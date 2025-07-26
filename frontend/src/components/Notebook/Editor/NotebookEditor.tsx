@@ -133,7 +133,12 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
         },
       }),
       Link.configure({
-        openOnClick: false,
+        openOnClick: true,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          class: 'notebook-link',
+        },
       }),
       Placeholder.configure({
         placeholder: ({ node }) => {
