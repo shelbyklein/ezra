@@ -204,6 +204,19 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Fixed placeholder positioning bug in columns
   - Added alignment menus for each column (top/middle/bottom, left/center/right)
 
+### Star Pages & Favorites Feature
+✅ Implemented star page functionality for notebooks
+  - Added is_starred field to notebook pages
+  - Created star button in notebook editor header
+  - Fixed UI update bug - star button wasn't reflecting state changes
+  - Added proper query invalidation for notebook-page query
+✅ Created Favorites section on Dashboard
+  - New API endpoint `/notebooks/starred-pages` to fetch all starred pages
+  - Displays up to 6 starred pages in card format
+  - Cards show page title, parent notebook info, and last updated time
+  - Click navigation to specific notebook pages
+  - Empty state with helpful message when no pages are starred
+
 ## Active Tasks
 ### Production Readiness
 - ✅ Testing & Quality Assurance

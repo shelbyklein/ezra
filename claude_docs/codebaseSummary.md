@@ -132,6 +132,8 @@ Ezra/
   - NotebookLayout - Main notebook interface
   - NotebookSidebar/DraggableNotebookSidebar - Hierarchical file browser with drag-and-drop
   - NotebookEditor - TipTap WYSIWYG editor with toolbar
+    - Star page functionality with proper UI updates ✅
+    - Query invalidation for both notebook and page queries ✅
   - NotebookCoverPage - Cover page with metadata, description, tags, and project association
   - CreateNotebookModal - New notebook creation
   - CreatePageModal - New page creation
@@ -156,6 +158,8 @@ Ezra/
   - NaturalLanguageInput - Command bar (Cmd/Ctrl + K) ✅
 - **Dashboard/** - Recent activity display
   - Dashboard - Shows 3 recent projects and notebooks ✅
+    - Favorites section displaying up to 6 starred notebook pages ✅
+    - Cards with page title, notebook info, and navigation ✅
 - **Layout/** - Application structure components
   - AppLayout - Main layout with navigation bar and user menu ✅
   - BreadcrumbFooter - Fixed footer showing navigation hierarchy ✅
@@ -171,7 +175,7 @@ Ezra/
   - notes.routes.ts - Notes CRUD operations
   - tags.routes.ts - Tags CRUD + task/project assignment
   - attachments.routes.ts - Task attachments CRUD
-  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint + project associations
+  - notebooks.routes.ts - Notebooks, folders, pages CRUD + batch updates + /recent endpoint + /starred-pages endpoint + project associations
   - users.routes.ts - User profile + API key management + avatar upload
   - ai.routes.ts - AI chat endpoint (/chat) for conversational interface
     - Context-aware processing (current notebook/page/project)

@@ -104,6 +104,7 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notebook', notebookId] });
+      queryClient.invalidateQueries({ queryKey: ['notebook-page', pageId] });
     },
   });
 

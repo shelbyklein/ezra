@@ -411,3 +411,7 @@ Develop mind mapping capabilities for knowledge management
 - [x] Column toolbar for layout switching (50/50, 70/30, 30/70)
 - [x] Responsive column design that stacks on mobile
 - [x] Slash commands for column insertion
+- [x] Star page functionality with is_starred field
+- [x] Fixed star button UI update bug with proper query invalidation
+- [x] Favorites section on Dashboard showing starred notebook pages
+- [x] API endpoint for fetching starred pages across all notebooks

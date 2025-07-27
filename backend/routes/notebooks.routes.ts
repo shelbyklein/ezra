@@ -45,6 +45,34 @@ router.get('/recent', authenticate, async (req, res) => {
   }
 });
 
+// Get starred pages across all notebooks
+router.get('/starred-pages', authenticate, async (req, res) => {
+  try {
+    const starredPages = await db('notebook_pages as p')
+      .join('notebooks as n', 'p.notebook_id', 'n.id')
+      .where({ 
+        'n.user_id': req.user!.userId,
+        'p.is_starred': true
+      })
+      .select(
+        'p.id',
+        'p.title',
+        'p.slug',
+        'p.updated_at',
+        'p.notebook_id',
+        'n.title as notebook_title',
+        'n.icon as notebook_icon',
+        'n.color as notebook_color'
+      )
+      .orderBy('p.updated_at', 'desc');
+    
+    res.json(starredPages);
+  } catch (error) {
+    console.error('Error fetching starred pages:', error);
+    res.status(500).json({ error: 'Failed to fetch starred pages' });
+  }
+});
+
 // Get all notebooks for authenticated user
 router.get('/', authenticate, async (req, res) => {
   try {

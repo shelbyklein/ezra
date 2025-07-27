@@ -24,12 +24,12 @@ import {
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { FaProjectDiagram, FaBook, FaClock, FaPlus, FaFolder } from 'react-icons/fa';
+import { FaProjectDiagram, FaBook, FaClock, FaPlus, FaFolder, FaStar } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { formatDistanceToNow } from 'date-fns';
 import { ChatBubble } from '../AI/ChatBubble';
 import { useAuth } from '../../contexts/AuthContext';
-import { SettingsIcon } from '@chakra-ui/icons';
+import { SettingsIcon, StarIcon } from '@chakra-ui/icons';
 
 interface Project {
   id: number;
@@ -52,6 +52,17 @@ interface Notebook {
   color?: string;
   updated_at: string;
   page_count?: number;
+}
+
+interface StarredPage {
+  id: number;
+  title: string;
+  slug: string;
+  updated_at: string;
+  notebook_id: number;
+  notebook_title: string;
+  notebook_icon: string;
+  notebook_color?: string;
 }
 
 export const Dashboard: React.FC = () => {
@@ -80,7 +91,16 @@ export const Dashboard: React.FC = () => {
     },
   });
 
-  const isLoading = projectsLoading || notebooksLoading;
+  // Fetch starred pages
+  const { data: starredPages, isLoading: starredLoading } = useQuery({
+    queryKey: ['starred-pages'],
+    queryFn: async () => {
+      const response = await api.get('/notebooks/starred-pages');
+      return response.data;
+    },
+  });
+
+  const isLoading = projectsLoading || notebooksLoading || starredLoading;
 
   if (isLoading) {
     return (
@@ -216,6 +236,80 @@ export const Dashboard: React.FC = () => {
                       >
                         Create your first project
                       </Button>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              )}
+            </SimpleGrid>
+          </Box>
+
+          {/* Favorites Section */}
+          <Box>
+            <HStack justify="space-between" mb={6}>
+              <HStack>
+                <Icon as={FaStar} color="yellow.500" boxSize={6} />
+                <Heading size="lg" color={headingColor}>
+                  Favorites
+                </Heading>
+              </HStack>
+            </HStack>
+
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+              {starredPages?.length > 0 ? (
+                starredPages.slice(0, 6).map((page: StarredPage) => (
+                  <Card
+                    key={page.id}
+                    bg={cardBg}
+                    borderWidth={1}
+                    borderColor={borderColor}
+                    _hover={{ 
+                      shadow: 'lg', 
+                      transform: 'translateY(-2px)',
+                      cursor: 'pointer' 
+                    }}
+                    transition="all 0.2s"
+                    onClick={() => navigate(`/app/notebooks/${page.notebook_id}/page/${page.id}`)}
+                  >
+                    <CardHeader pb={2}>
+                      <VStack align="start" spacing={2}>
+                        <HStack justify="space-between" w="full">
+                          <Heading size="md" noOfLines={1}>{page.title}</Heading>
+                          <Icon as={FaStar} color="yellow.400" boxSize={4} />
+                        </HStack>
+                        <HStack spacing={2}>
+                          <Box
+                            p={1}
+                            borderRadius="sm"
+                            bg={page.notebook_color || 'blue.500'}
+                            color="white"
+                          >
+                            <Icon as={FaFolder} boxSize={3} />
+                          </Box>
+                          <Text fontSize="sm" color="gray.500" noOfLines={1}>
+                            {page.notebook_title}
+                          </Text>
+                        </HStack>
+                      </VStack>
+                    </CardHeader>
+                    <CardFooter pt={2}>
+                      <HStack>
+                        <Icon as={FaClock} color="gray.400" boxSize={3} />
+                        <Text fontSize="xs" color="gray.500">
+                          Updated {formatDistanceToNow(new Date(page.updated_at), { addSuffix: true })}
+                        </Text>
+                      </HStack>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <Card bg={cardBg} borderWidth={1} borderColor={borderColor}>
+                  <CardBody>
+                    <VStack spacing={3}>
+                      <Icon as={FaStar} boxSize={8} color="gray.400" />
+                      <Text color="gray.500">No starred pages yet</Text>
+                      <Text fontSize="sm" color="gray.400" textAlign="center">
+                        Star important notebook pages to see them here
+                      </Text>
                     </VStack>
                   </CardBody>
                 </Card>
