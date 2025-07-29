@@ -160,6 +160,7 @@ Ezra/
   - Dashboard - Shows 3 recent projects and notebooks ✅
     - Favorites section displaying up to 6 starred notebook pages ✅
     - Cards with page title, notebook info, and navigation ✅
+    - Fixed favorite page navigation URL pattern ✅
 - **Layout/** - Application structure components
   - AppLayout - Main layout with navigation bar and user menu ✅
   - BreadcrumbFooter - Fixed footer showing navigation hierarchy ✅

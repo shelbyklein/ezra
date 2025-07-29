@@ -48,11 +48,14 @@ router.get('/recent', authenticate, async (req, res) => {
 // Get starred pages across all notebooks
 router.get('/starred-pages', authenticate, async (req, res) => {
   try {
+    console.log('Fetching starred pages for user:', req.user!.userId);
+    console.log('Database object exists:', !!db);
+    
     const starredPages = await db('notebook_pages as p')
       .join('notebooks as n', 'p.notebook_id', 'n.id')
       .where({ 
         'n.user_id': req.user!.userId,
-        'p.is_starred': true
+        'p.is_starred': 1  // SQLite uses 1/0 for boolean
       })
       .select(
         'p.id',
@@ -61,14 +64,18 @@ router.get('/starred-pages', authenticate, async (req, res) => {
         'p.updated_at',
         'p.notebook_id',
         'n.title as notebook_title',
-        'n.icon as notebook_icon',
-        'n.color as notebook_color'
+        'n.icon as notebook_icon'
       )
       .orderBy('p.updated_at', 'desc');
     
+    console.log('Found starred pages:', starredPages.length);
     res.json(starredPages);
   } catch (error) {
     console.error('Error fetching starred pages:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     res.status(500).json({ error: 'Failed to fetch starred pages' });
   }
 });

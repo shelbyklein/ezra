@@ -268,7 +268,7 @@ export const Dashboard: React.FC = () => {
                       cursor: 'pointer' 
                     }}
                     transition="all 0.2s"
-                    onClick={() => navigate(`/app/notebooks/${page.notebook_id}/page/${page.id}`)}
+                    onClick={() => navigate(`/app/notebooks/${page.notebook_id}/${page.id}`)}
                   >
                     <CardHeader pb={2}>
                       <VStack align="start" spacing={2}>

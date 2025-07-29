@@ -216,6 +216,9 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Cards show page title, parent notebook info, and last updated time
   - Click navigation to specific notebook pages
   - Empty state with helpful message when no pages are starred
+✅ Fixed favorite page navigation bug
+  - Corrected URL pattern from `/app/notebooks/{id}/page/{pageId}` to `/app/notebooks/{id}/{pageId}`
+  - Favorites now properly open the selected page when clicked
 
 ## Active Tasks
 ### Production Readiness
