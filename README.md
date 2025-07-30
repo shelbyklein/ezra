@@ -31,7 +31,7 @@ docker-compose up -d
 ```
 
 The application will be available at:
-- Frontend: http://localhost
+- Frontend: http://localhost:3005
 - Backend API: http://localhost:5001
 
 To stop the application:

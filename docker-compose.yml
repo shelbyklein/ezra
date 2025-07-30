@@ -36,7 +36,7 @@ services:
     container_name: ezra-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "3005:80"
     environment:
       - VITE_API_URL=/api
     depends_on:

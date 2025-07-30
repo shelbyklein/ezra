@@ -40,7 +40,7 @@ docker-compose up -d --build
 ```
 
 ### 4. Access the Application
-- Frontend: http://localhost
+- Frontend: http://localhost:3005
 - Backend API: http://localhost:5001
 
 ## Production Deployment
@@ -166,13 +166,13 @@ docker-compose exec backend npx knex migrate:latest
 ```
 
 ### Port Conflicts
-If ports 80 or 5001 are already in use:
+If ports 3005 or 5001 are already in use:
 ```yaml
 # In docker-compose.yml, change ports:
 services:
   frontend:
     ports:
-      - "8080:80"  # Change 80 to 8080
+      - "8080:80"  # Change 3005 to 8080
   backend:
     ports:
       - "5002:5001"  # Change 5001 to 5002
