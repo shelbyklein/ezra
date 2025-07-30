@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - DATABASE_URL=/app/data/ezra.db
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-here-change-in-production}
+      - JWT_EXPIRES_IN=7d
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=/api
+    depends_on:
+      - backend
+    networks:
+      - ezra-network
+
+  # Optional: PostgreSQL for production
+  postgres:
+    image: postgres:15-alpine
+    container_name: ezra-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=ezra_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-your-postgres-password}
+      - POSTGRES_DB=ezra_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ezra-network
+    profiles:
+      - postgres
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ezra-pgadmin
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@ezra.local}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - ezra-network
+    profiles:
+      - postgres
+
+  # Optional: Backup service
+  backup:
+    build:
+      context: .
+      dockerfile: ./docker/backup/Dockerfile
+    container_name: ezra-backup
+    restart: unless-stopped
+    environment:
+      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 2 * * *}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
+    volumes:
+      - ./data:/app/data:ro
+      - ./backups:/backups
+    networks:
+      - ezra-network
+    profiles:
+      - backup
+
+networks:
+  ezra-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

@@ -292,9 +292,12 @@ Visual knowledge management:
    - Implement search functionality (currently placeholder)
    - Add file upload support for task attachments
    - [x] Set up CI/CD pipeline with GitHub Actions
-   - [x] Prepare production environment (Replit deployment configured)
+   - [x] Prepare production environment (Multiple deployment options ready)
+     - [x] Replit deployment configured (with challenges)
+     - [x] Docker deployment fully configured
+     - [x] Self-hosting documentation prepared
    - [x] Add data export features (backup/import system completed)
-   - Deploy to Replit and test production build
+   - Deploy using Docker Compose for production
 
 3. **Medium-term (Next Month)**:
    - Deploy MVP to production

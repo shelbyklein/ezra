@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+*/node_modules/
+*/*/node_modules/
+
+# Build outputs
+dist/
+*/dist/
+build/
+*/build/
+
+# Development files
+*.log
+.env
+.env.local
+.env.development
+.env.test
+*.sqlite3
+*.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+claude_docs/
+
+# Testing
+coverage/
+.nyc_output/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Replit specific
+.replit
+replit.nix
+.env.replit
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Docker files (we don't want to copy these into the context)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
