@@ -31,7 +31,8 @@
     "lint:backend": "npm run lint --workspace=backend",
     "type-check:frontend": "npm run type-check --workspace=frontend",
     "type-check:backend": "npm run type-check --workspace=backend",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "build": "tsc"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
