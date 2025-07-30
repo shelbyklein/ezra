@@ -2,9 +2,25 @@
 
 An intelligent kanban board application with AI-powered task management, markdown notes, and future mind-mapping capabilities.
 
+## ✨ Features
+
+- 🤖 **AI-Powered Assistant** - Natural language task management and content generation
+- 📋 **Kanban Board** - Drag-and-drop task management with real-time updates
+- 📝 **Rich Notebooks** - WYSIWYG editor with markdown support and image uploads
+- 🏷️ **Smart Tagging** - Organize projects and tasks with colorful tags
+- 🌓 **Dark Mode** - Automatic theme switching based on system preferences
+- ⌨️ **Keyboard Shortcuts** - Navigate and manage tasks without touching the mouse
+- 💾 **Backup & Restore** - Export and import your data anytime
+- 🔐 **Secure Authentication** - JWT-based auth with encrypted API keys
+
 ## 🚀 Quick Start
 
-### Option 1: One-Command Start (Simplest)
+### Prerequisites
+- Docker & Docker Compose (for options 1-4)
+- Node.js 18+ (for option 5 only)
+- [Anthropic API key](https://console.anthropic.com)
+
+### Option 1: One-Command Start (Simplest) 🎯
 
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
@@ -12,9 +28,9 @@ cd ezra
 ./start.sh
 ```
 
-Just edit the `.env` file with your API key and run `./start.sh` again!
+The script will create a `.env` file. Edit it with your API key and run `./start.sh` again!
 
-### Option 2: Full Deployment Manager (Recommended)
+### Option 2: Full Deployment Manager (Recommended) 🛠️
 
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
@@ -22,12 +38,23 @@ cd ezra
 ./deploy.sh
 ```
 
-The deployment manager handles:
-- Initial setup and deployment
-- Updates and maintenance
-- Backups and restoration
-- Service management
-- Log viewing
+Features:
+- **Interactive menu** for all operations
+- **Automatic setup** with validation
+- **Backup/restore** functionality
+- **Update management** with git pull
+- **Service control** and log viewing
+- **Health checks** and error handling
+
+Command line usage:
+```bash
+./deploy.sh deploy    # Initial deployment
+./deploy.sh update    # Update to latest version
+./deploy.sh backup    # Create timestamped backup
+./deploy.sh restore   # Restore from backup
+./deploy.sh logs      # View service logs
+./deploy.sh stop      # Stop all services
+```
 
 ### Option 3: Simple Docker Compose (All-in-One YAML)
 
@@ -64,10 +91,6 @@ cp .env.docker .env
 docker-compose up -d
 ```
 
-The application will be available at:
-- Frontend: http://localhost:3005
-- Backend API: http://localhost:5001
-
 ### Option 5: Local Development
 
 #### Prerequisites
@@ -99,53 +122,90 @@ cp .env.example .env
 npm run dev
 ```
 
-The application will be available at:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:5001
+## 📍 Access Points
 
-## 🐳 Docker Deployment
+Once deployed, Ezra is available at:
+- **Frontend**: http://localhost:3005
+- **Backend API**: http://localhost:5001
+- **Development Frontend**: http://localhost:5173 (local dev only)
+
+## 🐳 Docker Management
+
+### Common Operations
+
+```bash
+# View running containers
+docker-compose ps
+
+# Restart a service
+docker-compose restart backend
+
+# Stop everything
+docker-compose down
+
+# Remove everything including volumes (CAUTION: deletes data)
+docker-compose down -v
+```
 
 ### Using PostgreSQL (Production)
 ```bash
-# Start with PostgreSQL instead of SQLite
+# Start with PostgreSQL profile
 docker-compose --profile postgres up -d
 
-# Access pgAdmin at http://localhost:5050
+# Or use production config
+docker-compose -f docker-compose.production.yml up -d
 ```
 
-### Building Fresh Images
+### Troubleshooting
+
 ```bash
-# Rebuild after code changes
-docker-compose up -d --build
+# Check logs for errors
+docker-compose logs backend | grep ERROR
+
+# Access container shell
+docker-compose exec backend sh
+
+# Check health status
+docker-compose ps
+
+# Rebuild if needed
+docker-compose build --no-cache
 ```
 
-### Viewing Logs
+### Data Management
+
+**Persistent Volumes:**
+- `./data` - SQLite database
+- `./uploads` - User files (avatars, images)
+- `./backups` - Automated backups
+
+**Backup Commands:**
 ```bash
-# All services
-docker-compose logs -f
+# Using deployment script
+./deploy.sh backup
 
-# Specific service
-docker-compose logs -f backend
+# Manual backup
+tar -czf backup-$(date +%Y%m%d).tar.gz data uploads .env
 ```
-
-### Data Persistence
-The following directories are mounted as volumes:
-- `./data` - SQLite database (if not using PostgreSQL)
-- `./uploads` - User uploaded files (avatars, images)
-- `./backups` - Database backups (optional)
 
 ## 📂 Project Structure
 
 ```
 ezra/
-├── frontend/          # React TypeScript application
-├── backend/           # Express TypeScript API
-├── shared/            # Shared types and utilities
-├── claude_docs/       # Project documentation
-├── docs/              # User documentation
-├── nginx/             # Nginx configurations
-├── docker-compose.yml # Docker orchestration
-└── DEPLOY_DOCKER.md   # Detailed Docker guide
+├── frontend/              # React TypeScript application
+├── backend/               # Express TypeScript API
+├── shared/                # Shared types and utilities
+├── deploy.sh              # Full deployment manager
+├── start.sh               # Quick start script
+├── docker-compose.yml     # Standard Docker setup
+├── docker-compose.simple.yml       # All-in-one config
+├── docker-compose.production.yml   # Production setup
+├── docker-compose.full.yml         # Comprehensive options
+├── scripts/               # Utility scripts
+│   └── replit-setup.sh    # Replit setup
+├── docs/                  # User documentation
+├── claude_docs/           # Development documentation
+└── nginx/                 # Nginx configurations
 ```
 
 ## 🛠️ Available Scripts
@@ -197,43 +257,119 @@ If you're running the backend on a separate server:
 
 ## 🔧 Configuration
 
-### Environment Variables
+### Required Environment Variables
 
-Key environment variables to configure:
+| Variable | Description | How to Get |
+|----------|-------------|------------|
+| `ANTHROPIC_API_KEY` | Claude API access | [Get from Anthropic Console](https://console.anthropic.com) |
+| `JWT_SECRET` | Auth token secret | Generate: `openssl rand -base64 32` |
 
-- `ANTHROPIC_API_KEY` - Your Anthropic API key (required)
-- `JWT_SECRET` - Secret for JWT tokens (generate with `openssl rand -base64 32`)
-- `DATABASE_URL` - Database connection string (defaults to SQLite)
-- `FRONTEND_URL` - Frontend URL for CORS (defaults to http://localhost)
+### Optional Configuration
 
-See `.env.example` for all available options.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | `./data/ezra.db` | Database connection |
+| `FRONTEND_URL` | `http://localhost:3005` | Frontend URL for CORS |
+| `JWT_EXPIRES_IN` | `7d` | Token expiration time |
+| `PORT` | `5001` | Backend port |
 
 ### Database Options
 
-1. **SQLite** (default) - Good for development and small deployments
-2. **PostgreSQL** - Recommended for production use
+1. **SQLite** (default)
+   - Zero configuration
+   - Perfect for personal use
+   - File-based persistence
 
-To use PostgreSQL with Docker:
-```bash
-docker-compose --profile postgres up -d
-```
+2. **PostgreSQL** (production)
+   ```bash
+   # Use production config
+   docker-compose -f docker-compose.production.yml up -d
+   
+   # Or use profile
+   docker-compose --profile postgres up -d
+   ```
 
 ## 📚 Documentation
 
-- [User Guide](docs/USER_GUIDE.md) - Complete feature documentation
-- [AI Features Guide](docs/AI_FEATURES_GUIDE.md) - AI assistant capabilities
-- [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) - Keyboard navigation
-- [Docker Deployment](DEPLOY_DOCKER.md) - Detailed Docker deployment guide
-- [Development Workflow](docs/DEVELOPMENT_WORKFLOW.md) - Contributing guidelines
+### User Documentation
+- [User Guide](docs/USER_GUIDE.md) - Complete feature walkthrough
+- [AI Features](docs/AI_FEATURES_GUIDE.md) - Claude integration guide
+- [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) - Productivity shortcuts
+
+### Deployment Guides
+- [Docker Deployment](DEPLOY_DOCKER.md) - Comprehensive Docker guide
+- [Quick Start](./start.sh) - Automated setup script
+- [Deployment Manager](./deploy.sh) - Full deployment toolkit
+
+### Developer Resources
+- [Development Workflow](docs/DEVELOPMENT_WORKFLOW.md) - Contributing guide
+- [API Documentation](docs/API.md) - Backend endpoints
+- [Database Schema](docs/DATABASE.md) - Data structure
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Please see our [Contributing Guide](docs/DEVELOPMENT_WORKFLOW.md) for details.
+
+### Quick Start for Contributors
+```bash
+# Fork and clone
+git clone https://github.com/YOUR_USERNAME/ezra.git
+cd ezra
+
+# Install dependencies
+npm install
+
+# Create feature branch
+git checkout -b feature/amazing-feature
+
+# Run in development
+npm run dev
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Docker won't start:**
+```bash
+# Check Docker daemon
+docker info
+
+# Check ports
+lsof -i :3005 -i :5001
+
+# Clean restart
+docker-compose down
+docker-compose up -d --build
+```
+
+**Can't access the app:**
+- Ensure ports 3005 and 5001 are not in use
+- Check firewall settings
+- Verify Docker containers are healthy: `docker-compose ps`
+
+**Database issues:**
+```bash
+# Check database file permissions
+ls -la ./data/
+
+# Run migrations manually
+docker-compose exec backend npx knex migrate:latest
+```
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://react.dev), [Express](https://expressjs.com), and [TypeScript](https://typescriptlang.org)
+- AI powered by [Anthropic Claude](https://anthropic.com)
+- UI components from [Chakra UI](https://chakra-ui.com)
+- Rich text editing with [TipTap](https://tiptap.dev)
 
 ## 📝 License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details
+
+---
+
+<p align="center">
+  Made with ❤️ by the Ezra team
+</p>

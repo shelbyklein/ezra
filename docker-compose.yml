@@ -77,23 +77,6 @@ services:
     profiles:
       - postgres
 
-  # Optional: Backup service
-  backup:
-    build:
-      context: .
-      dockerfile: ./docker/backup/Dockerfile
-    container_name: ezra-backup
-    restart: unless-stopped
-    environment:
-      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 2 * * *}
-      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
-    volumes:
-      - ./data:/app/data:ro
-      - ./backups:/backups
-    networks:
-      - ezra-network
-    profiles:
-      - backup
 
 networks:
   ezra-network:
