@@ -4,17 +4,32 @@ An intelligent kanban board application with AI-powered task management, markdow
 
 ## 🚀 Quick Start
 
-### Option 1: Quick Start Script (Easiest)
+### Option 1: One-Command Start (Simplest)
 
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
 cd ezra
-./quick-start.sh
+./start.sh
 ```
 
-The script will prompt you for your Anthropic API key and handle all setup automatically.
+Just edit the `.env` file with your API key and run `./start.sh` again!
 
-### Option 2: Simple Docker Compose (All-in-One YAML)
+### Option 2: Full Deployment Manager (Recommended)
+
+```bash
+git clone https://github.com/shelbyklein/ezra.git
+cd ezra
+./deploy.sh
+```
+
+The deployment manager handles:
+- Initial setup and deployment
+- Updates and maintenance
+- Backups and restoration
+- Service management
+- Log viewing
+
+### Option 3: Simple Docker Compose (All-in-One YAML)
 
 1. Clone the repository:
 ```bash
@@ -34,7 +49,7 @@ environment:
 docker-compose -f docker-compose.simple.yml up -d
 ```
 
-### Option 3: Standard Docker Compose
+### Option 4: Standard Docker Compose
 
 1. Clone and configure:
 ```bash
@@ -53,7 +68,7 @@ The application will be available at:
 - Frontend: http://localhost:3005
 - Backend API: http://localhost:5001
 
-### Option 4: Local Development
+### Option 5: Local Development
 
 #### Prerequisites
 - Node.js 18+
