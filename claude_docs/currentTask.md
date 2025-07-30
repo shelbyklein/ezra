@@ -316,6 +316,8 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Created comprehensive Docker deployment guide (DEPLOY_DOCKER.md)
   - Added .dockerignore for efficient builds
   - Set up volume mounts for data persistence
+  - Changed frontend port to 3005 to avoid conflicts
+  - Updated README with Docker setup instructions
 
 ## Progress Reference
 - Phase 1: MVP Kanban Board - ✅ 100% COMPLETE

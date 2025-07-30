@@ -523,3 +523,5 @@ Ezra/
 - Volume mounts for data persistence
 - Health checks and restart policies
 - Support for multiple deployment profiles
+- Frontend exposed on port 3005
+- Backend API on port 5001
