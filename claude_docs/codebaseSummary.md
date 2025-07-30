@@ -85,7 +85,11 @@ Ezra/
 ├── .dockerignore          # Docker build exclusions
 ├── .replit                # Replit configuration
 ├── replit.nix             # Replit system dependencies
-├── docker-compose.yml     # Docker Compose configuration
+├── docker-compose.yml     # Standard Docker Compose configuration
+├── docker-compose.simple.yml    # Simplified all-in-one YAML config
+├── docker-compose.full.yml      # Comprehensive config with all options
+├── docker-compose.production.yml # Production-ready with PostgreSQL
+├── quick-start.sh         # Interactive setup script
 ├── ecosystem.config.js    # PM2 configuration
 ├── tsconfig.json          # Root TypeScript config
 ├── package.json           # Root workspace configuration
@@ -517,7 +521,12 @@ Ezra/
 
 #### Docker Deployment
 - Multi-stage Dockerfiles for optimized builds
-- Docker Compose with full stack orchestration
+- Multiple Docker Compose configurations:
+  - Standard setup with environment files
+  - Simple all-in-one YAML configuration
+  - Comprehensive configuration with all options
+  - Production-ready setup with PostgreSQL
+- Interactive quick-start script for easy setup
 - Optional PostgreSQL database service
 - Nginx reverse proxy for frontend
 - Volume mounts for data persistence
@@ -525,3 +534,4 @@ Ezra/
 - Support for multiple deployment profiles
 - Frontend exposed on port 3005
 - Backend API on port 5001
+- Automated backup service option
