@@ -18,6 +18,10 @@ fi
 echo "📦 Installing dependencies..."
 npm run install:all
 
+# Ensure TypeScript is available at root level for Replit
+echo "📦 Installing TypeScript at root level..."
+npm install --save-dev typescript knex
+
 # Build the application
 echo "🔨 Building application..."
 npm run build:prod
