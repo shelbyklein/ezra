@@ -7,18 +7,18 @@
   "scripts": {
     "dev": "kill-port 5001 && nodemon",
     "dev:force": "lsof -ti:5001 | xargs kill -9 2>/dev/null || true && nodemon",
-    "build": "tsc",
+    "build": "npx tsc",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
-    "type-check": "tsc --noEmit",
+    "type-check": "npx tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "db:migrate": "knex migrate:latest",
-    "db:migrate:make": "knex migrate:make",
-    "db:migrate:rollback": "knex migrate:rollback",
-    "db:seed": "knex seed:run",
-    "db:migrate:test": "NODE_ENV=test knex migrate:latest"
+    "db:migrate": "npx knex migrate:latest",
+    "db:migrate:make": "npx knex migrate:make",
+    "db:migrate:rollback": "npx knex migrate:rollback",
+    "db:seed": "npx knex seed:run",
+    "db:migrate:test": "NODE_ENV=test npx knex migrate:latest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.0",
