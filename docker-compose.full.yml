@@ -1,0 +1,168 @@
+version: '3.8'
+
+# ================================
+# CONFIGURATION - Edit these values
+# ================================
+x-config:
+  # Backend Configuration
+  - &jwt_secret "your-secret-key-here-change-in-production"  # Generate with: openssl rand -base64 32
+  - &anthropic_api_key "your-anthropic-api-key-here"         # Get from https://console.anthropic.com
+  - &jwt_expires_in "7d"
+  
+  # Database Configuration (for PostgreSQL option)
+  - &postgres_user "ezra_user"
+  - &postgres_password "your-postgres-password-here"
+  - &postgres_db "ezra_db"
+  
+  # Frontend Configuration
+  - &frontend_port "3005"
+  - &backend_port "5001"
+  - &frontend_url "http://localhost:3005"
+  
+  # pgAdmin Configuration (optional)
+  - &pgadmin_email "admin@ezra.local"
+  - &pgadmin_password "admin"
+  - &pgadmin_port "5050"
+
+services:
+  # ================================
+  # BACKEND SERVICE
+  # ================================
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-5001}:5001"
+    environment:
+      # Core Configuration
+      NODE_ENV: production
+      PORT: 5001
+      
+      # Authentication
+      JWT_SECRET: *jwt_secret
+      JWT_EXPIRES_IN: *jwt_expires_in
+      
+      # AI Integration
+      ANTHROPIC_API_KEY: *anthropic_api_key
+      
+      # Database (SQLite by default)
+      DATABASE_URL: /app/data/ezra.db
+      
+      # For PostgreSQL (uncomment and comment out DATABASE_URL above)
+      # DATABASE_URL: postgresql://*postgres_user:*postgres_password@postgres:5432/*postgres_db
+      
+      # Frontend URL for CORS
+      FRONTEND_URL: *frontend_url
+      
+      # API Configuration
+      API_RATE_LIMIT_WINDOW_MS: 900000
+      API_RATE_LIMIT_MAX: 100
+    volumes:
+      - ./data:/app/data              # Database storage
+      - ./uploads:/app/uploads        # User uploads
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - postgres  # Only if using PostgreSQL
+
+  # ================================
+  # FRONTEND SERVICE
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    environment:
+      VITE_API_URL: /api
+    depends_on:
+      - backend
+    networks:
+      - ezra-network
+
+  # ================================
+  # POSTGRESQL SERVICE (Optional)
+  # ================================
+  # Uncomment this section to use PostgreSQL instead of SQLite
+  postgres:
+    image: postgres:15-alpine
+    container_name: ezra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: *postgres_user
+      POSTGRES_PASSWORD: *postgres_password
+      POSTGRES_DB: *postgres_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ezra-network
+    # Comment out the next line to enable PostgreSQL
+    profiles: ["postgres"]
+
+  # ================================
+  # PGADMIN SERVICE (Optional)
+  # ================================
+  # Web interface for PostgreSQL management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ezra-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: *pgadmin_email
+      PGADMIN_DEFAULT_PASSWORD: *pgadmin_password
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - postgres
+    networks:
+      - ezra-network
+    # Comment out the next line to enable pgAdmin
+    profiles: ["postgres"]
+
+  # ================================
+  # BACKUP SERVICE (Optional)
+  # ================================
+  # Automated backup service
+  backup:
+    image: alpine:latest
+    container_name: ezra-backup
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache sqlite
+        while true; do
+          echo "Running backup at $$(date)"
+          sqlite3 /app/data/ezra.db ".backup /backups/ezra-$$(date +%Y%m%d-%H%M%S).db"
+          # Keep only last 7 days of backups
+          find /backups -name "ezra-*.db" -mtime +7 -delete
+          # Sleep for 24 hours
+          sleep 86400
+        done
+    volumes:
+      - ./data:/app/data:ro           # Read-only access to database
+      - ./backups:/backups            # Backup storage
+    networks:
+      - ezra-network
+    # Comment out the next line to enable backups
+    profiles: ["backup"]
+
+networks:
+  ezra-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

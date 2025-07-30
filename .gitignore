@@ -76,6 +76,11 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.configured
+
+# Docker configurations with secrets
+docker-compose.configured.yml
+docker-compose.override.yml
 
 # Uploaded files
 backend/uploads/

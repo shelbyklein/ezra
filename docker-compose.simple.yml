@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # ================================
+  # BACKEND SERVICE
+  # ================================
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      # 🔧 REQUIRED: Edit these values!
+      JWT_SECRET: "your-secret-key-here-change-in-production"  # Generate with: openssl rand -base64 32
+      ANTHROPIC_API_KEY: "your-anthropic-api-key-here"         # Get from https://console.anthropic.com
+      
+      # Default configuration (usually no need to change)
+      NODE_ENV: production
+      PORT: 5001
+      DATABASE_URL: /app/data/ezra.db
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:3005
+      API_RATE_LIMIT_WINDOW_MS: 900000
+      API_RATE_LIMIT_MAX: 100
+    volumes:
+      - ./data:/app/data              # Database storage
+      - ./uploads:/app/uploads        # User uploads
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # FRONTEND SERVICE
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "3005:80"
+    environment:
+      VITE_API_URL: /api
+    depends_on:
+      - backend
+    networks:
+      - ezra-network
+
+networks:
+  ezra-network:
+    driver: bridge

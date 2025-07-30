@@ -1,0 +1,164 @@
+version: '3.8'
+
+# Production-ready Docker Compose configuration for Ezra
+# 
+# Usage:
+# 1. Replace all "CHANGE_ME" values with your actual credentials
+# 2. Run: docker-compose -f docker-compose.production.yml up -d
+
+services:
+  # ================================
+  # POSTGRESQL DATABASE
+  # ================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: ezra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ezra_user
+      POSTGRES_PASSWORD: "CHANGE_ME_postgres_password"  # Use a strong password
+      POSTGRES_DB: ezra_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezra_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ================================
+  # BACKEND SERVICE
+  # ================================
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      # Core Configuration
+      NODE_ENV: production
+      PORT: 5001
+      
+      # REQUIRED: Authentication Secret
+      JWT_SECRET: "CHANGE_ME_use_openssl_rand_base64_32"  # Generate with: openssl rand -base64 32
+      JWT_EXPIRES_IN: 7d
+      
+      # REQUIRED: AI Integration
+      ANTHROPIC_API_KEY: "CHANGE_ME_your_anthropic_api_key"  # Get from https://console.anthropic.com
+      
+      # Database - Using PostgreSQL for production
+      DATABASE_URL: "postgresql://ezra_user:CHANGE_ME_postgres_password@postgres:5432/ezra_db"
+      
+      # Frontend URL for CORS (update with your domain)
+      FRONTEND_URL: "https://ezra.yourdomain.com"  # CHANGE_ME to your actual domain
+      
+      # API Configuration
+      API_RATE_LIMIT_WINDOW_MS: 900000
+      API_RATE_LIMIT_MAX: 100
+      
+      # File Upload Settings
+      MAX_FILE_SIZE: 10485760  # 10MB
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ./uploads:/app/uploads        # User uploads
+      - ./logs:/app/logs              # Application logs
+    networks:
+      - ezra-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # FRONTEND SERVICE
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "3005:80"
+    environment:
+      VITE_API_URL: /api
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # NGINX REVERSE PROXY (Optional)
+  # ================================
+  # Uncomment this section if you want to use Nginx as a reverse proxy
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: ezra-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/ezra.conf:/etc/nginx/conf.d/default.conf
+  #     - ./ssl:/etc/letsencrypt  # SSL certificates
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   networks:
+  #     - ezra-network
+
+  # ================================
+  # BACKUP SERVICE
+  # ================================
+  backup:
+    image: postgres:15-alpine
+    container_name: ezra-backup
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: "CHANGE_ME_postgres_password"  # Same as postgres password
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          echo "Running backup at $$(date)"
+          pg_dump -h postgres -U ezra_user ezra_db | gzip > /backups/ezra-$$(date +%Y%m%d-%H%M%S).sql.gz
+          # Keep only last 7 days of backups
+          find /backups -name "ezra-*.sql.gz" -mtime +7 -delete
+          # Sleep for 24 hours
+          sleep 86400
+        done
+    volumes:
+      - ./backups:/backups
+    networks:
+      - ezra-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  ezra-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres-data:
+    driver: local

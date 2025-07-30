@@ -4,14 +4,17 @@ An intelligent kanban board application with AI-powered task management, markdow
 
 ## 🚀 Quick Start
 
-### Option 1: Docker Compose (Recommended)
+### Option 1: Quick Start Script (Easiest)
 
-#### Prerequisites
-- Docker Engine 20.10+
-- Docker Compose 2.0+
-- Anthropic API key
+```bash
+git clone https://github.com/shelbyklein/ezra.git
+cd ezra
+./quick-start.sh
+```
 
-#### Installation
+The script will prompt you for your Anthropic API key and handle all setup automatically.
+
+### Option 2: Simple Docker Compose (All-in-One YAML)
 
 1. Clone the repository:
 ```bash
@@ -19,13 +22,29 @@ git clone https://github.com/shelbyklein/ezra.git
 cd ezra
 ```
 
-2. Set up environment variables:
-```bash
-cp .env.docker .env
-# Edit .env and add your Anthropic API key and JWT secret
+2. Edit `docker-compose.simple.yml` and add your credentials:
+```yaml
+environment:
+  JWT_SECRET: "your-secret-key-here"         # Generate with: openssl rand -base64 32
+  ANTHROPIC_API_KEY: "your-anthropic-key"    # From https://console.anthropic.com
 ```
 
-3. Build and start with Docker Compose:
+3. Run with Docker Compose:
+```bash
+docker-compose -f docker-compose.simple.yml up -d
+```
+
+### Option 3: Standard Docker Compose
+
+1. Clone and configure:
+```bash
+git clone https://github.com/shelbyklein/ezra.git
+cd ezra
+cp .env.docker .env
+# Edit .env with your credentials
+```
+
+2. Start the application:
 ```bash
 docker-compose up -d
 ```
@@ -34,12 +53,7 @@ The application will be available at:
 - Frontend: http://localhost:3005
 - Backend API: http://localhost:5001
 
-To stop the application:
-```bash
-docker-compose down
-```
-
-### Option 2: Local Development
+### Option 4: Local Development
 
 #### Prerequisites
 - Node.js 18+
