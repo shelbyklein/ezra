@@ -21,8 +21,12 @@ const io = new Server(httpServer, {
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
-      process.env.FRONTEND_URL
-    ].filter((url): url is string => Boolean(url)),
+      process.env.FRONTEND_URL,
+      // Replit domains
+      /\.replit\.dev$/,
+      /\.repl\.co$/,
+      /\.replit\.app$/
+    ].filter((url): url is string | RegExp => Boolean(url)),
     credentials: true
   }
 })
@@ -37,10 +41,14 @@ app.use(cors({
       process.env.FRONTEND_URL
     ].filter(Boolean);
     
+    // Check for Replit domains
+    const replitDomains = [/\.replit\.dev$/, /\.repl\.co$/, /\.replit\.app$/];
+    const isReplitDomain = origin && replitDomains.some(regex => regex.test(origin));
+    
     // Allow requests with no origin (like Postman or curl)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || isReplitDomain) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -152,6 +160,23 @@ if (process.env.NODE_ENV !== 'production') {
   
   // Export io for use in other modules (like nodemon hooks)
   ;(global as any).io = io
+}
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve frontend build files
+  const frontendBuildPath = path.join(__dirname, '../../../frontend/dist')
+  app.use(express.static(frontendBuildPath))
+  
+  // Handle SPA routes - serve index.html for all non-API routes
+  app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api')) {
+      return next()
+    }
+    
+    res.sendFile(path.join(frontendBuildPath, 'index.html'))
+  })
 }
 
 // Start server only if not in test environment

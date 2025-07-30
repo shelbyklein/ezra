@@ -34,22 +34,33 @@ const config: { [key: string]: Knex.Config } = {
   },
 
   production: {
-    client: 'postgresql',
+    client: 'sqlite3',
     connection: {
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5432'),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD
-    },
-    pool: {
-      min: 2,
-      max: 10
+      // Use Replit's persistent storage path
+      filename: process.env.REPLIT ? '/home/runner/ezra-data/ezra.db' : path.join(__dirname, 'prod.sqlite3')
     },
     migrations: {
       directory: path.join(__dirname, 'migrations'),
       extension: 'ts'
-    }
+    },
+    seeds: {
+      directory: path.join(__dirname, 'seeds'),
+      extension: 'ts'
+    },
+    useNullAsDefault: true,
+    // PostgreSQL config for future use
+    // client: 'postgresql',
+    // connection: {
+    //   host: process.env.DB_HOST,
+    //   port: parseInt(process.env.DB_PORT || '5432'),
+    //   database: process.env.DB_NAME,
+    //   user: process.env.DB_USER,
+    //   password: process.env.DB_PASSWORD
+    // },
+    // pool: {
+    //   min: 2,
+    //   max: 10
+    // }
   }
 };
 

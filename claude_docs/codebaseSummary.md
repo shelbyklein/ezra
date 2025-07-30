@@ -74,11 +74,17 @@ Ezra/
 │   ├── tsconfig.json      # TypeScript config
 │   └── package.json       # Shared package config
 ├── docs/                  # User-facing documentation
+├── scripts/               # Utility scripts
+│   └── replit-setup.sh    # Replit deployment setup script
 ├── .env.example           # Backend environment template
+├── .env.production        # Production environment template
 ├── .gitignore             # Git ignore rules
+├── .replit                # Replit configuration
+├── replit.nix             # Replit system dependencies
 ├── tsconfig.json          # Root TypeScript config
 ├── package.json           # Root workspace configuration
-└── README.md              # Project documentation
+├── README.md              # Project documentation
+└── DEPLOY_REPLIT.md       # Replit deployment guide
 
 ### Testing Structure
 - **Frontend Testing**:
@@ -454,7 +460,10 @@ Ezra/
 
 - **README.md** - Project overview and setup instructions
 - **.env.example** - Backend environment configuration template
+- **.env.production** - Production environment template for Replit
 - **frontend/.env.example** - Frontend environment configuration template
+- **frontend/.env.production** - Frontend production configuration
+- **DEPLOY_REPLIT.md** - Comprehensive Replit deployment guide
 - **claude_docs/featureIdeas.md** - Future feature considerations (if exists)
 
 ### Key Configuration Files
@@ -486,3 +495,11 @@ Ezra/
 - SQL injection prevention
 - XSS protection
 - Secure authentication flow
+
+### Deployment Configuration (Replit)
+- Production build process configured
+- Static file serving from backend in production
+- CORS settings updated for Replit domains
+- SQLite persistence in /home/runner/ezra-data/
+- Environment-based configuration
+- Automated setup script for easy deployment

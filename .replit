@@ -1,0 +1,37 @@
+run = "npm run start:prod"
+entrypoint = "backend/src/index.ts"
+hidden = [".config", "package-lock.json"]
+language = "nodejs"
+
+[nix]
+channel = "stable-23_11"
+
+[deployment]
+run = ["sh", "-c", "npm run start:prod"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 5001
+externalPort = 80
+
+[env]
+XDG_CONFIG_HOME = "/home/runner/$REPL_SLUG/.config"
+PATH = "/home/runner/$REPL_SLUG/.config/npm/node_global/bin:/home/runner/$REPL_SLUG/node_modules/.bin"
+NODE_ENV = "production"
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+packageSearch = true
+guessImports = true
+enabledForHosting = false
+
+[unitTest]
+language = "nodejs"
+
+[languages.javascript]
+pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+
+[languages.javascript.languageServer]
+start = "typescript-language-server --stdio"
