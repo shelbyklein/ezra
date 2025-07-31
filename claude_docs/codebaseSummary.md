@@ -75,11 +75,9 @@ Ezra/
 │   └── package.json       # Shared package config
 ├── docs/                  # User-facing documentation
 ├── scripts/               # Utility scripts
-│   └── replit-setup.sh    # Replit deployment setup script
 ├── nginx/                 # Nginx configurations
 │   └── ezra.conf          # Production nginx config
 ├── .env.example           # Backend environment template
-├── .env.production        # Production environment template
 ├── docker/                # All Docker-related files
 │   ├── docker-compose.yml # Unified compose with profiles
 │   ├── docker-compose.dockge.yml # Dockge deployment config
@@ -95,13 +93,10 @@ Ezra/
 │   └── generate-ssl-cert.sh # SSL certificate generation
 ├── .gitignore             # Git ignore rules
 ├── .dockerignore          # Docker build exclusions
-├── .replit                # Replit configuration
-├── replit.nix             # Replit system dependencies
 ├── ecosystem.config.js    # PM2 configuration
 ├── tsconfig.json          # Root TypeScript config
 ├── package.json           # Root workspace configuration
-├── README.md              # Project documentation
-└── DEPLOY_REPLIT.md       # Replit deployment guide
+└── README.md              # Project documentation
 
 ### Testing Structure
 - **Frontend Testing**:
@@ -528,11 +523,7 @@ Ezra/
 
 - **README.md** - Project overview and setup instructions
 - **.env.example** - Backend environment configuration template
-- **.env.production** - Production environment template for Replit
-- **.env.docker** - Docker-specific environment template
 - **frontend/.env.example** - Frontend environment configuration template
-- **frontend/.env.production** - Frontend production configuration
-- **DEPLOY_REPLIT.md** - Comprehensive Replit deployment guide
 - **DEPLOY_DOCKER.md** - Docker deployment guide with compose setup
 - **ecosystem.config.js** - PM2 process management configuration
 - **claude_docs/featureIdeas.md** - Future feature considerations (if exists)
@@ -567,15 +558,7 @@ Ezra/
 - XSS protection
 - Secure authentication flow
 
-### Deployment Configuration (Multiple Options)
-#### Replit Deployment
-- Production build process configured
-- Static file serving from backend in production
-- CORS settings updated for Replit domains
-- SQLite persistence in /home/runner/ezra-data/
-- Environment-based configuration
-- Automated setup script for easy deployment
-
+### Deployment Configuration
 #### Docker Deployment
 - Multi-stage Dockerfiles for optimized builds
 - Consolidated Docker configuration in docker/ directory

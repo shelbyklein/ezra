@@ -212,7 +212,6 @@ ezra/
 ├── docker-compose.production.yml   # Production setup
 ├── docker-compose.full.yml         # Comprehensive options
 ├── scripts/               # Utility scripts
-│   └── replit-setup.sh    # Replit setup
 ├── docs/                  # User documentation
 ├── claude_docs/           # Development documentation
 └── nginx/                 # Nginx configurations

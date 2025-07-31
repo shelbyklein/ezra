@@ -33,8 +33,8 @@ var config = {
     production: {
         client: 'sqlite3',
         connection: {
-            // Use DATABASE_URL if provided, otherwise fall back to default paths
-            filename: process.env.DATABASE_URL || (process.env.REPLIT ? '/home/runner/ezra-data/ezra.db' : path.join(__dirname, 'prod.sqlite3'))
+            // Use DATABASE_URL if provided, otherwise fall back to default path
+            filename: process.env.DATABASE_URL || path.join(__dirname, 'prod.sqlite3')
         },
         migrations: {
             directory: path.join(__dirname, 'migrations'),

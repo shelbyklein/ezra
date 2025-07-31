@@ -140,7 +140,6 @@
   - Code quality checks
 - **Deployment Options** ✅
   - Docker Compose (recommended)
-  - Replit configuration (with challenges)
   - Self-hosting documentation
 
 ### Monitoring

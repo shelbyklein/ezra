@@ -128,12 +128,12 @@ Optimize for production use:
 Ready for production launch:
 
 - [x] Environment Setup:
-  - [x] Production environment variables (Replit configured)
-  - [x] Secure secrets management (Replit Secrets)
-  - [ ] SSL certificate configuration (handled by Replit)
+  - [x] Production environment variables configured
+  - [x] Secure secrets management
+  - [x] SSL certificate configuration via Docker
   - [ ] File storage strategy (avatars, future attachments)
 - [x] Database Migration:
-  - [x] SQLite persistence for Replit deployment
+  - [x] SQLite persistence configured
   - [x] Data migration scripts
   - [x] Backup strategy (export/import system)
   - [ ] PostgreSQL setup for future scaling
@@ -145,13 +145,13 @@ Ready for production launch:
   - [x] Code quality checks (ESLint, Prettier, TypeScript)
   - [x] Security scanning with npm audit
   - [ ] Rollback procedures
-- [x] Replit Deployment Configuration:
-  - [x] .replit and replit.nix configuration files
+- [x] Docker Deployment Configuration:
+  - [x] Multi-stage Docker builds
   - [x] Production build scripts
   - [x] Static file serving from backend
-  - [x] CORS configuration for Replit domains
-  - [x] Deployment documentation (DEPLOY_REPLIT.md)
-  - [x] Setup automation script
+  - [x] CORS configuration for production domains
+  - [x] Deployment documentation (DEPLOY_DOCKER.md)
+  - [x] Setup automation scripts
 - [ ] Monitoring:
   - [ ] Error tracking (Sentry)
   - [ ] Performance monitoring
@@ -308,8 +308,7 @@ Visual knowledge management:
    - Add file upload support for task attachments
    - Integrate email service for password recovery (SendGrid/AWS SES/Postmark)
    - [x] Set up CI/CD pipeline with GitHub Actions
-   - [x] Prepare production environment (Multiple deployment options ready)
-     - [x] Replit deployment configured (with challenges)
+   - [x] Prepare production environment (Docker deployment ready)
      - [x] Docker deployment fully configured with profiles
      - [x] SSL/HTTPS support for secure password handling
      - [x] Dockge-compatible deployment setup

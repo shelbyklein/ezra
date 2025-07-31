@@ -21,11 +21,7 @@ const io = new Server(httpServer, {
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
-      process.env.FRONTEND_URL,
-      // Replit domains
-      /\.replit\.dev$/,
-      /\.repl\.co$/,
-      /\.replit\.app$/
+      process.env.FRONTEND_URL
     ].filter((url): url is string | RegExp => Boolean(url)),
     credentials: true
   }
@@ -41,14 +37,10 @@ app.use(cors({
       process.env.FRONTEND_URL
     ].filter(Boolean);
     
-    // Check for Replit domains
-    const replitDomains = [/\.replit\.dev$/, /\.repl\.co$/, /\.replit\.app$/];
-    const isReplitDomain = origin && replitDomains.some(regex => regex.test(origin));
-    
     // Allow requests with no origin (like Postman or curl)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin) || isReplitDomain) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
