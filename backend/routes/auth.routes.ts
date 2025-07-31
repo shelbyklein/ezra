@@ -5,6 +5,7 @@ import { UserModel, UserCreateInput } from '../models/User';
 import { generateToken } from '../utils/jwt';
 import { authenticate } from '../middleware/auth.middleware';
 import bcrypt from 'bcrypt';
+import { sendEmail, generatePasswordResetEmail } from '../utils/email';
 
 const router = Router();
 
@@ -22,6 +23,15 @@ const loginValidation = [
 ];
 
 const resetPasswordValidation = [
+  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+];
+
+const forgotPasswordValidation = [
+  body('email').isEmail().normalizeEmail()
+];
+
+const resetWithTokenValidation = [
+  body('token').notEmpty(),
   body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ];
 
@@ -204,6 +214,108 @@ router.post('/reset-password', authenticate, resetPasswordValidation, async (req
       success: false,
       error: {
         code: 'PASSWORD_RESET_FAILED',
+        message: 'Failed to reset password'
+      }
+    });
+  }
+});
+
+// Forgot password endpoint (no auth required)
+router.post('/forgot-password', forgotPasswordValidation, async (req: Request, res: Response) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
+      });
+    }
+
+    const { email } = req.body;
+
+    // Generate reset token
+    const resetToken = await UserModel.generateResetToken(email);
+
+    if (resetToken) {
+      // Generate reset URL
+      const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+      
+      // Prepare email
+      const emailOptions = generatePasswordResetEmail(resetUrl);
+      emailOptions.to = email;
+      
+      try {
+        // Send email (in development, this just logs)
+        await sendEmail(emailOptions);
+        console.log(`Password reset token for ${email}: ${resetToken}`);
+      } catch (error) {
+        console.error('Failed to send password reset email:', error);
+      }
+      
+      // Return response
+      res.json({
+        success: true,
+        message: 'If an account exists with this email, a password reset link has been sent.',
+        // Remove this in production - only for development
+        ...(process.env.NODE_ENV === 'development' && { resetToken })
+      });
+    } else {
+      // Don't reveal whether the email exists or not
+      res.json({
+        success: true,
+        message: 'If an account exists with this email, a password reset link has been sent.'
+      });
+    }
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'FORGOT_PASSWORD_FAILED',
+        message: 'Failed to process password reset request'
+      }
+    });
+  }
+});
+
+// Reset password with token endpoint (no auth required)
+router.post('/reset-password-token', resetWithTokenValidation, async (req: Request, res: Response) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
+      });
+    }
+
+    const { token, newPassword } = req.body;
+
+    // Reset password using token
+    const success = await UserModel.resetPasswordWithToken(token, newPassword);
+
+    if (success) {
+      res.json({
+        success: true,
+        message: 'Password has been reset successfully'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid or expired reset token'
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Reset password with token error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'RESET_PASSWORD_FAILED',
         message: 'Failed to reset password'
       }
     });

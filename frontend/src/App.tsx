@@ -11,6 +11,8 @@ import { WebSocketProvider } from './contexts/WebSocketContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { Login } from './components/Auth/Login';
 import { Register } from './components/Auth/Register';
+import { ForgotPassword } from './components/Auth/ForgotPassword';
+import { ResetPassword } from './components/Auth/ResetPassword';
 import { AppLayout } from './components/Layout/AppLayout';
 import { ProjectList } from './components/Projects/ProjectList';
 import { Board } from './components/Board/Board';
@@ -42,6 +44,8 @@ const AppWithSystemColorMode = () => {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         
         {/* App routes with layout */}
         <Route

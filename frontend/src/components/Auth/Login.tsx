@@ -147,12 +147,17 @@ export const Login: React.FC = () => {
           </form>
         </Box>
 
-        <Text>
-          Don't have an account?{' '}
-          <Link as={RouterLink} to="/register" color="blue.500">
-            Sign up
+        <VStack spacing={2}>
+          <Link as={RouterLink} to="/forgot-password" color="blue.500" fontSize="sm">
+            Forgot your password?
           </Link>
-        </Text>
+          <Text>
+            Don't have an account?{' '}
+            <Link as={RouterLink} to="/register" color="blue.500">
+              Sign up
+            </Link>
+          </Text>
+        </VStack>
       </VStack>
     </Container>
     <LoginDevTools />

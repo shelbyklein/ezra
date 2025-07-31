@@ -61,11 +61,49 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 ✅ Avatar storage in uploads/avatars directory
 ✅ Automatic cleanup of old avatars on new upload
 ✅ Dashboard shows personalized welcome message with settings button
-✅ Password reset functionality
-  - Authenticated password change (requires login)
+✅ Password change functionality (authenticated users)
   - Modal UI for password entry and confirmation
   - Client-side validation (minimum 6 characters, password match)
   - Secure bcrypt hashing on backend
+
+### Password Recovery System
+✅ Complete forgot password flow for unauthenticated users
+✅ Database migration for reset_token and reset_token_expires columns
+✅ Backend implementation:
+  - generateResetToken() method in User model
+  - resetPasswordWithToken() method for token validation
+  - POST /auth/forgot-password endpoint
+  - POST /auth/reset-password-token endpoint
+  - Secure token generation (32 bytes random)
+  - SHA256 hashing for token storage
+  - 1-hour token expiration
+✅ Frontend implementation:
+  - ForgotPassword component with email input
+  - ResetPassword component with token validation
+  - "Forgot your password?" link on login page
+  - Routes added to App.tsx
+✅ Email system placeholder:
+  - email.ts utility file created
+  - Email template for password reset
+  - Console logging in development
+  - Ready for production email service integration
+✅ Security features:
+  - Generic responses to prevent email enumeration
+  - Tokens cleared after successful use
+  - Expired token validation
+✅ Development features:
+  - Token displayed in UI for easy testing
+  - Email content logged to console
+
+### Port Migration
+✅ Changed backend port from 5001 to 6001
+✅ Updated all configuration files:
+  - backend/src/index.ts
+  - backend/package.json (dev scripts)
+  - frontend/vite.config.ts (proxy)
+  - frontend/src/services/api.ts
+  - backend/.env.example
+  - README.md documentation
 
 ### UI/Layout Improvements
 ✅ Fixed chat layout - input bar stays at bottom with proper flex height
@@ -344,7 +382,7 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - @dnd-kit for drag-and-drop
 - TipTap for WYSIWYG editing
 - Axios with JWT interceptors
-- Backend API on port 5001
+- Backend API on port 6001
 - SQLite with Knex.js migrations
 - Kill-port for development convenience
 - Multer for file uploads (avatars)

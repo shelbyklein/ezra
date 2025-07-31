@@ -271,7 +271,7 @@ If you're running the backend on a separate server:
 | `DATABASE_URL` | `./data/ezra.db` | Database connection |
 | `FRONTEND_URL` | `http://localhost:3005` | Frontend URL for CORS |
 | `JWT_EXPIRES_IN` | `7d` | Token expiration time |
-| `PORT` | `5001` | Backend port |
+| `PORT` | `6001` | Backend port |
 
 ### Database Options
 

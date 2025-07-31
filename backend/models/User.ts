@@ -1,6 +1,7 @@
 // User model and database operations
 import db from '../src/db';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 export interface User {
   id?: number;
@@ -11,6 +12,8 @@ export interface User {
   avatar_url?: string;
   is_active?: boolean;
   api_key?: string;
+  reset_token?: string;
+  reset_token_expires?: Date;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -83,5 +86,49 @@ export class UserModel {
       delete user.api_key;
       return user;
     });
+  }
+
+  static async generateResetToken(email: string): Promise<string | null> {
+    const user = await this.findByEmail(email);
+    if (!user) return null;
+
+    // Generate a secure random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    
+    // Token expires in 1 hour
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    await db('users')
+      .where({ id: user.id })
+      .update({
+        reset_token: hashedToken,
+        reset_token_expires: expiresAt
+      });
+
+    return resetToken;
+  }
+
+  static async resetPasswordWithToken(token: string, newPassword: string): Promise<boolean> {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    
+    const user = await db('users')
+      .where('reset_token', hashedToken)
+      .where('reset_token_expires', '>', new Date())
+      .first();
+
+    if (!user) return false;
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    await db('users')
+      .where({ id: user.id })
+      .update({
+        password_hash,
+        reset_token: null,
+        reset_token_expires: null
+      });
+
+    return true;
   }
 }

@@ -420,3 +420,38 @@ Develop mind mapping capabilities for knowledge management
 - [x] Fixed star button UI update bug with proper query invalidation
 - [x] Favorites section on Dashboard showing starred notebook pages
 - [x] API endpoint for fetching starred pages across all notebooks
+
+### Password Recovery Phase
+- [x] Forgot password flow for unauthenticated users
+- [x] Database migration for password reset tokens
+- [x] Backend password reset endpoints:
+  - [x] POST /auth/forgot-password - Request reset
+  - [x] POST /auth/reset-password-token - Reset with token
+- [x] Password reset token generation and storage
+  - [x] Secure random token generation (32 bytes)
+  - [x] SHA256 hashing for database storage
+  - [x] 1-hour expiration time
+- [x] Frontend password recovery components:
+  - [x] ForgotPassword component
+  - [x] ResetPassword component
+  - [x] Integration with login page
+- [x] Email utility system (placeholder)
+  - [x] Email template generation
+  - [x] Development mode logging
+  - [x] Production-ready structure
+- [x] Security features:
+  - [x] Email enumeration prevention
+  - [x] Token single-use enforcement
+  - [x] Secure token handling
+- [x] Migration fixes:
+  - [x] Renamed migrations to use date prefixes
+  - [x] Fixed migration ordering issues
+  - [x] Successfully ran all migrations
+
+### Port Migration Phase
+- [x] Changed backend port from 5001 to 6001 (conflict with Dockge)
+- [x] Updated backend configuration (src/index.ts)
+- [x] Updated frontend proxy configuration (vite.config.ts)
+- [x] Updated API service configuration (services/api.ts)
+- [x] Updated package.json scripts
+- [x] Updated documentation and .env examples

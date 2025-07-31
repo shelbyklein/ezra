@@ -116,10 +116,12 @@ Ezra/
 
 ### Frontend Components (Implemented)
 - **Auth/** - Authentication components
-  - Login - User login form with validation
+  - Login - User login form with validation and "Forgot Password" link
   - Register - User registration form
   - ProtectedRoute - Route guard for authenticated users
   - LoginDevTools - Development tools access from login
+  - ForgotPassword - Request password reset by email
+  - ResetPassword - Reset password with token
 - **Layout/** - Application structure
   - AppLayout - Main layout with navigation bar (Home, Chat, Projects, Notebooks)
     - Updated navigation header structure ✅
@@ -187,7 +189,7 @@ Ezra/
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
-  - auth.routes.ts - Authentication (register/login/reset-password)
+  - auth.routes.ts - Authentication (register/login/reset-password/forgot-password/reset-password-token)
   - projects.routes.ts - Project CRUD + tags integration + /recent endpoint
   - tasks.routes.ts - Task CRUD + reordering + tags fetching + /natural-language endpoint
   - notes.routes.ts - Notes CRUD operations
@@ -209,7 +211,7 @@ Ezra/
     - /import/preview - Preview import data before processing
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
-  - User.ts - User authentication model
+  - User.ts - User authentication model with password reset token support
   - Project.ts - Project model
   - Task.ts - Task model with position tracking
 - **middleware/** - Request processing
@@ -225,6 +227,7 @@ Ezra/
     - Snippet extraction for context
     - Format context for AI consumption
     - Generate source citations
+  - email.ts - Email utility functions (placeholder for production email service integration)
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
 - **src/db/** - Database configuration
@@ -438,11 +441,30 @@ Ezra/
 - Automatic cleanup of old avatars on new upload
 - Dashboard personalized welcome message
 - UI layout fixes for proper flex height in Chat/Notebook views
-- Password reset functionality (POST /auth/reset-password)
-  - Requires authentication (change password, not forgot password flow)
+- Password change functionality (POST /auth/reset-password)
+  - Requires authentication (change password while logged in)
   - Modal UI for entering and confirming new password
   - Client-side validation (min 6 chars, password match)
   - Secure password hashing with bcrypt
+
+### Password Recovery Phase ✅ COMPLETED
+- Forgot password flow for unauthenticated users
+- Password reset token generation with secure random tokens
+- Token storage with SHA256 hashing and 1-hour expiration
+- Backend endpoints:
+  - POST /auth/forgot-password - Request password reset
+  - POST /auth/reset-password-token - Reset password with token
+- Frontend components:
+  - ForgotPassword - Request password reset by email
+  - ResetPassword - Reset password using token
+- Email utility placeholder (ready for production email service)
+- Security features:
+  - Generic responses to prevent email enumeration
+  - Secure token generation and hashing
+  - Token expiration and single-use enforcement
+- Development features:
+  - Token displayed in UI for testing
+  - Email content logged to console
 
 ### Data Backup & Import Phase ✅ COMPLETED
 - Backend endpoints for data export/import with validation
