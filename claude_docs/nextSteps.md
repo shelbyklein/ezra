@@ -301,6 +301,9 @@ Visual knowledge management:
      - [x] Resolved React Query cache conflicts
      - [x] Fixed database schema mismatches (projects.name → projects.title)
      - [x] Cleaned up old compiled JavaScript files
+   - [x] UI/UX improvements:
+     - [x] Created animated loading indicators for chat
+     - [x] Improved AI response quality and naturalness
    - [ ] Clean up ESLint warnings (111 remaining - mostly type annotations)
    - [ ] Continue writing unit tests for Board and Task components
    - [ ] Create onboarding flow for new users

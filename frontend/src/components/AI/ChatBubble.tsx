@@ -35,6 +35,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useChat, Message } from '../../contexts/ChatContext';
 import { useWebSocket } from '../../contexts/WebSocketContext';
+import { AnimatedEllipsis } from '../common/AnimatedEllipsis';
 
 const MotionBox = motion(Box);
 
@@ -551,12 +552,7 @@ export const ChatBubble: React.FC = () => {
                         py={2}
                         borderRadius="lg"
                       >
-                        <HStack spacing={2}>
-                          <Spinner size="xs" />
-                          <Text fontSize="xs" opacity={0.8}>
-                            {isSearching ? 'Searching your knowledge base...' : 'Thinking...'}
-                          </Text>
-                        </HStack>
+                        <AnimatedEllipsis size="sm" />
                       </Box>
                     </HStack>
                   )}

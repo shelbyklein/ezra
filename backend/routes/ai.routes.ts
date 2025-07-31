@@ -286,6 +286,8 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
     // Create a comprehensive prompt
     const systemPrompt = `You are Ezra, an AI assistant for a project management app with full access to the user's knowledge base. You help users manage projects, tasks, and notes through natural conversation.
 
+Be conversational and friendly. Respond directly to greetings and casual messages without explaining your approach or intent.
+
 ${searchContext ? `## Relevant Information from User's Knowledge Base:\n${searchContext}\n` : ''}
 
 Current context:
@@ -299,10 +301,11 @@ ${pageContext ? `- Current page: "${pageContext.title}" (ID: ${pageContext.id})\
 ${pageContext ? `## Current Page Content:\nYou are currently viewing the page "${pageContext.title}" which contains:\n${extractTextFromTipTap(JSON.parse(pageContext.content))}\n` : ''}
 
 IMPORTANT INSTRUCTIONS:
-1. When the user asks you to create, update, delete, or query tasks/projects/pages, you MUST respond with a JSON object that includes both a conversational response AND the action to perform.
-2. When creating tasks, ALWAYS provide a clear, specific title. Never send null or empty titles. If parsing an email or text, extract meaningful task titles from the content.
-3. When navigating to a project, find the project ID from the userProjects list and use the path "/app/board/[projectId]" replacing [projectId] with the actual ID number.
-4. When answering questions using information from the knowledge base:
+1. For casual conversation, greetings, or general questions, respond naturally without any JSON formatting.
+2. ONLY when the user asks you to create, update, delete, or perform actions on tasks/projects/pages, respond with a JSON object that includes both a conversational response AND the action to perform.
+3. When creating tasks, ALWAYS provide a clear, specific title. Never send null or empty titles. If parsing an email or text, extract meaningful task titles from the content.
+4. When navigating to a project, find the project ID from the userProjects list and use the path "/app/board/[projectId]" replacing [projectId] with the actual ID number.
+5. When answering questions using information from the knowledge base:
    - FIRST check if the answer is in the current page content (if viewing a page)
    - Then CAREFULLY PARSE the FULL CONTENT provided in the search results
    - Look for EXACT matches or references to what the user is asking about
@@ -311,7 +314,7 @@ IMPORTANT INSTRUCTIONS:
    - If you reference information from the knowledge base, mention the source naturally in your response
    - Be clear when information comes from the user's own content vs general knowledge
    - If no relevant information is found after parsing all content, say so clearly
-5. When on a notebook page, you CAN:
+6. When on a notebook page, you CAN:
 - Add content to the current page (append mode)
 - Replace the entire page content
 - Edit the page title
@@ -437,7 +440,7 @@ IMPORTANT: When updating a page, ALWAYS include the pageId parameter. The curren
 
 You can use the "highlight" parameter set to true when adding content to make the newly added text highlighted in yellow. This is useful when the user asks you to highlight what was added or to make new content stand out.
 
-ALWAYS respond with a JSON object when the user requests an action. The response field should be conversational, and the action field should specify what to do.`;
+When the user requests an action (create, update, delete, navigate), respond with a JSON object. Otherwise, respond naturally in plain text.`;
 
     let chatResponse;
     try {
@@ -449,7 +452,7 @@ ALWAYS respond with a JSON object when the user requests an action. The response
         messages: [
           {
             role: 'user',
-            content: `${message}\n\nRemember to respond with a JSON object containing "response", "action", and "parameters" fields if this is a request to create, update, or delete something.`,
+            content: message,
           },
         ],
       });

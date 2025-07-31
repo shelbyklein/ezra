@@ -340,7 +340,16 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **API Key Display Fix (Latest):**
+- **Chat UI Improvements (Latest):**
+  - Created AnimatedEllipsis component for cleaner loading indicators
+  - Replaced text-based "Searching your knowledge base..." with animated dots
+  - Provides modern, minimal loading feedback during AI processing
+- **AI Response Quality:**
+  - Modified system prompt to eliminate response prefaces
+  - AI now responds conversationally to greetings without explaining its approach
+  - Updated instructions to use JSON only for action requests, plain text for conversation
+  - Removed redundant reminders that caused verbose responses
+- **API Key Display Fix:**
   - Fixed React Query cache conflict between ProfileSettings and ApiKeySettings components
   - Both components were using same query key ['user-profile'] but expecting different response structures
   - ProfileSettings was caching full API response { success: true, data: {...} }
