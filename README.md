@@ -16,8 +16,8 @@ An intelligent kanban board application with AI-powered task management, markdow
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Docker & Docker Compose (for options 1-4)
-- Node.js 18+ (for option 5 only)
+- Docker & Docker Compose (for production deployment)
+- Node.js 18+ (for local development only)
 - [Anthropic API key](https://console.anthropic.com)
 
 ### Option 1: Interactive Docker Setup (Recommended) 🎯
@@ -28,7 +28,12 @@ cd ezra/docker
 ./quick-start.sh
 ```
 
-The script will guide you through configuration and start everything automatically!
+**The interactive script provides:**
+- **Guided configuration** with validation
+- **Automatic environment setup**
+- **Built-in backup/restore functionality**
+- **Service management and monitoring**
+- **Health checks and error handling**
 
 ### Option 2: Manual Docker Setup 🛠️
 
@@ -36,91 +41,20 @@ The script will guide you through configuration and start everything automatical
 git clone https://github.com/shelbyklein/ezra.git
 cd ezra/docker
 cp .env.example .env
-# Edit .env with your credentials
+# Edit .env with your credentials (see Configuration section below)
 docker-compose up -d
 ```
 
-Features:
-- **Interactive menu** for all operations
-- **Automatic setup** with validation
-- **Backup/restore** functionality
-- **Update management** with git pull
-- **Service control** and log viewing
-- **Health checks** and error handling
+### Option 3: Local Development
 
-Command line usage:
-```bash
-./deploy.sh deploy    # Initial deployment
-./deploy.sh update    # Update to latest version
-./deploy.sh backup    # Create timestamped backup
-./deploy.sh restore   # Restore from backup
-./deploy.sh logs      # View service logs
-./deploy.sh stop      # Stop all services
-```
+**For local development only:**
 
-### Option 3: Simple Docker Compose (All-in-One YAML)
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
 cd ezra
-```
-
-2. Edit `docker-compose.simple.yml` and add your credentials:
-```yaml
-environment:
-  JWT_SECRET: "your-secret-key-here"         # Generate with: openssl rand -base64 32
-  ANTHROPIC_API_KEY: "your-anthropic-key"    # From https://console.anthropic.com
-```
-
-3. Run with Docker Compose:
-```bash
-docker-compose -f docker-compose.simple.yml up -d
-```
-
-### Option 4: Standard Docker Compose
-
-1. Clone and configure:
-```bash
-git clone https://github.com/shelbyklein/ezra.git
-cd ezra
-cp .env.docker .env
-# Edit .env with your credentials
-```
-
-2. Start the application:
-```bash
-docker-compose up -d
-```
-
-### Option 5: Local Development
-
-#### Prerequisites
-- Node.js 18+
-- npm 9+
-- Anthropic API key
-
-#### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/shelbyklein/ezra.git
-cd ezra
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Set up environment variables:
-```bash
 cp .env.example .env
 # Edit .env and add your Anthropic API key
-```
-
-4. Start the development servers:
-```bash
 npm run dev
 ```
 
@@ -131,40 +65,35 @@ Once deployed, Ezra is available at:
 - **Backend API**: http://localhost:6001
 - **Development Frontend**: http://localhost:5173 (local dev only)
 
-## 🐳 Docker Management
+## 🐳 Docker Deployment
 
-Docker configuration has been consolidated in the `docker/` directory.
+### Available Deployment Profiles
 
-### Quick Start with Docker
+All Docker configuration is consolidated in the `docker/` directory:
+
+- **Default**: Basic setup with SQLite (recommended for personal use)
+- **postgres**: PostgreSQL database (recommended for production)
+- **pgadmin**: Database management interface
+- **backup**: Automated backup scheduling
+- **ssl**: HTTPS with SSL certificates
+- **production**: Full production setup with all features
+
+### Advanced Usage
 
 ```bash
-# Navigate to docker directory
 cd docker
 
-# Copy and configure environment variables
-cp .env.example .env
-# Edit .env with your values
-
-# Start with default configuration (SQLite)
-docker-compose up -d
-```
-
-### Available Docker Profiles
-
-- **Default**: Basic setup with SQLite
-- **postgres**: Use PostgreSQL instead of SQLite
-- **pgadmin**: Include pgAdmin for database management
-- **backup**: Enable automated backups
-- **production**: Full production setup
-- **alt-ports**: Use alternative ports (3006/5002)
-
-Example:
-```bash
-cd docker
+# Use PostgreSQL instead of SQLite
 docker-compose --profile postgres up -d
+
+# Production setup with SSL
+docker-compose --profile production --profile ssl up -d
+
+# Development with database management
+docker-compose --profile pgadmin up -d
 ```
 
-For detailed Docker deployment instructions, see [docker/README.md](docker/README.md)
+For comprehensive deployment instructions, see [docker/README.md](docker/README.md)
 
 ### Troubleshooting
 
@@ -182,17 +111,22 @@ docker-compose ps
 docker-compose build --no-cache
 ```
 
-### Data Management
+### Data Management & Backups
 
-**Persistent Volumes:**
-- `./data` - SQLite database
-- `./uploads` - User files (avatars, images)
-- `./backups` - Automated backups
+**Persistent Data Locations:**
+- `./data` - SQLite database files
+- `./uploads` - User files (avatars, notebook images)
+- `./backups` - Automated backup archives
 
-**Backup Commands:**
+**Backup & Restore:**
 ```bash
-# Using deployment script
+cd docker
+
+# Create timestamped backup
 ./deploy.sh backup
+
+# Restore from backup
+./deploy.sh restore
 
 # Manual backup
 tar -czf backup-$(date +%Y%m%d).tar.gz data uploads .env
@@ -205,64 +139,56 @@ ezra/
 ├── frontend/              # React TypeScript application
 ├── backend/               # Express TypeScript API
 ├── shared/                # Shared types and utilities
-├── deploy.sh              # Full deployment manager
-├── start.sh               # Quick start script
-├── docker-compose.yml     # Standard Docker setup
-├── docker-compose.simple.yml       # All-in-one config
-├── docker-compose.production.yml   # Production setup
-├── docker-compose.full.yml         # Comprehensive options
-├── scripts/               # Utility scripts
+├── docker/                # Docker deployment configuration
+│   ├── docker-compose.yml # Main Docker setup with profiles
+│   ├── .env.example       # Environment configuration template
+│   ├── quick-start.sh     # Interactive deployment script
+│   └── deploy.sh          # Deployment management script
 ├── docs/                  # User documentation
 ├── claude_docs/           # Development documentation
-└── nginx/                 # Nginx configurations
+└── scripts/               # Utility scripts
 ```
 
 ## 🛠️ Available Scripts
 
-### Development
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run dev:frontend-only` - Start only the frontend
-- `npm run dev:backend-only` - Start only the backend
+### Development Scripts
+```bash
+npm run dev                    # Start both frontend and backend
+npm run dev:frontend-only      # Start only frontend
+npm run dev:backend-only       # Start only backend
+```
 
-### Production
-- `npm run build` - Build all workspaces for production
-- `npm run start:prod` - Start production server
+### Production Scripts
+```bash
+npm run build                  # Build all workspaces
+npm run start:prod            # Start production server
+```
 
-### Testing & Quality
-- `npm run test` - Run tests in all workspaces
-- `npm run lint` - Lint all workspaces
-- `npm run type-check:frontend` - Type check frontend
-- `npm run type-check:backend` - Type check backend
+### Quality & Testing
+```bash
+npm run test                  # Run all tests
+npm run lint                  # Lint all workspaces
+npm run type-check:frontend   # TypeScript check frontend
+npm run type-check:backend    # TypeScript check backend
+```
 
-### Running with Separate Servers
+### Distributed Deployment
 
-If you're running the backend on a separate server:
+For running frontend and backend on separate servers:
 
-1. **Frontend Setup:**
+1. **Frontend Server:**
    ```bash
-   # Copy the frontend environment template
    cp frontend/.env.example frontend/.env
-   
-   # Edit frontend/.env and set your backend URL:
-   # VITE_API_URL=http://your-backend-server:port
-   
-   # Run only the frontend
+   # Edit: VITE_API_URL=http://your-backend-server:6001
    npm run dev:frontend-only
    ```
 
-2. **Backend Setup (on separate server):**
+2. **Backend Server:**
    ```bash
-   # Set up backend environment
    cp .env.example .env
-   # Edit .env and update FRONTEND_URL to match your frontend URL
-   
-   # Run only the backend
+   # Edit: FRONTEND_URL=http://your-frontend-server:5173
    npm run dev:backend-only
-   # Or use nodemon directly: cd backend && npm run dev
    ```
-
-3. **CORS Configuration:**
-   Make sure the backend's `FRONTEND_URL` environment variable matches where your frontend is running to allow cross-origin requests.
 
 ## 🔧 Configuration
 
@@ -284,19 +210,10 @@ If you're running the backend on a separate server:
 
 ### Database Options
 
-1. **SQLite** (default)
-   - Zero configuration
-   - Perfect for personal use
-   - File-based persistence
-
-2. **PostgreSQL** (production)
-   ```bash
-   # Use production config
-   docker-compose -f docker-compose.production.yml up -d
-   
-   # Or use profile
-   docker-compose --profile postgres up -d
-   ```
+| Database | Use Case | Setup |
+|----------|----------|-------|
+| **SQLite** | Personal use, development | Default - no configuration needed |
+| **PostgreSQL** | Production, teams | `docker-compose --profile postgres up -d` |
 
 ## 📚 Documentation
 
@@ -306,9 +223,9 @@ If you're running the backend on a separate server:
 - [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) - Productivity shortcuts
 
 ### Deployment Guides
-- [Docker Deployment](DEPLOY_DOCKER.md) - Comprehensive Docker guide
-- [Quick Start](./start.sh) - Automated setup script
-- [Deployment Manager](./deploy.sh) - Full deployment toolkit
+- [Docker Deployment](docker/README.md) - Comprehensive Docker deployment guide
+- [Quick Start Script](docker/quick-start.sh) - Interactive deployment wizard
+- [Deployment Manager](docker/deploy.sh) - Advanced deployment toolkit
 
 ### Developer Resources
 - [Development Workflow](docs/DEVELOPMENT_WORKFLOW.md) - Contributing guide
