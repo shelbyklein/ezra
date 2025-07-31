@@ -1,0 +1,111 @@
+version: '3.8'
+
+# Ezra Docker Compose for Dockge
+# This version uses pre-built images since Dockge can't access the source code
+
+services:
+  # ================================
+  # BACKEND SERVICE
+  # ================================
+  backend:
+    image: ghcr.io/shelbyklein/ezra-backend:latest
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-6001}:6001"
+    environment:
+      # Core Configuration
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 6001
+      
+      # Authentication (REQUIRED - change these!)
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-here-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      ADMIN_SECRET: ${ADMIN_SECRET:-idontknow}
+      
+      # AI Integration (REQUIRED for AI features)
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-your-anthropic-api-key-here}
+      
+      # Database Configuration
+      DATABASE_URL: ${DATABASE_URL:-/app/data/ezra.db}
+      
+      # Frontend URL for CORS
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3005}
+      
+      # API Configuration
+      API_RATE_LIMIT_WINDOW_MS: ${API_RATE_LIMIT_WINDOW_MS:-900000}
+      API_RATE_LIMIT_MAX: ${API_RATE_LIMIT_MAX:-100}
+      
+      # File Upload Settings
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ezra-data:/app/data              # Database storage
+      - ezra-uploads:/app/uploads        # User uploads
+      - ezra-logs:/app/logs              # Application logs
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:6001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # FRONTEND SERVICE
+  # ================================
+  frontend:
+    image: ghcr.io/shelbyklein/ezra-frontend:latest
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-/api}
+    depends_on:
+      - backend
+    networks:
+      - ezra-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # NGINX SSL (Optional)
+  # ================================
+  nginx-ssl:
+    image: nginx:alpine
+    container_name: ezra-nginx-ssl
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - nginx-config:/etc/nginx/conf.d
+      - ssl-certs:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - ezra-network
+    profiles:
+      - ssl
+
+networks:
+  ezra-network:
+    driver: bridge
+
+volumes:
+  ezra-data:
+    driver: local
+  ezra-uploads:
+    driver: local
+  ezra-logs:
+    driver: local
+  nginx-config:
+    driver: local
+  ssl-certs:
+    driver: local

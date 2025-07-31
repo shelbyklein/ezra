@@ -55,7 +55,7 @@ RUN mkdir -p /app/data /app/uploads/avatars /app/uploads/notebooks
 WORKDIR /app/backend
 
 # Expose port
-EXPOSE 5001
+EXPOSE 6001
 
 # Run migrations and start server
 CMD ["sh", "-c", "npx knex migrate:latest && node dist/index.js"]

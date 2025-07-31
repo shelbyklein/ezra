@@ -80,22 +80,28 @@ Ezra/
 │   └── ezra.conf          # Production nginx config
 ├── .env.example           # Backend environment template
 ├── .env.production        # Production environment template
-├── .env.docker            # Docker environment template
+├── docker/                # All Docker-related files
+│   ├── docker-compose.yml # Unified compose with profiles
+│   ├── docker-compose.dockge.yml # Dockge deployment config
+│   ├── docker-compose.dockge-local.yml # Dockge with local images
+│   ├── nginx-ssl.conf     # Nginx HTTPS configuration
+│   ├── .env.example       # Docker environment template
+│   ├── README.md          # Docker deployment guide
+│   ├── DOCKGE-DEPLOYMENT.md # Dockge-specific guide
+│   ├── quick-start.sh     # Interactive setup script
+│   ├── enable-ssl.sh      # SSL enablement script
+│   ├── fix-docker-compose.sh # Python 3.12 fix
+│   ├── build-for-dockge.sh # Build images for Dockge
+│   └── generate-ssl-cert.sh # SSL certificate generation
 ├── .gitignore             # Git ignore rules
 ├── .dockerignore          # Docker build exclusions
 ├── .replit                # Replit configuration
 ├── replit.nix             # Replit system dependencies
-├── docker-compose.yml     # Standard Docker Compose configuration
-├── docker-compose.simple.yml    # Simplified all-in-one YAML config
-├── docker-compose.full.yml      # Comprehensive config with all options
-├── docker-compose.production.yml # Production-ready with PostgreSQL
-├── quick-start.sh         # Interactive setup script
 ├── ecosystem.config.js    # PM2 configuration
 ├── tsconfig.json          # Root TypeScript config
 ├── package.json           # Root workspace configuration
 ├── README.md              # Project documentation
-├── DEPLOY_REPLIT.md       # Replit deployment guide
-└── DEPLOY_DOCKER.md       # Docker deployment guide
+└── DEPLOY_REPLIT.md       # Replit deployment guide
 
 ### Testing Structure
 - **Frontend Testing**:
@@ -548,17 +554,22 @@ Ezra/
 
 #### Docker Deployment
 - Multi-stage Dockerfiles for optimized builds
-- Multiple Docker Compose configurations:
-  - Standard setup with environment files
-  - Simple all-in-one YAML configuration
-  - Comprehensive configuration with all options
-  - Production-ready setup with PostgreSQL
+- Consolidated Docker configuration in docker/ directory
+- Single docker-compose.yml with profiles:
+  - default: Basic SQLite setup
+  - postgres: PostgreSQL database
+  - pgadmin: Database management UI
+  - backup: Automated backups
+  - ssl: HTTPS with nginx
+  - production: Full production setup
+  - alt-ports: Alternative port configuration
+- SSL/HTTPS support with self-signed certificates
+- Docker Compose v2 compatibility
+- Dockge deployment support with pre-built images
 - Interactive quick-start script for easy setup
-- Optional PostgreSQL database service
-- Nginx reverse proxy for frontend
+- Nginx reverse proxy for SSL termination
 - Volume mounts for data persistence
 - Health checks and restart policies
-- Support for multiple deployment profiles
-- Frontend exposed on port 3005
-- Backend API on port 5001
-- Automated backup service option
+- Frontend exposed on port 3005 (or 443 with SSL)
+- Backend API on port 6001
+- Python 3.12 compatibility fixes included

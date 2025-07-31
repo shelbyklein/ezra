@@ -20,8 +20,7 @@
   },
   "references": [
     { "path": "./shared" },
-    { "path": "./backend" },
-    { "path": "./frontend" }
+    { "path": "./backend" }
   ],
-  "exclude": ["node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist", "build", "frontend"]
 }

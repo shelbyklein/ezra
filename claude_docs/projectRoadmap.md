@@ -245,7 +245,7 @@ Develop mind mapping capabilities for knowledge management
 - [x] Batch update API for efficient position changes
 
 ### Development Environment Improvements
-- [x] Port configuration changed from 3001 to 5001
+- [x] Port configuration changed from 3001 to 6001
 - [x] Automatic port cleanup with kill-port
 - [x] Startup scripts for clean development
 - [x] Fixed infinite loop in CreateProjectModal
@@ -449,7 +449,7 @@ Develop mind mapping capabilities for knowledge management
   - [x] Successfully ran all migrations
 
 ### Port Migration Phase
-- [x] Changed backend port from 5001 to 6001 (conflict with Dockge)
+- [x] Changed backend port from 6001 to 6001 (conflict with Dockge)
 - [x] Updated backend configuration (src/index.ts)
 - [x] Updated frontend proxy configuration (vite.config.ts)
 - [x] Updated API service configuration (services/api.ts)

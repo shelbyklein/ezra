@@ -5,7 +5,7 @@ The AI integration for task enhancement has been implemented. Here's how to test
 ## Setup
 
 1. The app should be running at http://localhost:5175
-2. The backend is running on port 5001
+2. The backend is running on port 6001
 
 ## Testing Steps
 

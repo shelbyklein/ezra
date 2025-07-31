@@ -41,7 +41,7 @@ docker-compose up -d --build
 
 ### 4. Access the Application
 - Frontend: http://localhost:3005
-- Backend API: http://localhost:5001
+- Backend API: http://localhost:6001
 
 ## Production Deployment
 
@@ -128,7 +128,7 @@ docker-compose down -v
 
 ### Backend Environment
 - `NODE_ENV`: Set to "production"
-- `PORT`: Backend port (default: 5001)
+- `PORT`: Backend port (default: 6001)
 - `DATABASE_URL`: Database connection string
 - `JWT_SECRET`: Secret for JWT tokens
 - `JWT_EXPIRES_IN`: Token expiration (default: 7d)
@@ -166,7 +166,7 @@ docker-compose exec backend npx knex migrate:latest
 ```
 
 ### Port Conflicts
-If ports 3005 or 5001 are already in use:
+If ports 3005 or 6001 are already in use:
 ```yaml
 # In docker-compose.yml, change ports:
 services:
@@ -175,7 +175,7 @@ services:
       - "8080:80"  # Change 3005 to 8080
   backend:
     ports:
-      - "5002:5001"  # Change 5001 to 5002
+      - "5002:6001"  # Change 6001 to 5002
 ```
 
 ### Memory Issues
@@ -203,7 +203,7 @@ services:
 ### Health Monitoring
 The backend includes a health check endpoint:
 ```bash
-curl http://localhost:5001/api/health
+curl http://localhost:6001/api/health
 ```
 
 ### Scaling

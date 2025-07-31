@@ -20,22 +20,24 @@ An intelligent kanban board application with AI-powered task management, markdow
 - Node.js 18+ (for option 5 only)
 - [Anthropic API key](https://console.anthropic.com)
 
-### Option 1: One-Command Start (Simplest) 🎯
+### Option 1: Interactive Docker Setup (Recommended) 🎯
 
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
-cd ezra
-./start.sh
+cd ezra/docker
+./quick-start.sh
 ```
 
-The script will create a `.env` file. Edit it with your API key and run `./start.sh` again!
+The script will guide you through configuration and start everything automatically!
 
-### Option 2: Full Deployment Manager (Recommended) 🛠️
+### Option 2: Manual Docker Setup 🛠️
 
 ```bash
 git clone https://github.com/shelbyklein/ezra.git
-cd ezra
-./deploy.sh
+cd ezra/docker
+cp .env.example .env
+# Edit .env with your credentials
+docker-compose up -d
 ```
 
 Features:
@@ -126,35 +128,43 @@ npm run dev
 
 Once deployed, Ezra is available at:
 - **Frontend**: http://localhost:3005
-- **Backend API**: http://localhost:5001
+- **Backend API**: http://localhost:6001
 - **Development Frontend**: http://localhost:5173 (local dev only)
 
 ## 🐳 Docker Management
 
-### Common Operations
+Docker configuration has been consolidated in the `docker/` directory.
+
+### Quick Start with Docker
 
 ```bash
-# View running containers
-docker-compose ps
+# Navigate to docker directory
+cd docker
 
-# Restart a service
-docker-compose restart backend
+# Copy and configure environment variables
+cp .env.example .env
+# Edit .env with your values
 
-# Stop everything
-docker-compose down
-
-# Remove everything including volumes (CAUTION: deletes data)
-docker-compose down -v
+# Start with default configuration (SQLite)
+docker-compose up -d
 ```
 
-### Using PostgreSQL (Production)
+### Available Docker Profiles
+
+- **Default**: Basic setup with SQLite
+- **postgres**: Use PostgreSQL instead of SQLite
+- **pgadmin**: Include pgAdmin for database management
+- **backup**: Enable automated backups
+- **production**: Full production setup
+- **alt-ports**: Use alternative ports (3006/5002)
+
+Example:
 ```bash
-# Start with PostgreSQL profile
+cd docker
 docker-compose --profile postgres up -d
-
-# Or use production config
-docker-compose -f docker-compose.production.yml up -d
 ```
+
+For detailed Docker deployment instructions, see [docker/README.md](docker/README.md)
 
 ### Troubleshooting
 
@@ -336,7 +346,7 @@ npm run dev
 docker info
 
 # Check ports
-lsof -i :3005 -i :5001
+lsof -i :3005 -i :6001
 
 # Clean restart
 docker-compose down
@@ -344,7 +354,7 @@ docker-compose up -d --build
 ```
 
 **Can't access the app:**
-- Ensure ports 3005 and 5001 are not in use
+- Ensure ports 3005 and 6001 are not in use
 - Check firewall settings
 - Verify Docker containers are healthy: `docker-compose ps`
 

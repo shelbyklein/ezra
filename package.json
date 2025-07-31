@@ -31,14 +31,13 @@
     "lint:backend": "npm run lint --workspace=backend",
     "type-check:frontend": "npm run type-check --workspace=frontend",
     "type-check:backend": "npm run type-check --workspace=backend",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "build": "tsc"
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "knex": "^3.1.0",
     "prettier": "^3.1.0",
-    "typescript": "^5.3.3",
-    "knex": "^3.1.0"
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -56,5 +55,8 @@
     "task-management"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^24.15.0"
+  }
 }

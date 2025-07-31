@@ -7,7 +7,7 @@ module.exports = {
     exec_mode: 'cluster',
     env: {
       NODE_ENV: 'production',
-      PORT: 5001
+      PORT: 6001
     },
     error_file: '/var/log/ezra/error.log',
     out_file: '/var/log/ezra/out.log',

@@ -1,0 +1,57 @@
+# Docker Compose with absolute paths for Portainer/Stack deployments
+# Use this if you get "no such file or directory" errors
+
+version: '3.8'
+
+services:
+  backend:
+    image: ezra-backend:latest
+    build:
+      context: /home/shelby/ezra
+      dockerfile: backend/Dockerfile
+    container_name: ezra-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-6001}:6001"
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 6001
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-here-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      ADMIN_SECRET: ${ADMIN_SECRET:-idontknow}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-your-anthropic-api-key-here}
+      DATABASE_URL: ${DATABASE_URL:-/app/data/ezra.db}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3005}
+      API_RATE_LIMIT_WINDOW_MS: ${API_RATE_LIMIT_WINDOW_MS:-900000}
+      API_RATE_LIMIT_MAX: ${API_RATE_LIMIT_MAX:-100}
+    volumes:
+      - ezra-data:/app/data
+      - ezra-uploads:/app/uploads
+      - ezra-logs:/app/logs
+    networks:
+      - ezra-network
+
+  frontend:
+    image: ezra-frontend:latest
+    build:
+      context: /home/shelby/ezra
+      dockerfile: frontend/Dockerfile
+    container_name: ezra-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-/api}
+    depends_on:
+      - backend
+    networks:
+      - ezra-network
+
+networks:
+  ezra-network:
+    driver: bridge
+
+volumes:
+  ezra-data:
+  ezra-uploads:
+  ezra-logs:

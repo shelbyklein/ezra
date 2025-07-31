@@ -11,7 +11,7 @@ async function testTags() {
     }
 
     // Fetch projects
-    const projectsResponse = await fetch('http://localhost:5001/api/projects', {
+    const projectsResponse = await fetch('http://localhost:6001/api/projects', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -22,7 +22,7 @@ async function testTags() {
     if (projects.length > 0) {
       // Fetch tasks for first project
       const projectId = projects[0].id;
-      const tasksResponse = await fetch(`http://localhost:5001/api/tasks/project/${projectId}`, {
+      const tasksResponse = await fetch(`http://localhost:6001/api/tasks/project/${projectId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
