@@ -38,7 +38,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 // Create axios instance with same config as main API
 const devApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:6001/api',
   headers: {
     'Content-Type': 'application/json',
   },

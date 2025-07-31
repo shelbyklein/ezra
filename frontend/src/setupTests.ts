@@ -67,7 +67,7 @@ afterAll(() => {
 (global as any).import = {
   meta: {
     env: {
-      VITE_API_URL: 'http://localhost:5001/api',
+      VITE_API_URL: 'http://localhost:6001/api',
     },
   },
 };

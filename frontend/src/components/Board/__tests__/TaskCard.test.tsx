@@ -136,7 +136,8 @@ describe('TaskCard Component', () => {
 
   it('applies drag styles when dragging', () => {
     // Mock dragging state
-    const mockUseSortable = require('@dnd-kit/sortable').useSortable as jest.Mock;
+    const { useSortable } = jest.requireMock('@dnd-kit/sortable');
+    const mockUseSortable = useSortable as jest.Mock;
     mockUseSortable.mockReturnValue({
       attributes: {},
       listeners: {},

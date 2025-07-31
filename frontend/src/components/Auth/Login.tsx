@@ -93,6 +93,7 @@ export const Login: React.FC = () => {
                 <Input
                   id="login-email"
                   type="email"
+                  autoComplete="email"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -110,6 +111,7 @@ export const Login: React.FC = () => {
                   <Input
                     id="login-password"
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {

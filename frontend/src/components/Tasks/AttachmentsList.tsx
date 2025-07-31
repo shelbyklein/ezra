@@ -51,6 +51,7 @@ interface AttachmentsListProps {
 export const AttachmentsList: React.FC<AttachmentsListProps> = ({ taskId }) => {
   const toast = useToast();
   const queryClient = useQueryClient();
+  const hoverBg = useColorModeValue('gray.50', 'whiteAlpha.50');
 
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['attachments', taskId],
@@ -143,7 +144,7 @@ export const AttachmentsList: React.FC<AttachmentsListProps> = ({ taskId }) => {
           p={3}
           borderWidth={1}
           borderRadius="md"
-          _hover={{ bg: useColorModeValue('gray.50', 'whiteAlpha.50') }}
+          _hover={{ bg: hoverBg }}
           spacing={3}
         >
           <Icon as={getFileIcon(attachment)} color="gray.400" />

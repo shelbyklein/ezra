@@ -46,7 +46,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     }
 
     // Connect to backend WebSocket
-    const socketInstance = io('http://localhost:5001', {
+    const backendUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:6001';
+    const socketInstance = io(backendUrl, {
       withCredentials: true,
     });
 
@@ -82,7 +83,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     // Check backend version periodically
     const checkBackendVersion = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/health');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:6001/api';
+        const response = await fetch(`${apiUrl}/health`);
         const data = await response.json();
         
         if (data.startTime !== lastVersionRef.current && lastVersionRef.current !== null) {

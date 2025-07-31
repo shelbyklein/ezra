@@ -243,7 +243,7 @@ export const ChatBubble: React.FC = () => {
       case 'created_multiple_tasks':
       case 'updated_task':
       case 'deleted_task':
-      case 'bulk_updated_tasks':
+      case 'bulk_updated_tasks': {
         const currentProject = getCurrentProject();
         if (currentProject) {
           queryClient.invalidateQueries({ 
@@ -251,8 +251,9 @@ export const ChatBubble: React.FC = () => {
           });
         }
         break;
+      }
       
-      case 'updated_page':
+      case 'updated_page': {
         const notebookContext = getCurrentNotebookContext();
         console.log('Updated page action, notebook context:', notebookContext);
         if (notebookContext?.pageId) {
@@ -285,6 +286,7 @@ export const ChatBubble: React.FC = () => {
           console.warn('No notebook context found for page update');
         }
         break;
+      }
       
       case 'created_page':
         if (metadata.result?.notebookId) {
