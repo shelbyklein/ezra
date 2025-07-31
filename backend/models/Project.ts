@@ -3,7 +3,7 @@ import db from '../src/db';
 
 export interface Project {
   id?: number;
-  name: string;
+  title: string;
   description?: string;
   color?: string;
   user_id: number;

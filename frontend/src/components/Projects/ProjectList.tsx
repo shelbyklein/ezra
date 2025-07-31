@@ -31,7 +31,7 @@ import { CreateProjectModal } from './CreateProjectModal';
 
 interface Project {
   id: number;
-  name: string;
+  title: string;
   description: string | null;
   color: string;
   user_id: number;
@@ -154,7 +154,7 @@ export const ProjectList: React.FC = () => {
             >
               <CardHeader pb={2}>
                 <HStack justify="space-between">
-                  <Heading id={`project-name-${project.id}`} className="project-name" size="md">{project.name}</Heading>
+                  <Heading id={`project-name-${project.id}`} className="project-name" size="md">{project.title}</Heading>
                   <HStack spacing={1}>
                     <IconButton
                       id={`edit-project-${project.id}`}

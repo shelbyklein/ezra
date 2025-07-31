@@ -1,0 +1,6 @@
+/**
+ * File upload endpoints for handling binary file uploads
+ */
+declare const router: import("express-serve-static-core").Router;
+export default router;
+//# sourceMappingURL=upload.routes.d.ts.map

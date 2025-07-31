@@ -46,16 +46,18 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/shared/package.json ./shared/
-COPY backend/knexfile.ts ./backend/
-COPY backend/migrations ./backend/migrations
+COPY --from=builder /app/backend/dist/knexfile.js ./backend/
+COPY backend/docker-entrypoint.sh ./
+COPY backend/init-db.sql ./backend/
+# Copy only JavaScript migration files
+COPY backend/migrations/*.js ./backend/migrations/
 
-# Create necessary directories
-RUN mkdir -p /app/data /app/uploads/avatars /app/uploads/notebooks
-
-WORKDIR /app/backend
+# Create necessary directories and make entrypoint executable
+RUN mkdir -p /app/data /app/uploads/avatars /app/uploads/notebooks && \
+    chmod +x docker-entrypoint.sh
 
 # Expose port
 EXPOSE 6001
 
-# Run migrations and start server
-CMD ["sh", "-c", "npx knex migrate:latest && node dist/index.js"]
+# Use the entrypoint script
+CMD ["./docker-entrypoint.sh"]

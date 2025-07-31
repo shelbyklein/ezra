@@ -5,6 +5,8 @@
 import express from 'express';
 import authenticate from '../middleware/auth.middleware';
 import db from '../src/db';
+import { NotebookModel } from '../models/Notebook';
+import { NotebookPageModel } from '../models/NotebookPage';
 
 const router = express.Router();
 
@@ -14,31 +16,8 @@ const router = express.Router();
 router.get('/recent', authenticate, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 3;
-    
-    const notebooks = await db('notebooks')
-      .where({ user_id: req.user!.userId })
-      .orderBy('updated_at', 'desc')
-      .limit(limit);
-    
-    // Get page counts for each notebook
-    const notebookIds = notebooks.map(n => n.id);
-    const pageCounts = await db('notebook_pages')
-      .whereIn('notebook_id', notebookIds)
-      .groupBy('notebook_id')
-      .select('notebook_id')
-      .count('id as count');
-    
-    const pageCountMap = pageCounts.reduce((acc, pc) => {
-      acc[pc.notebook_id] = parseInt(pc.count as string);
-      return acc;
-    }, {} as Record<number, number>);
-    
-    const notebooksWithDetails = notebooks.map(notebook => ({
-      ...notebook,
-      page_count: pageCountMap[notebook.id] || 0
-    }));
-    
-    res.json(notebooksWithDetails);
+    const notebooks = await NotebookModel.findRecentByUserId(req.user!.userId, limit);
+    res.json(notebooks);
   } catch (error) {
     console.error('Error fetching recent notebooks:', error);
     res.status(500).json({ error: 'Failed to fetch recent notebooks' });
@@ -48,34 +27,10 @@ router.get('/recent', authenticate, async (req, res) => {
 // Get starred pages across all notebooks
 router.get('/starred-pages', authenticate, async (req, res) => {
   try {
-    console.log('Fetching starred pages for user:', req.user!.userId);
-    console.log('Database object exists:', !!db);
-    
-    const starredPages = await db('notebook_pages as p')
-      .join('notebooks as n', 'p.notebook_id', 'n.id')
-      .where({ 
-        'n.user_id': req.user!.userId,
-        'p.is_starred': 1  // SQLite uses 1/0 for boolean
-      })
-      .select(
-        'p.id',
-        'p.title',
-        'p.slug',
-        'p.updated_at',
-        'p.notebook_id',
-        'n.title as notebook_title',
-        'n.icon as notebook_icon'
-      )
-      .orderBy('p.updated_at', 'desc');
-    
-    console.log('Found starred pages:', starredPages.length);
+    const starredPages = await NotebookPageModel.findStarredByUserId(req.user!.userId);
     res.json(starredPages);
   } catch (error) {
     console.error('Error fetching starred pages:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', error.message);
-      console.error('Error stack:', error.stack);
-    }
     res.status(500).json({ error: 'Failed to fetch starred pages' });
   }
 });
@@ -83,16 +38,7 @@ router.get('/starred-pages', authenticate, async (req, res) => {
 // Get all notebooks for authenticated user
 router.get('/', authenticate, async (req, res) => {
   try {
-    const notebooks = await db('notebooks')
-      .leftJoin('projects', 'notebooks.project_id', 'projects.id')
-      .where({ 'notebooks.user_id': req.user!.userId })
-      .select(
-        'notebooks.*',
-        'projects.name as project_name',
-        'projects.color as project_color'
-      )
-      .orderBy('notebooks.position', 'asc');
-    
+    const notebooks = await NotebookModel.findByUserId(req.user!.userId);
     res.json(notebooks);
   } catch (error) {
     console.error('Error fetching notebooks:', error);
@@ -111,7 +57,7 @@ router.get('/:id', authenticate, async (req, res) => {
       })
       .select(
         'notebooks.*',
-        'projects.name as project_name',
+        'projects.title as project_name',  // Database uses 'title' not 'name'
         'projects.color as project_color'
       )
       .first();

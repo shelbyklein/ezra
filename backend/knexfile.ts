@@ -36,8 +36,8 @@ const config: { [key: string]: Knex.Config } = {
   production: {
     client: 'sqlite3',
     connection: {
-      // Use Replit's persistent storage path
-      filename: process.env.REPLIT ? '/home/runner/ezra-data/ezra.db' : path.join(__dirname, 'prod.sqlite3')
+      // Use DATABASE_URL if provided, otherwise fall back to default paths
+      filename: process.env.DATABASE_URL || (process.env.REPLIT ? '/home/runner/ezra-data/ezra.db' : path.join(__dirname, 'prod.sqlite3'))
     },
     migrations: {
       directory: path.join(__dirname, 'migrations'),

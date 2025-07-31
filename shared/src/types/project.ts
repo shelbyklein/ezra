@@ -1,7 +1,7 @@
 // Project type definitions
 export interface Project {
   id: string
-  name: string
+  title: string
   description?: string
   color?: string
   userId: string
@@ -11,7 +11,7 @@ export interface Project {
 }
 
 export interface CreateProjectRequest {
-  name: string
+  title: string
   description?: string
   color?: string
 }

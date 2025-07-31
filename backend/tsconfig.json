@@ -12,6 +12,11 @@
   },
   "include": ["src/**/*", "routes/**/*", "utils/**/*", "middleware/**/*", "models/**/*", "migrations/**/*", "knexfile.ts"],
   "exclude": ["node_modules", "dist"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "references": [
     { "path": "../shared" }
   ]

@@ -33,7 +33,7 @@ import { SettingsIcon } from '@chakra-ui/icons';
 
 interface Project {
   id: number;
-  name: string;
+  title: string;
   description: string | null;
   color: string;
   updated_at: string;
@@ -178,7 +178,7 @@ export const Dashboard: React.FC = () => {
                     />
                     <CardHeader pb={2}>
                       <VStack align="start" spacing={1}>
-                        <Heading size="md">{project.name}</Heading>
+                        <Heading size="md">{project.title}</Heading>
                         {project.description && (
                           <Text fontSize="sm" color="gray.500" noOfLines={2}>
                             {project.description}

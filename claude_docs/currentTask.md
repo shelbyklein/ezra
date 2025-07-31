@@ -247,6 +247,27 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Fixed placeholder positioning bug in columns
   - Added alignment menus for each column (top/middle/bottom, left/center/right)
 
+### Database Schema Debugging & Resolution
+✅ Identified and resolved frontend-backend field mismatch
+  - Root cause: Database migrated from `projects.name` to `projects.title`
+  - Frontend components still expected `name` field, causing "Loading..." display
+  - Created migration `20250731121105_rename_projects_name_to_title.ts`
+✅ Created comprehensive database models
+  - `Notebook.ts` - Model with project associations and page counts
+  - `NotebookPage.ts` - Page model with starred functionality and ownership verification
+  - Updated existing models to use consistent field names
+✅ Updated frontend components for schema consistency
+  - `Board.tsx`, `ProjectList.tsx`, `Dashboard.tsx` - Now use `title` field
+  - Updated TypeScript interfaces in shared types
+  - Fixed project title display issues across all components
+✅ Refactored routes to use proper models
+  - `notebooks.routes.ts` - Now uses Notebook and NotebookPage models instead of direct DB queries
+  - `projects.routes.ts` - Updated to support both `name` and `title` for backward compatibility
+✅ Fixed build system and migration execution
+  - Cleaned up compiled JavaScript migration files
+  - Updated knexfile for consistent TypeScript usage across all environments
+  - Fixed TypeScript migration execution with ts-node and tsx
+
 ### Star Pages & Favorites Feature
 ✅ Implemented star page functionality for notebooks
   - Added is_starred field to notebook pages

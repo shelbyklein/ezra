@@ -14,7 +14,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "db:migrate": "npx knex migrate:latest",
+    "db:migrate": "node -r ts-node/register ../node_modules/.bin/knex migrate:latest",
     "db:migrate:make": "npx knex migrate:make",
     "db:migrate:rollback": "npx knex migrate:rollback",
     "db:seed": "npx knex seed:run",
@@ -54,6 +54,7 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.3.3"
   }
 }

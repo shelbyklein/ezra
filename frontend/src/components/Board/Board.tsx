@@ -70,7 +70,7 @@ interface Task {
 
 interface Project {
   id: number;
-  name: string;
+  title: string;
   description: string | null;
   color?: string;
 }
@@ -534,7 +534,7 @@ export const Board: React.FC = () => {
                   borderColor="border.primary"
                 />
               )}
-              <Heading id="board-title" size="lg">{project?.name || 'Loading...'}</Heading>
+              <Heading id="board-title" size="lg">{project?.title || 'Loading...'}</Heading>
               {!notebooksLoading && projectNotebooks.length > 0 && (
                 <HStack spacing={2}>
                   {projectNotebooks.map((notebook: any) => (
@@ -687,7 +687,7 @@ export const Board: React.FC = () => {
           onClose={onProjectEditClose}
           project={project ? {
             id: project.id,
-            name: project.name,
+            name: project.title,
             description: project.description,
             color: project.color || '#3182CE',
             user_id: 0, // Not available in this interface

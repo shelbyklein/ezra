@@ -218,8 +218,10 @@ Ezra/
   - dev.routes.ts - Development tools (reset-all, reset-user, seed, stats)
 - **models/** - Database models with TypeScript interfaces
   - User.ts - User authentication model with password reset token support
-  - Project.ts - Project model
+  - Project.ts - Project model (updated to use 'title' field)
   - Task.ts - Task model with position tracking
+  - Notebook.ts - Notebook model with project associations and page counts
+  - NotebookPage.ts - Notebook page model with starred functionality
 - **middleware/** - Request processing
   - auth.middleware.ts - JWT token verification
 - **utils/** - Helper functions
@@ -236,6 +238,7 @@ Ezra/
   - email.ts - Email utility functions (placeholder for production email service integration)
 - **migrations/** - Database schema versioning
   - Knex.js migrations for all entities
+  - 20250731121105_rename_projects_name_to_title.ts - Schema fix migration
 - **src/db/** - Database configuration
   - SQLite setup with Knex.js
 
@@ -480,6 +483,27 @@ Ezra/
 - Transaction-based import with proper ID mapping
 - Maintains all relationships between entities
 - Non-destructive import (adds data without overwriting)
+
+### Database Schema Debugging & Resolution ✅ COMPLETED
+- **Root Cause Identified**: Frontend-backend field mismatch after migrations
+  - Database had migrated from `projects.name` to `projects.title`
+  - Frontend components still expecting `name` field
+  - Project titles showing "Loading..." when `project.name` was undefined
+- **Migration Created**: `20250731121105_rename_projects_name_to_title.ts`
+  - Properly renames the database column with rollback support
+- **Models Created**: 
+  - `Notebook.ts` - Comprehensive model with associations and page counts
+  - `NotebookPage.ts` - Page model with starred functionality and ownership verification
+- **Frontend Components Updated**:
+  - `Board.tsx`, `ProjectList.tsx`, `Dashboard.tsx` - Updated to use `title` field
+  - Type interfaces updated to match backend schema
+- **Routes Refactored**:
+  - `notebooks.routes.ts` - Now uses Notebook and NotebookPage models
+  - `projects.routes.ts` - Supports both `name` and `title` for backward compatibility
+- **Build System Fixed**:
+  - Cleaned up compiled JavaScript migration files
+  - Updated knexfile to use TypeScript consistently across all environments
+  - Fixed TypeScript migration execution with ts-node
 
 ### MVP Status
 ✅ **100% COMPLETE** - All MVP features have been successfully implemented!

@@ -51,6 +51,7 @@ router.get('/recent', authenticate, async (req, res) => {
     
     const projectsWithDetails = projects.map(project => ({
       ...project,
+      title: project.title,
       task_count: taskCountMap[project.id] || 0,
       tags: tagsByProject[project.id] || []
     }));
@@ -92,9 +93,10 @@ router.get('/', authenticate, async (req, res) => {
       return acc;
     }, {} as Record<number, Array<{ id: number; name: string; color: string }>>);
     
-    // Add tags to projects
+    // Add tags to projects and map title to name
     const projectsWithTags = projects.map(project => ({
       ...project,
+      title: project.title,
       tags: tagsByProject[project.id] || []
     }));
     
@@ -127,6 +129,7 @@ router.get('/:id', authenticate, async (req, res) => {
     
     res.json({
       ...project,
+      title: project.title,
       tags: projectTags
     });
   } catch (error) {
@@ -138,10 +141,12 @@ router.get('/:id', authenticate, async (req, res) => {
 // Create new project
 router.post('/', authenticate, async (req, res) => {
   try {
-    const { name, description, color } = req.body;
+    const { title, name, description, color } = req.body;
     
-    if (!name) {
-      return res.status(400).json({ error: 'Project name is required' });
+    // Support both 'title' and 'name' for backward compatibility
+    const projectTitle = title || name;
+    if (!projectTitle) {
+      return res.status(400).json({ error: 'Project title is required' });
     }
     
     // Validate color format (hex)
@@ -151,7 +156,7 @@ router.post('/', authenticate, async (req, res) => {
     
     const project = {
       user_id: req.user!.userId,
-      name,
+      title: projectTitle,
       description: description || null,
       color: color || '#3182CE', // Default blue if not provided
       created_at: new Date().toISOString(),
@@ -166,7 +171,10 @@ router.post('/', authenticate, async (req, res) => {
       .orderBy('id', 'desc')
       .first();
     
-    res.status(201).json(createdProject);
+    res.status(201).json({
+      ...createdProject,
+      name: createdProject.title  // Map database 'title' to frontend 'name'
+    });
   } catch (error) {
     console.error('Error creating project:', error);
     res.status(500).json({ error: 'Failed to create project' });
@@ -176,7 +184,7 @@ router.post('/', authenticate, async (req, res) => {
 // Update project
 router.put('/:id', authenticate, async (req, res) => {
   try {
-    const { name, description, color } = req.body;
+    const { title, name, description, color } = req.body;
     
     // Validate color format if provided
     if (color && !/^#[0-9A-F]{6}$/i.test(color)) {
@@ -187,7 +195,9 @@ router.put('/:id', authenticate, async (req, res) => {
       updated_at: new Date().toISOString()
     };
     
-    if (name !== undefined) updateData.name = name;
+    // Support both 'title' and 'name' for backward compatibility
+    const projectTitle = title || name;
+    if (projectTitle !== undefined) updateData.title = projectTitle;
     if (description !== undefined) updateData.description = description;
     if (color !== undefined) updateData.color = color;
     
@@ -206,7 +216,10 @@ router.put('/:id', authenticate, async (req, res) => {
       .where({ id: req.params.id })
       .first();
     
-    res.json(project);
+    res.json({
+      ...project,
+      name: project.title  // Map database 'title' to frontend 'name'
+    });
   } catch (error) {
     console.error('Error updating project:', error);
     res.status(500).json({ error: 'Failed to update project' });
