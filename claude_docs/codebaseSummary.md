@@ -513,6 +513,17 @@ Ezra/
   - Notebook functionality works correctly
   - All TypeScript compilation errors resolved
 
+### Home Navigation Enhancement ✅ COMPLETED
+- **Issue**: Home navigation didn't refresh dashboard data when clicked from dashboard page
+- **Solution**: 
+  - Added React Query client integration to AppLayout component
+  - Created smart `handleHomeNavigation()` function with conditional behavior
+  - Updates Home button, mobile menu, and logo click handlers
+- **Behavior**: 
+  - If already on dashboard: Invalidates and refreshes recent projects, notebooks, starred pages
+  - If on other pages: Navigates to dashboard as before
+- **Result**: Users now see updated content when clicking Home from dashboard
+
 ### MVP Status
 ✅ **100% COMPLETE** - All MVP features have been successfully implemented!
 

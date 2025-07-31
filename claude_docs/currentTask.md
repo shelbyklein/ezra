@@ -340,7 +340,13 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **Database Crash Resolution (Latest):**
+- **Home Navigation Refresh Fix (Latest):**
+  - Fixed Home navigation to properly refresh dashboard data when clicked from dashboard
+  - Added React Query client integration to AppLayout component
+  - Implemented handleHomeNavigation function with smart refresh behavior
+  - Updated Home button, mobile menu, and logo click to refresh data when already on dashboard
+  - Ensures users see updated recent projects, notebooks, and starred pages on Home click
+- **Database Crash Resolution:**
   - Fixed critical database schema issue preventing startup
   - Removed duplicate migration creating conflicting notebook_pages table
   - TypeScript compilation errors in Socket.IO CORS configuration resolved
