@@ -22,6 +22,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { ChatBubble } from '../AI/ChatBubble';
 import { BreadcrumbFooter } from './BreadcrumbFooter';
@@ -35,6 +36,7 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
   const { isSearchOpen, onCloseSearch } = useKeyboardShortcuts();
+  const queryClient = useQueryClient();
   
   // Determine if current route should have padding
   // Chat and individual notebook views should have no padding
@@ -44,6 +46,18 @@ export const AppLayout: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleHomeNavigation = () => {
+    // If we're already on the home page, refresh the data
+    if (location.pathname === '/') {
+      queryClient.invalidateQueries({ queryKey: ['recent-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['recent-notebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['starred-pages'] });
+    } else {
+      // Navigate to home page
+      navigate('/');
+    }
   };
 
   return (
@@ -66,12 +80,12 @@ export const AppLayout: React.FC = () => {
               fontSize="xl"
               color="blue.500"
               cursor="pointer"
-              onClick={() => navigate('/')}
+              onClick={handleHomeNavigation}
             >
               Ezra
             </Box>
             <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-              <Button id="nav-home" variant="ghost" onClick={() => navigate('/')}>
+              <Button id="nav-home" variant="ghost" onClick={handleHomeNavigation}>
                 Home
               </Button>
               <Button id="nav-chat" variant="ghost" onClick={() => navigate('/app/chat')}>
@@ -125,7 +139,7 @@ export const AppLayout: React.FC = () => {
         {isOpen ? (
           <Box id="mobile-menu" className="mobile-navigation" pb={4} display={{ md: 'none' }}>
             <Stack as="nav" spacing={4}>
-              <Button id="mobile-nav-home" variant="ghost" onClick={() => navigate('/')}>
+              <Button id="mobile-nav-home" variant="ghost" onClick={handleHomeNavigation}>
                 Home
               </Button>
               <Button id="mobile-nav-chat" variant="ghost" onClick={() => navigate('/app/chat')}>
