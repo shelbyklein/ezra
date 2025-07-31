@@ -358,6 +358,11 @@ Develop mind mapping capabilities for knowledge management
 - [x] Dashboard personalized welcome message with settings button
 - [x] UI layout fixes for Chat and Notebook views
 - [x] Full-width layout for individual notebook views
+- [x] Password reset functionality for authenticated users
+  - [x] Backend endpoint at /auth/reset-password
+  - [x] Modal UI in ProfileSettings component
+  - [x] Client-side validation (min 6 chars, password match)
+  - [x] Secure bcrypt hashing
 
 ### Data Backup & Import Phase
 - [x] Backend endpoints for data export (JSON format)

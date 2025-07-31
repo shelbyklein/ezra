@@ -61,6 +61,11 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 ✅ Avatar storage in uploads/avatars directory
 ✅ Automatic cleanup of old avatars on new upload
 ✅ Dashboard shows personalized welcome message with settings button
+✅ Password reset functionality
+  - Authenticated password change (requires login)
+  - Modal UI for password entry and confirmation
+  - Client-side validation (minimum 6 characters, password match)
+  - Secure bcrypt hashing on backend
 
 ### UI/Layout Improvements
 ✅ Fixed chat layout - input bar stays at bottom with proper flex height

@@ -29,7 +29,7 @@ import { api } from '../../services/api';
 import { formatDistanceToNow } from 'date-fns';
 import { ChatBubble } from '../AI/ChatBubble';
 import { useAuth } from '../../contexts/AuthContext';
-import { SettingsIcon, StarIcon } from '@chakra-ui/icons';
+import { SettingsIcon } from '@chakra-ui/icons';
 
 interface Project {
   id: number;

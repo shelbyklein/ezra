@@ -17,8 +17,17 @@ import {
   useToast,
   Spinner,
   Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  FormErrorMessage,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, LockIcon } from '@chakra-ui/icons';
 import { FaCamera } from 'react-icons/fa';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
@@ -37,6 +46,10 @@ export const ProfileSettings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   // Fetch user profile
   const { data: profile, isLoading } = useQuery<UserProfile>({
@@ -115,6 +128,33 @@ export const ProfileSettings: React.FC = () => {
     },
   });
 
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (newPassword: string) => {
+      const response = await api.post('/auth/reset-password', { newPassword });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Password updated successfully',
+        status: 'success',
+        duration: 3000,
+      });
+      onClose();
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordError('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Failed to update password',
+        description: error.response?.data?.message || 'Please try again',
+        status: 'error',
+        duration: 5000,
+      });
+    },
+  });
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -142,6 +182,22 @@ export const ProfileSettings: React.FC = () => {
     } else {
       setIsEditingName(false);
     }
+  };
+
+  const handlePasswordReset = () => {
+    setPasswordError('');
+    
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    
+    resetPasswordMutation.mutate(newPassword);
   };
 
   if (isLoading) {
@@ -279,6 +335,65 @@ export const ProfileSettings: React.FC = () => {
             : 'Unknown'}
         </Text>
       </FormControl>
+
+      {/* Password Section */}
+      <FormControl>
+        <FormLabel>Password</FormLabel>
+        <Button
+          leftIcon={<LockIcon />}
+          variant="outline"
+          onClick={onOpen}
+        >
+          Change Password
+        </Button>
+      </FormControl>
+
+      {/* Password Reset Modal */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Change Password</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={4}>
+              <FormControl isInvalid={!!passwordError}>
+                <FormLabel>New Password</FormLabel>
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </FormControl>
+              <FormControl isInvalid={!!passwordError}>
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+                {passwordError && (
+                  <FormErrorMessage>{passwordError}</FormErrorMessage>
+                )}
+              </FormControl>
+            </VStack>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={handlePasswordReset}
+              isLoading={resetPasswordMutation.isPending}
+            >
+              Update Password
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };

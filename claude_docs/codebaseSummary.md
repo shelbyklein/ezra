@@ -136,7 +136,7 @@ Ezra/
   - DeveloperTools - Data reset and testing tools (dev only)
   - TagsManagement - Tags CRUD interface with color picker
   - ApiKeySettings - Anthropic API key management interface
-  - ProfileSettings - User profile management with avatar upload
+  - ProfileSettings - User profile management with avatar upload and password change
   - BackupSettings - Data export/import functionality with preview
 - **Tasks/** - Task management
   - CreateTaskForm - Quick task creation modal with tag selector
@@ -187,7 +187,7 @@ Ezra/
 
 ### Backend Structure
 - **routes/** - API endpoint definitions
-  - auth.routes.ts - Authentication (register/login)
+  - auth.routes.ts - Authentication (register/login/reset-password)
   - projects.routes.ts - Project CRUD + tags integration + /recent endpoint
   - tasks.routes.ts - Task CRUD + reordering + tags fetching + /natural-language endpoint
   - notes.routes.ts - Notes CRUD operations
@@ -438,6 +438,11 @@ Ezra/
 - Automatic cleanup of old avatars on new upload
 - Dashboard personalized welcome message
 - UI layout fixes for proper flex height in Chat/Notebook views
+- Password reset functionality (POST /auth/reset-password)
+  - Requires authentication (change password, not forgot password flow)
+  - Modal UI for entering and confirming new password
+  - Client-side validation (min 6 chars, password match)
+  - Secure password hashing with bcrypt
 
 ### Data Backup & Import Phase ✅ COMPLETED
 - Backend endpoints for data export/import with validation

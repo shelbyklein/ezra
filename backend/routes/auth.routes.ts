@@ -3,6 +3,8 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { UserModel, UserCreateInput } from '../models/User';
 import { generateToken } from '../utils/jwt';
+import { authenticate } from '../middleware/auth.middleware';
+import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -17,6 +19,10 @@ const registerValidation = [
 const loginValidation = [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty()
+];
+
+const resetPasswordValidation = [
+  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ];
 
 // Register endpoint
@@ -162,6 +168,43 @@ router.post('/login', loginValidation, async (req: Request, res: Response) => {
       error: {
         code: 'LOGIN_FAILED',
         message: 'Failed to login'
+      }
+    });
+  }
+});
+
+// Reset password endpoint (requires authentication)
+router.post('/reset-password', authenticate, resetPasswordValidation, async (req: Request, res: Response) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
+      });
+    }
+
+    const { newPassword } = req.body;
+    const userId = req.user!.userId;
+
+    // Hash the new password
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    // Update user's password
+    await UserModel.update(userId, { password_hash });
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'PASSWORD_RESET_FAILED',
+        message: 'Failed to reset password'
       }
     });
   }
