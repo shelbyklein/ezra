@@ -50,6 +50,7 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS chat_conversations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   title VARCHAR(255),
+  started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   last_message_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -139,6 +140,11 @@ if sqlite3 /app/data/ezra.db "PRAGMA table_info(projects);" | grep -q "name" && 
   echo "Renaming projects.name to projects.title..."
   sqlite3 /app/data/ezra.db "ALTER TABLE projects RENAME COLUMN name TO title;"
 fi
+
+# Add started_at column to chat_conversations table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(chat_conversations);
+" | grep -q "started_at" || sqlite3 /app/data/ezra.db "ALTER TABLE chat_conversations ADD COLUMN started_at DATETIME DEFAULT CURRENT_TIMESTAMP;"
 
 echo "Missing columns added successfully"
 
