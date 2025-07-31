@@ -45,6 +45,38 @@ sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_pages_noteboo
 sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_pages_slug ON notebook_pages(slug);"
 sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_pages_is_starred ON notebook_pages(is_starred);"
 
+# Create chat history tables if they don't exist
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS chat_conversations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  title VARCHAR(255),
+  last_message_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);"
+
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS chat_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  conversation_id INTEGER NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  metadata TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
+);"
+
+# Create notebook_tags table if it doesn't exist
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_tags (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  notebook_id INTEGER NOT NULL,
+  tag_id INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+  UNIQUE(notebook_id, tag_id)
+);"
+
 echo "All required tables verified/created"
 
 # Add missing columns to existing tables
@@ -72,6 +104,41 @@ PRAGMA table_info(projects);
 sqlite3 /app/data/ezra.db "
 PRAGMA table_info(tasks);
 " | grep -q "position" || sqlite3 /app/data/ezra.db "ALTER TABLE tasks ADD COLUMN position INTEGER DEFAULT 0;"
+
+# Add project_id column to notebooks table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(notebooks);
+" | grep -q "project_id" || sqlite3 /app/data/ezra.db "ALTER TABLE notebooks ADD COLUMN project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL;"
+
+# Add anthropic_api_key column to users table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(users);
+" | grep -q "anthropic_api_key" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN anthropic_api_key VARCHAR(255);"
+
+# Add password reset columns to users table if they don't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(users);
+" | grep -q "reset_token" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN reset_token VARCHAR(255);"
+
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(users);
+" | grep -q "reset_token_expires" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN reset_token_expires DATETIME;"
+
+# Add avatar_url column to users table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(users);
+" | grep -q "avatar_url" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255);"
+
+# Add username column to users table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(users);
+" | grep -q "username" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN username VARCHAR(255);"
+
+# Rename projects.name to projects.title if needed
+if sqlite3 /app/data/ezra.db "PRAGMA table_info(projects);" | grep -q "name" && ! sqlite3 /app/data/ezra.db "PRAGMA table_info(projects);" | grep -q "title"; then
+  echo "Renaming projects.name to projects.title..."
+  sqlite3 /app/data/ezra.db "ALTER TABLE projects RENAME COLUMN name TO title;"
+fi
 
 echo "Missing columns added successfully"
 
