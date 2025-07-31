@@ -340,6 +340,12 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
+- **Database Crash Resolution (Latest):**
+  - Fixed critical database schema issue preventing startup
+  - Removed duplicate migration creating conflicting notebook_pages table
+  - TypeScript compilation errors in Socket.IO CORS configuration resolved
+  - Backend now starts successfully with proper database connectivity
+  - Verified notebook functionality works correctly with folder_id column
 - Docker Configuration Consolidation:
   - Consolidated 5 docker-compose files into single file with profiles
   - Reorganized all Docker files into dedicated docker/ directory

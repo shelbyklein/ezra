@@ -22,7 +22,7 @@ const io = new Server(httpServer, {
       'http://localhost:5174',
       'http://localhost:5175',
       process.env.FRONTEND_URL
-    ].filter((url): url is string | RegExp => Boolean(url)),
+    ].filter((url): url is string => Boolean(url) && typeof url === 'string'),
     credentials: true
   }
 })
