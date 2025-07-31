@@ -228,31 +228,31 @@ async function searchProjects(
   try {
     let query = db('projects')
       .where('user_id', userId)
-      .select('id', 'name', 'description', 'updated_at');
+      .select('id', 'title', 'description', 'updated_at');
     
     if (!options.includeArchived) {
-      query = query.where('archived', false);
+      query = query.where('is_archived', false);
     }
     
     const projects = await query;
     const results: SearchResult[] = [];
     
     for (const project of projects) {
-      const fullText = `${project.name} ${project.description || ''}`;
+      const fullText = `${project.title} ${project.description || ''}`;
       const relevanceScore = calculateRelevance(fullText, keywords);
       
       if (relevanceScore > 0) {
         results.push({
           type: 'project',
           id: project.id,
-          title: project.name,
+          title: project.title,
           content: project.description || '',
-          fullContent: project.description || project.name,
-          snippet: extractSnippet(project.description || project.name, keywords),
-          relevanceScore: relevanceScore + (calculateRelevance(project.name, keywords) * 2),
+          fullContent: project.description || project.title,
+          snippet: extractSnippet(project.description || project.title, keywords),
+          relevanceScore: relevanceScore + (calculateRelevance(project.title, keywords) * 2),
           metadata: {
             projectId: project.id,
-            projectName: project.name,
+            projectName: project.title,
             updatedAt: project.updated_at
           }
         });
@@ -285,7 +285,7 @@ async function searchTasks(
         't.status',
         't.updated_at',
         'p.id as project_id',
-        'p.name as project_name'
+        'p.title as project_name'
       );
     
     if (options.timeRange?.start) {

@@ -300,7 +300,9 @@ Visual knowledge management:
    - [x] Fixed API key persistence and display issues:
      - [x] Resolved React Query cache conflicts
      - [x] Fixed database schema mismatches (projects.name → projects.title)
+     - [x] Fixed additional schema mismatches (archived → is_archived)
      - [x] Cleaned up old compiled JavaScript files
+     - [x] Aligned all API endpoints with current database schema
    - [x] UI/UX improvements:
      - [x] Created animated loading indicators for chat
      - [x] Improved AI response quality and naturalness

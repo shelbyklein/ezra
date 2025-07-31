@@ -78,19 +78,19 @@ router.get('/', authenticate, async (req, res) => {
         .where('user_id', req.user!.userId)
         .andWhere((builder) => {
           builder
-            .whereRaw('LOWER(name) LIKE ?', [`%${query}%`])
+            .whereRaw('LOWER(title) LIKE ?', [`%${query}%`])
             .orWhereRaw('LOWER(description) LIKE ?', [`%${query}%`]);
         })
-        .select('id', 'name', 'description');
+        .select('id', 'title', 'description');
 
       projects.forEach(project => {
-        const titleMatch = project.name.toLowerCase().includes(query);
+        const titleMatch = project.title.toLowerCase().includes(query);
         const descMatch = project.description?.toLowerCase().includes(query);
         
         results.push({
           type: 'project',
           id: project.id,
-          title: project.name,
+          title: project.title,
           description: project.description,
           match: titleMatch ? 'title' : 'description',
           score: titleMatch ? 10 : 5

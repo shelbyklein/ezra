@@ -340,7 +340,14 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **Chat UI Improvements (Latest):**
+- **Database Schema Mismatch Resolution (Latest):**
+  - Fixed critical API errors caused by database column name mismatches
+  - Updated contextSearch.ts to use `projects.title` instead of `projects.name`
+  - Fixed `is_archived` column reference (was incorrectly using `archived`)
+  - Updated search.routes.ts to query correct column names
+  - Resolved SQLite errors preventing search and AI context functionality
+  - All API endpoints now properly aligned with current database schema
+- **Chat UI Improvements:**
   - Created AnimatedEllipsis component for cleaner loading indicators
   - Replaced text-based "Searching your knowledge base..." with animated dots
   - Provides modern, minimal loading feedback during AI processing
