@@ -152,7 +152,7 @@ router.post('/suggest-tasks', authenticate, async (req: Request, res: Response) 
       .where({ project_id: projectId })
       .select('title', 'description', 'status');
 
-    const prompt = `Given a project titled "${project.name}" ${project.description ? `with description: "${project.description}"` : ''}, 
+    const prompt = `Given a project titled "${project.title}" ${project.description ? `with description: "${project.description}"` : ''}, 
     and these existing tasks: ${existingTasks.map(t => `"${t.title}" (${t.status})`).join(', ')},
     suggest 3-5 new tasks that would help complete this project. 
     
@@ -256,8 +256,10 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
         searchContext = formatContextForAI(searchResults);
         citations = generateSourceCitations(searchResults);
       }
-    } catch (searchError) {
+    } catch (searchError: any) {
       console.error('Context search failed:', searchError);
+      console.error('Search error details:', searchError.message);
+      console.error('Stack trace:', searchError.stack);
       // Continue without search context
     }
 
@@ -268,7 +270,7 @@ router.post('/chat', authenticate, async (req: Request, res: Response) => {
     const recentTasks = context?.currentProjectId ?
       await db('tasks').where({ project_id: context.currentProjectId }).limit(10).select('id', 'title', 'status') : [];
 
-    const userProjects = await db('projects').where({ user_id: userId }).select('id', 'name');
+    const userProjects = await db('projects').where({ user_id: userId }).select('id', 'title');
 
     // Get notebook context if available
     const notebookContext = context?.currentNotebookId ?
@@ -288,8 +290,8 @@ ${searchContext ? `## Relevant Information from User's Knowledge Base:\n${search
 
 Current context:
 - User has ${userProjects.length} projects
-- Current project: ${projectContext ? `"${projectContext.name}" (ID: ${projectContext.id})` : 'None selected'}
-- Available projects: ${userProjects.map(p => `"${p.name}" (ID: ${p.id})`).join(', ')}
+- Current project: ${projectContext ? `"${projectContext.title}" (ID: ${projectContext.id})` : 'None selected'}
+- Available projects: ${userProjects.map(p => `"${p.title}" (ID: ${p.id})`).join(', ')}
 ${recentTasks.length > 0 ? `- Recent tasks in current project:\n${recentTasks.map(t => `  - [ID: ${t.id}] "${t.title}" (${t.status})`).join('\n')}` : ''}
 ${notebookContext ? `- Current notebook: "${notebookContext.name}" (ID: ${notebookContext.id})` : ''}
 ${pageContext ? `- Current page: "${pageContext.title}" (ID: ${pageContext.id})\n- You CAN edit this page using the update_page action` : ''}
@@ -437,18 +439,33 @@ You can use the "highlight" parameter set to true when adding content to make th
 
 ALWAYS respond with a JSON object when the user requests an action. The response field should be conversational, and the action field should specify what to do.`;
 
-    const chatResponse = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1500,
-      temperature: 0.3,  // Lower temperature for more consistent formatting
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: `${message}\n\nRemember to respond with a JSON object containing "response", "action", and "parameters" fields if this is a request to create, update, or delete something.`,
-        },
-      ],
-    });
+    let chatResponse;
+    try {
+      chatResponse = await client.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1500,
+        temperature: 0.3,  // Lower temperature for more consistent formatting
+        system: systemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: `${message}\n\nRemember to respond with a JSON object containing "response", "action", and "parameters" fields if this is a request to create, update, or delete something.`,
+          },
+        ],
+      });
+    } catch (claudeError: any) {
+      console.error('Claude API error:', claudeError);
+      console.error('Claude error details:', claudeError.response?.data || claudeError.message);
+      
+      if (claudeError.status === 401 || claudeError.message?.includes('authentication')) {
+        return res.status(200).json({ 
+          response: 'Your Anthropic API key appears to be invalid. Please check your API key in settings.',
+          metadata: { action: 'api_key_invalid' }
+        });
+      }
+      
+      throw claudeError; // Re-throw to be caught by outer catch
+    }
 
     const content = chatResponse.content[0];
     if (content.type === 'text') {
@@ -691,9 +708,24 @@ ALWAYS respond with a JSON object when the user requests an action. The response
     }
   } catch (error: any) {
     console.error('Chat error:', error);
-    res.status(500).json({ 
-      error: error.message || 'Failed to process chat message' 
+    console.error('Chat error details:', {
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data
     });
+    
+    // Return a more helpful error message
+    if (error.response?.status === 401) {
+      res.status(200).json({ 
+        response: 'Your API key appears to be invalid. Please check your Anthropic API key in settings.',
+        metadata: { action: 'api_key_invalid' }
+      });
+    } else {
+      res.status(500).json({ 
+        error: error.message || 'Failed to process chat message',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
   }
 });
 
@@ -817,7 +849,7 @@ async function executeAction(action: string, parameters: any, userId: number, co
       case 'create_project':
         const newProject = await db('projects').insert({
           user_id: userId,
-          name: parameters.name,
+          title: parameters.name, // Accept 'name' parameter but save as 'title'
           description: parameters.description || null,
           color: parameters.color || '#3182CE',
           created_at: new Date().toISOString(),
@@ -833,7 +865,7 @@ async function executeAction(action: string, parameters: any, userId: number, co
           action: 'created_project',
           result: { 
             projectId: createdProject.id,
-            projectName: createdProject.name 
+            projectName: createdProject.title 
           }
         };
 

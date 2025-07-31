@@ -297,7 +297,11 @@ Visual knowledge management:
      - [x] Fixed backend .env configuration for admin endpoints
      - [x] Fixed frontend API URL configuration
      - [x] Fixed test user authentication
-   - [ ] Clean up ESLint warnings (124 remaining - mostly type annotations)
+   - [x] Fixed API key persistence and display issues:
+     - [x] Resolved React Query cache conflicts
+     - [x] Fixed database schema mismatches (projects.name → projects.title)
+     - [x] Cleaned up old compiled JavaScript files
+   - [ ] Clean up ESLint warnings (111 remaining - mostly type annotations)
    - [ ] Continue writing unit tests for Board and Task components
    - [ ] Create onboarding flow for new users
 

@@ -96,6 +96,9 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
 router.put('/api-key', authenticate, async (req: Request, res: Response) => {
   try {
     const { apiKey } = req.body;
+    console.log('API Key update request for user:', req.user!.userId);
+    console.log('API Key provided:', apiKey ? 'Yes' : 'No');
+    console.log('API Key format valid:', apiKey ? apiKey.startsWith('sk-ant-') : 'N/A');
 
     // Validate API key format (sk-ant-...)
     if (apiKey && !apiKey.startsWith('sk-ant-')) {
@@ -104,6 +107,7 @@ router.put('/api-key', authenticate, async (req: Request, res: Response) => {
 
     // Encrypt the API key before storing
     const encryptedApiKey = apiKey ? encrypt(apiKey) : null;
+    console.log('Encrypted API key length:', encryptedApiKey ? encryptedApiKey.length : 0);
 
     await db('users')
       .where({ id: req.user!.userId })
@@ -111,6 +115,15 @@ router.put('/api-key', authenticate, async (req: Request, res: Response) => {
         anthropic_api_key: encryptedApiKey,
         updated_at: new Date()
       });
+
+    // Verify the update worked
+    const updatedUser = await db('users')
+      .where({ id: req.user!.userId })
+      .select('anthropic_api_key')
+      .first();
+    
+    console.log('API key saved successfully:', !!updatedUser.anthropic_api_key);
+    console.log('Saved encrypted length:', updatedUser.anthropic_api_key ? updatedUser.anthropic_api_key.length : 0);
 
     res.json({ message: 'API key updated successfully', hasApiKey: !!apiKey });
   } catch (error) {
@@ -148,7 +161,19 @@ router.get('/profile', authenticate, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(user);
+    // Check if user has API key set (matching /me endpoint)
+    const hasApiKey = await db('users')
+      .where({ id: req.user!.userId })
+      .whereNotNull('anthropic_api_key')
+      .first();
+
+    res.json({
+      success: true,
+      data: {
+        ...user,
+        has_api_key: !!hasApiKey
+      }
+    });
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({ error: 'Failed to fetch user profile' });

@@ -42,8 +42,8 @@ export const ApiKeySettings: React.FC = () => {
   const { data: userProfile } = useQuery({
     queryKey: ['user-profile'],
     queryFn: async () => {
-      const response = await api.get('/users/me');
-      return response.data;
+      const response = await api.get('/users/profile');
+      return response.data.data;
     },
   });
 
@@ -152,7 +152,7 @@ export const ApiKeySettings: React.FC = () => {
           </Text>
         </Box>
 
-        {!userProfile?.hasApiKey && !isEditing ? (
+        {!userProfile?.has_api_key && !isEditing ? (
           <Alert status="info" borderRadius="md">
             <AlertIcon />
             <AlertDescription>
@@ -173,7 +173,7 @@ export const ApiKeySettings: React.FC = () => {
           </Alert>
         ) : null}
 
-        {userProfile?.hasApiKey && !isEditing ? (
+        {userProfile?.has_api_key && !isEditing ? (
           <Box>
             <Alert status="success" borderRadius="md" mb={4}>
               <AlertIcon />
@@ -202,7 +202,7 @@ export const ApiKeySettings: React.FC = () => {
           </Box>
         ) : null}
 
-        {isEditing || (!userProfile?.hasApiKey && !isEditing) ? (
+        {isEditing || (!userProfile?.has_api_key && !isEditing) ? (
           <Box>
             <FormControl>
               <FormLabel>API Key</FormLabel>

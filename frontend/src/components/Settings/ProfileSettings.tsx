@@ -56,7 +56,7 @@ export const ProfileSettings: React.FC = () => {
     queryKey: ['user-profile'],
     queryFn: async () => {
       const response = await api.get('/users/profile');
-      return response.data;
+      return response.data.data;
     },
   });
 

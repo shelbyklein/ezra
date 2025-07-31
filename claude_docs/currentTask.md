@@ -340,7 +340,20 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **Home Navigation Refresh Fix (Latest):**
+- **API Key Display Fix (Latest):**
+  - Fixed React Query cache conflict between ProfileSettings and ApiKeySettings components
+  - Both components were using same query key ['user-profile'] but expecting different response structures
+  - ProfileSettings was caching full API response { success: true, data: {...} }
+  - ApiKeySettings expected just the inner data object, causing has_api_key to be undefined
+  - Fixed by ensuring both components extract response.data.data for consistent caching
+  - API key status now correctly displays in settings UI
+- **Chat API 500 Error Resolution:**
+  - Fixed database column reference from projects.name to projects.title
+  - Updated ai.routes.ts and search.routes.ts to use correct column names
+  - Discovered old compiled JavaScript files were preventing TypeScript changes from taking effect
+  - Cleaned up all backend/**/*.js and backend/**/*.d.ts files
+  - Chat API now works correctly with proper project context
+- **Home Navigation Refresh Fix:**
   - Fixed Home navigation to properly refresh dashboard data when clicked from dashboard
   - Added React Query client integration to AppLayout component
   - Implemented handleHomeNavigation function with smart refresh behavior

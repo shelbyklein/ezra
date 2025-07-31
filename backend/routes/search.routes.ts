@@ -52,7 +52,7 @@ router.get('/', authenticate, async (req, res) => {
           'tasks.title',
           'tasks.description',
           'tasks.project_id as projectId',
-          'projects.name as projectName'
+          'projects.title as projectName'
         );
 
       tasks.forEach(task => {
