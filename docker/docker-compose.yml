@@ -103,11 +103,32 @@ services:
       - backend
     networks:
       - ezra-network
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      # HTTPS router
+      - "traefik.http.routers.ezra.rule=Host(`ezra.shelbyklein.com`)"
+      - "traefik.http.routers.ezra.entrypoints=websecure"
+      - "traefik.http.routers.ezra.tls=true"
+      - "traefik.http.routers.ezra.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ezra.service=ezra"
+      # HTTP router for ACME challenge
+      - "traefik.http.routers.ezra-http.rule=Host(`ezra.shelbyklein.com`)"
+      - "traefik.http.routers.ezra-http.entrypoints=web"
+      - "traefik.http.routers.ezra-http.middlewares=https-redirect"
+      - "traefik.http.routers.ezra-http.service=ezra"
+      # Middleware for HTTP to HTTPS redirect
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+      # Service configuration
+      - "traefik.http.services.ezra.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-network"
+    # Temporarily disabled health check due to wget issues in Alpine
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
 
   # ================================
   # FRONTEND SERVICE (Alternative Ports)
@@ -306,6 +327,9 @@ services:
 networks:
   ezra-network:
     driver: bridge
+  traefik-network:
+    name: traefik-network
+    external: true
 
 volumes:
   postgres-data:

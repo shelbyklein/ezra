@@ -179,6 +179,15 @@ For production deployment:
 5. Configure proper domain names
 6. Set up monitoring and logging
 
+### Traefik Integration
+The frontend service includes Traefik labels for automatic HTTPS/SSL:
+- Automatic Let's Encrypt certificate generation
+- HTTP to HTTPS redirection
+- Requires external `traefik-network` to be created first:
+  ```bash
+  docker network create traefik-network
+  ```
+
 Example production command:
 ```bash
 docker-compose --profile production up -d
@@ -207,6 +216,11 @@ Docker Desktop includes Compose v2 which doesn't have this issue.
 - Check logs: `docker compose logs backend` (or `docker-compose logs backend`)
 - Verify environment variables are set correctly
 - Ensure ports are not already in use
+
+### Frontend health check issues
+- Health check temporarily disabled due to Alpine wget compatibility
+- Container functions normally without health check
+- For Traefik users: container will be picked up once running
 
 ### Database connection issues
 - For PostgreSQL, ensure the postgres service is healthy

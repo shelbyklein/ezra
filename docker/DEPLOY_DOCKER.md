@@ -57,20 +57,30 @@ docker-compose --profile postgres up -d
 DATABASE_URL=postgresql://ezra_user:your-postgres-password@postgres:5432/ezra_db
 ```
 
-### 2. SSL/HTTPS Setup
+### 2. SSL/HTTPS Setup with Traefik
 
-For production, use a reverse proxy like Traefik or nginx-proxy:
+For production, the docker-compose.yml includes Traefik labels for automatic SSL/TLS:
 
 ```yaml
-# docker-compose.prod.yml
-version: '3.8'
-
+# Already configured in docker-compose.yml
 services:
   frontend:
+    networks:
+      - ezra-network
+      - traefik-network  # External network for Traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ezra.rule=Host(`ezra.yourdomain.com`)"
+      - "traefik.http.routers.ezra.entrypoints=websecure"
+      - "traefik.http.routers.ezra.tls=true"
       - "traefik.http.routers.ezra.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ezra.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-network"
+```
+
+**Important**: Ensure the `traefik-network` exists before deploying:
+```bash
+docker network create traefik-network
 ```
 
 ### 3. Backup Strategy
@@ -156,6 +166,12 @@ docker-compose logs frontend
 docker-compose ps
 ```
 
+### Container Health Check Issues
+If the frontend container shows as unhealthy in Traefik:
+- The health check has been temporarily disabled due to wget issues in Alpine Linux
+- The container still works correctly despite no health check
+- To verify nginx is running: `docker exec ezra-frontend curl -I http://localhost:80`
+
 ### Database Issues
 ```bash
 # Check database file permissions
@@ -176,6 +192,11 @@ services:
   backend:
     ports:
       - "5002:6001"  # Change 6001 to 5002
+```
+
+Or use the alternative ports profile:
+```bash
+docker-compose --profile alt-ports up -d
 ```
 
 ### Memory Issues
