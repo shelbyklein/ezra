@@ -68,10 +68,12 @@ const NotebookCard: React.FC<{ notebook: Notebook; onEdit: () => void; onDelete:
       }}
       onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
       position="relative"
-      // 8.5:11 aspect ratio (portrait orientation like a sheet of paper)
-      aspectRatio="8.5/11"
+      // Mobile: horizontal layout with reduced height
+      // Desktop: portrait orientation like a sheet of paper
+      aspectRatio={{ base: 'auto', md: '8.5/11' }}
+      height={{ base: '80px', md: 'auto' }}
       display="flex"
-      flexDirection="column"
+      flexDirection={{ base: 'row', md: 'column' }}
     >
       {/* Menu button */}
       <Menu>
@@ -96,37 +98,80 @@ const NotebookCard: React.FC<{ notebook: Notebook; onEdit: () => void; onDelete:
         </MenuList>
       </Menu>
 
-      <VStack spacing={4} p={6} align="stretch" h="full">
+      <HStack 
+        spacing={{ base: 3, md: 0 }} 
+        p={{ base: 4, md: 6 }} 
+        align={{ base: 'center', md: 'stretch' }}
+        justify={{ base: 'flex-start', md: 'stretch' }}
+        h="full"
+        w="full"
+        flexDirection={{ base: 'row', md: 'column' }}
+        as={VStack}
+      >
         {/* Icon */}
-        <Center flexShrink={0}>
-          <Icon as={FaBook} boxSize={12} color={iconColor} />
+        <Center flexShrink={0} display={{ base: 'flex', md: 'flex' }}>
+          <Icon 
+            as={FaBook} 
+            boxSize={{ base: 8, md: 12 }} 
+            color={iconColor} 
+          />
         </Center>
 
-        {/* Title */}
-        <VStack spacing={2} flex={1} align="center" justify="center">
+        {/* Content - Title and Description */}
+        <VStack 
+          spacing={{ base: 0, md: 2 }} 
+          flex={1} 
+          align={{ base: 'flex-start', md: 'center' }}
+          justify={{ base: 'center', md: 'center' }}
+        >
           <Text 
-            fontSize="lg" 
+            fontSize={{ base: 'md', md: 'lg' }}
             fontWeight="bold" 
-            textAlign="center"
-            noOfLines={2}
+            textAlign={{ base: 'left', md: 'center' }}
+            noOfLines={{ base: 1, md: 2 }}
           >
             {notebook.title}
           </Text>
           
+          {/* Show description only on desktop */}
           {notebook.description && (
             <Text 
               fontSize="sm" 
               color="gray.500" 
-              textAlign="center"
-              noOfLines={3}
+              textAlign={{ base: 'left', md: 'center' }}
+              noOfLines={{ base: 1, md: 3 }}
+              display={{ base: 'none', md: 'block' }}
             >
               {notebook.description}
             </Text>
           )}
+          
+          {/* Show project on mobile inline */}
+          {notebook.project_name && (
+            <HStack 
+              fontSize="xs" 
+              color="gray.500"
+              display={{ base: 'flex', md: 'none' }}
+            >
+              <Box 
+                w={2} 
+                h={2} 
+                borderRadius="full" 
+                bg={notebook.project_color || 'gray.400'} 
+              />
+              <Text>{notebook.project_name}</Text>
+            </HStack>
+          )}
         </VStack>
 
-        {/* Footer with metadata */}
-        <VStack spacing={2} fontSize="xs" color="gray.500" flexShrink={0}>
+        {/* Footer with metadata - only show on desktop */}
+        <VStack 
+          spacing={2} 
+          fontSize="xs" 
+          color="gray.500" 
+          flexShrink={0}
+          display={{ base: 'none', md: 'flex' }}
+        >
           {notebook.project_name && (
             <HStack>
               <Box 
@@ -142,7 +187,22 @@ const NotebookCard: React.FC<{ notebook: Notebook; onEdit: () => void; onDelete:
             Created {new Date(notebook.created_at).toLocaleDateString()}
           </Text>
         </VStack>
-      </VStack>
+
+        {/* Mobile: Show created date on the right */}
+        <Text
+          fontSize="xs"
+          color="gray.500"
+          display={{ base: 'block', md: 'none' }}
+          flexShrink={0}
+          ml="auto"
+          pr={8} // Space for menu button
+        >
+          {new Date(notebook.created_at).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric' 
+          })}
+        </Text>
+      </HStack>
     </Box>
   );
 };
@@ -207,13 +267,13 @@ export const NotebooksHome: React.FC = () => {
             Create and manage your notebooks
           </Text>
         </VStack>
-        <Button
-          leftIcon={<AddIcon />}
+        <IconButton
+          id="new-notebook-button"
+          aria-label="New Notebook"
+          icon={<AddIcon />}
           colorScheme="blue"
           onClick={handleCreateNotebook}
-        >
-          New Notebook
-        </Button>
+        />
       </HStack>
 
       {/* Notebooks Grid */}
@@ -235,8 +295,8 @@ export const NotebooksHome: React.FC = () => {
         </Center>
       ) : (
         <SimpleGrid
-          columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
-          spacing={6}
+          columns={{ base: 1, md: 3, lg: 4, xl: 5 }}
+          spacing={{ base: 3, md: 6 }}
         >
           {notebooks.map((notebook) => (
             <NotebookCard

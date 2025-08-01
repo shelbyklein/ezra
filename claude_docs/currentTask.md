@@ -340,13 +340,17 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **Mobile Notebook UI Improvements (Latest):**
+- **Mobile UI/UX Enhancements (Latest):**
   - Fixed overlapping hamburger menu buttons on mobile view
   - Removed fixed position hamburger button that was conflicting with main navigation
   - Added inline left-pointing caret icon next to notebook titles
   - Caret icon appears on both NotebookEditor and NotebookCoverPage components
   - Mobile sidebar drawer slides from left when caret is clicked
-  - Cleaner mobile interface without UI element conflicts
+  - Notebook cards redesigned for mobile: 80px height with horizontal layout
+  - Removed "New Notebook" text, now shows only plus icon with ID "new-notebook-button"
+  - Chat bubble automatically hidden when users are on the chat page
+  - Chat History button now shows only icon without text for cleaner interface
+  - All buttons maintain proper accessibility with aria-label attributes
 - **Project Management UI Enhancements:**
   - Added delete functionality to project edit modal
   - Users can now delete projects directly from the edit dialog

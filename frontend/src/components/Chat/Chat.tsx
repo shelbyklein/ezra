@@ -119,15 +119,14 @@ export const Chat: React.FC = () => {
               Ask me anything about your projects, tasks, or notebooks
             </Text>
           </Box>
-          <Button
+          <IconButton
             id="chat-history-button"
-            leftIcon={<FaHistory />}
+            aria-label="Chat History"
+            icon={<FaHistory />}
             variant="outline"
             size="sm"
             onClick={onOpen}
-          >
-            Chat History
-          </Button>
+          />
         </HStack>
       </Box>
 

@@ -341,6 +341,11 @@ export const ChatBubble: React.FC = () => {
     }
   };
 
+  // Hide the chat bubble when on the chat page
+  if (location.pathname === '/app/chat') {
+    return null;
+  }
+
   return (
     <>
       {/* Chat Bubble Button */}
