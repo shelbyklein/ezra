@@ -26,3 +26,15 @@
     opacity: 1;
   }
 }
+
+/* Make "Sources:" section smaller in chat messages */
+.chat-sources-section {
+  font-size: 0.875rem !important;
+  opacity: 0.8;
+  margin-top: 1rem;
+}
+
+.chat-source-item {
+  font-size: 0.875rem !important;
+  opacity: 0.8;
+}

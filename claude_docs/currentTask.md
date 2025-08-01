@@ -442,6 +442,12 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Confirmed keyboard shortcuts functionality
   - Validated AI chat assistant context awareness
   - Fixed frontend API URL configuration issues
+- Task Creation 500 Error Fix:
+  - Fixed missing user_id field in task creation endpoints
+  - Database schema requires user_id but API routes weren't providing it
+  - Updated POST /api/tasks endpoint to include user_id: req.user!.userId
+  - Updated natural language task creation to include user_id field
+  - Both task creation methods now work without 500 errors
 - Docker Deployment Configuration:
   - Created multi-stage Dockerfiles for backend and frontend
   - Consolidated all docker-compose files into single file with profiles

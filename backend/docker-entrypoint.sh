@@ -14,15 +14,22 @@ echo "Database tables verified/created"
 # Check and create missing tables directly
 echo "Checking for missing tables..."
 
+# Create task_tags table if it doesn't exist
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS task_tags (
+  task_id INTEGER NOT NULL,
+  tag_id INTEGER NOT NULL,
+  PRIMARY KEY (task_id, tag_id),
+  FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);"
+
 # Create project_tags table if it doesn't exist
 sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS project_tags (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   project_id INTEGER NOT NULL,
   tag_id INTEGER NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (project_id, tag_id),
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
-  UNIQUE(project_id, tag_id)
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );"
 
 # Create notebook_folders table first (before notebook_pages)
@@ -85,13 +92,11 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS chat_messages (
 
 # Create notebook_tags table if it doesn't exist
 sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_tags (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   notebook_id INTEGER NOT NULL,
   tag_id INTEGER NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (notebook_id, tag_id),
   FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
-  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
-  UNIQUE(notebook_id, tag_id)
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );"
 
 # Create indexes for notebook_folders
@@ -150,6 +155,11 @@ PRAGMA table_info(users);
 sqlite3 /app/data/ezra.db "
 PRAGMA table_info(users);
 " | grep -q "avatar_url" || sqlite3 /app/data/ezra.db "ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255);"
+
+# Add updated_at column to tags table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(tags);
+" | grep -q "updated_at" || sqlite3 /app/data/ezra.db "ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP;"
 
 # Add username column to users table if it doesn't exist
 sqlite3 /app/data/ezra.db "

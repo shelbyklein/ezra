@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardFooter,
   Button,
+  IconButton,
   Spinner,
   Center,
   useColorModeValue,
@@ -125,14 +126,13 @@ export const Dashboard: React.FC = () => {
                   Here's what you've been working on recently
                 </Text>
               </Box>
-              <Button
-                leftIcon={<SettingsIcon />}
+              <IconButton
+                aria-label="Settings"
+                icon={<SettingsIcon />}
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/app/settings')}
-              >
-                Settings
-              </Button>
+              />
             </HStack>
           </Box>
 

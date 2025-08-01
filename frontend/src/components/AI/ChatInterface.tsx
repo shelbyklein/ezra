@@ -84,6 +84,7 @@ What would you like to do today?`,
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [context, setContext] = useState<ChatContext>({});
+  const [conversationId, setConversationId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -114,15 +115,38 @@ What would you like to do today?`,
     },
   });
 
+  // Create conversation if needed
+  const createConversationIfNeeded = async (message: string) => {
+    if (!conversationId) {
+      try {
+        const response = await api.post('/chat-history/conversations', {
+          isNewConversation: true,
+          message: {
+            role: 'user',
+            content: message,
+          },
+        });
+        const newConvId = response.data.conversationId;
+        setConversationId(newConvId);
+        return newConvId;
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        return null;
+      }
+    }
+    return conversationId;
+  };
+
   // Process message with AI
   const processChatMutation = useMutation({
-    mutationFn: async (message: string) => {
+    mutationFn: async ({ message, convId }: { message: string; convId: number | null }) => {
       const response = await api.post('/ai/chat', {
         message,
         context: {
           ...context,
           projects: projects?.map((p: any) => ({ id: p.id, name: p.name })),
         },
+        conversationId: convId,
       });
       return response.data;
     },
@@ -191,7 +215,7 @@ What would you like to do today?`,
     }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -205,7 +229,10 @@ What would you like to do today?`,
     setInput('');
     setIsTyping(true);
 
-    processChatMutation.mutate(input);
+    // Create conversation if this is the first message
+    const convId = await createConversationIfNeeded(input);
+    
+    processChatMutation.mutate({ message: input, convId });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -256,7 +283,10 @@ What would you like to do today?`,
               <MenuItem onClick={() => navigate('/app/settings')}>
                 Settings
               </MenuItem>
-              <MenuItem onClick={() => setMessages([messages[0]])}>
+              <MenuItem onClick={() => {
+                setMessages([messages[0]]);
+                setConversationId(null);
+              }}>
                 Clear Chat
               </MenuItem>
             </MenuList>
@@ -299,7 +329,22 @@ What would you like to do today?`,
                       {message.role === 'assistant' ? (
                         <ReactMarkdown
                           components={{
-                            p: ({ children }) => <Text mb={2}>{children}</Text>,
+                            p: ({ children, ...props }) => {
+                              // Check if this paragraph contains "Sources:" to make it smaller
+                              const text = children?.toString() || '';
+                              const isSourcesHeader = text.includes('Sources:');
+                              const isSourceItem = /^\[\d+\]/.test(text);
+                              
+                              return (
+                                <Text 
+                                  mb={2}
+                                  className={isSourcesHeader ? 'chat-sources-section' : isSourceItem ? 'chat-source-item' : ''}
+                                  {...props}
+                                >
+                                  {children}
+                                </Text>
+                              );
+                            },
                             ul: ({ children }) => <Box as="ul" pl={4} mb={2}>{children}</Box>,
                             li: ({ children }) => <Box as="li" mb={1}>{children}</Box>,
                           }}

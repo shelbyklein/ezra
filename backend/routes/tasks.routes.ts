@@ -119,6 +119,7 @@ router.post('/', authenticate, async (req, res) => {
     
     const task = {
       project_id,
+      user_id: req.user!.userId,
       title,
       description: description || null,
       status: status || 'todo',
@@ -317,6 +318,7 @@ router.post('/natural-language', authenticate, async (req, res) => {
         
         const newTask = {
           project_id: projectId,
+          user_id: req.user!.userId,
           title: parsedCommand.taskData.title,
           description: parsedCommand.taskData.description || null,
           status: parsedCommand.taskData.status || 'todo',

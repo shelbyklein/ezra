@@ -178,7 +178,22 @@ export const Chat: React.FC = () => {
                     {message.role === 'assistant' ? (
                       <ReactMarkdown
                         components={{
-                          p: ({ children }) => <Text mb={2}>{children}</Text>,
+                          p: ({ children, ...props }) => {
+                            // Check if this paragraph contains "Sources:" to make it smaller
+                            const text = children?.toString() || '';
+                            const isSourcesHeader = text.includes('Sources:');
+                            const isSourceItem = /^\[\d+\]/.test(text);
+                            
+                            return (
+                              <Text 
+                                mb={2}
+                                className={isSourcesHeader ? 'chat-sources-section' : isSourceItem ? 'chat-source-item' : ''}
+                                {...props}
+                              >
+                                {children}
+                              </Text>
+                            );
+                          },
                           ul: ({ children }) => <Box as="ul" pl={4} mb={2}>{children}</Box>,
                           ol: ({ children }) => <Box as="ol" pl={4} mb={2}>{children}</Box>,
                           li: ({ children }) => <Box as="li" mb={1}>{children}</Box>,
