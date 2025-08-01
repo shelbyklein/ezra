@@ -45,7 +45,8 @@ export class MigrationRunner {
       console.error('❌ Migration error:', error);
       
       // Log more details about the error
-      if (error.message.includes('no such table')) {
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (errorMessage.includes('no such table')) {
         console.error('🔧 Missing migration table. Creating...');
         try {
           await knex.migrate.latest({

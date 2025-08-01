@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       database: 'disconnected',
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
@@ -47,7 +47,7 @@ router.get('/database', async (req, res) => {
     const tableCounts: Record<string, number> = {};
     for (const table of tables) {
       const count = await db(table.name).count('* as count').first();
-      tableCounts[table.name] = count?.count || 0;
+      tableCounts[table.name] = Number(count?.count) || 0;
     }
     
     // Get migration status
@@ -70,7 +70,7 @@ router.get('/database', async (req, res) => {
       timestamp: new Date().toISOString(),
       database: {
         connected: true,
-        tables: tables.map(t => t.name),
+        tables: tables.map((t: any) => t.name),
         tableCounts,
         migrations: migrationStatus
       },
@@ -87,7 +87,7 @@ router.get('/database', async (req, res) => {
       timestamp: new Date().toISOString(),
       database: {
         connected: false,
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       }
     });
   }
@@ -101,7 +101,7 @@ router.get('/schema', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to validate schema',
-      message: error.message
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });

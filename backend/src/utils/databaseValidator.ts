@@ -232,7 +232,7 @@ export class DatabaseValidator {
       console.error('Error validating database schema:', error);
       return {
         valid: false,
-        issues: [`Database validation error: ${error.message}`],
+        issues: [`Database validation error: ${error instanceof Error ? error.message : 'Unknown error'}`],
         missingTables: [],
         missingColumns: []
       };
