@@ -67,6 +67,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label
       <Popover isOpen={isOpen} onClose={onToggle}>
         <PopoverTrigger>
           <Button
+            type="button"
             onClick={onToggle}
             size="md"
             borderWidth={2}
@@ -100,6 +101,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label
                   <Box
                     key={color}
                     as="button"
+                    type="button"
                     w={10}
                     h={10}
                     borderRadius="md"
