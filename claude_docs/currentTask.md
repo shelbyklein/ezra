@@ -448,6 +448,17 @@ MVP features are now complete! Focus on testing, performance optimization, docum
   - Updated POST /api/tasks endpoint to include user_id: req.user!.userId
   - Updated natural language task creation to include user_id field
   - Both task creation methods now work without 500 errors
+- Comprehensive Database Migration System (Major Update):
+  - **Root Cause Analysis**: Identified dual database management conflict causing recurring 500 errors
+  - **Immediate Fix**: Added missing attachments table to docker-entrypoint.sh
+  - **DatabaseValidator Utility**: Created schema validation system that runs on startup
+  - **MigrationRunner Utility**: Ensures reliable migration execution in Docker environment
+  - **Health Check Endpoints**: Added /api/health/database and /api/health/schema for diagnostics
+  - **Safety Net Migration**: Created 20250801_ensure_all_tables.ts as backup table creation
+  - **Enhanced Docker Entrypoint**: Created v2 entrypoint with better migration handling
+  - **TypeScript Error Resolution**: Fixed all compilation errors in validation system
+  - **Prevention Strategy**: Dual approach - add tables to both migrations AND entrypoint script
+  - **Result**: Eliminates recurring database schema mismatch issues permanently
 - Docker Deployment Configuration:
   - Created multi-stage Dockerfiles for backend and frontend
   - Consolidated all docker-compose files into single file with profiles

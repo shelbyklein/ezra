@@ -71,6 +71,8 @@
   - No additional services required
   - Using with Knex.js for migrations
   - Tables: users, projects, tasks, notes, tags, task_tags, project_tags, attachments, notebooks, folders, pages
+  - **Enhanced with validation system** - Schema integrity checking ✅
+  - **Dual migration approach** - Knex migrations + Docker entrypoint fallbacks ✅
 - **PostgreSQL** (future) - Production database
   - Better performance at scale
   - Advanced features
@@ -81,6 +83,8 @@
   - Migration support
   - Simple API
   - Configured for SQLite with easy migration path
+  - **Enhanced with DatabaseValidator** - Runtime schema validation ✅
+  - **MigrationRunner utility** - Reliable migration execution ✅
 
 ### Authentication
 - **JWT** - Token-based authentication (implemented)
@@ -143,6 +147,14 @@
   - Self-hosting documentation
 
 ### Monitoring
+- **Health Check Endpoints** - Implemented ✅
+  - /api/health - Basic application health
+  - /api/health/database - Database connectivity and schema validation
+  - /api/health/schema - Detailed schema integrity checking
+- **Database Validation** - Implemented ✅
+  - Startup schema validation
+  - Runtime table/column verification
+  - Missing schema detection and logging
 - **Application monitoring** - TBD
 - **Error tracking** - TBD
 - **Analytics** - TBD
