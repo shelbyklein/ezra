@@ -90,6 +90,7 @@ You are a coding assistant focused on simplicity and minimalism. Follow these co
 - always comment a summary of the purpose of the file at the top of the page
 - if a file containg operational code gets to long (over 500 lines), consider refactoring it - prompt the user if this seems like a good idea.
 - if creating tests, createa a tests/ folder
+- add unique IDs to every html element you create
 
 
 ### Technology Selection

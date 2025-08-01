@@ -139,7 +139,16 @@ export const ProjectList: React.FC = () => {
           </VStack>
         </Center>
       ) : (
-        <Grid id="projects-grid" className="projects-grid" templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+        <Grid 
+          id="projects-grid" 
+          className="projects-grid" 
+          templateColumns={{ 
+            base: "1fr", 
+            sm: "repeat(auto-fill, minmax(280px, 1fr))",
+            md: "repeat(auto-fill, minmax(300px, 1fr))" 
+          }} 
+          gap={{ base: 4, md: 6 }}
+        >
           {projects?.map((project) => (
             <Card
               id={`project-card-${project.id}`}

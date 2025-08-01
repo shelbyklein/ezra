@@ -19,6 +19,9 @@ import {
   useToast,
   useDisclosure,
   Tooltip,
+  Flex,
+  Badge,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { AddIcon, ArrowLeftIcon, EditIcon } from '@chakra-ui/icons';
 import { FaMagic, FaBook } from 'react-icons/fa';
@@ -91,6 +94,8 @@ export const Board: React.FC = () => {
   const { isOpen: isNLOpen, onOpen: onNLOpen, onClose: onNLClose } = useDisclosure();
   const { isOpen: isProjectEditOpen, onOpen: onProjectEditOpen, onClose: onProjectEditClose } = useDisclosure();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const taskBg = useColorModeValue('white', 'gray.800');
+  const emptyBg = useColorModeValue('gray.50', 'gray.700');
   
   // Initialize keyboard shortcuts
   const {
@@ -513,42 +518,72 @@ export const Board: React.FC = () => {
     >
       <VStack id="kanban-board" className="kanban-board" spacing={6} align="stretch" h="full">
         {/* Header */}
-        <HStack id="board-header" className="board-header" justify="space-between">
-          <HStack spacing={4}>
-            <Button
-              id="board-back-button"
-              leftIcon={<ArrowLeftIcon />}
-              variant="ghost"
-              onClick={() => navigate('/projects')}
-            >
-              Back
-            </Button>
-            <HStack spacing={2}>
-              {project && (
-                <Box
-                  w={4}
-                  h={4}
-                  borderRadius="full"
-                  bg={project.color}
-                  borderWidth={1}
-                  borderColor="border.primary"
-                />
-              )}
-              <Heading id="board-title" size="lg">{project?.title || 'Loading...'}</Heading>
+        <Box>
+          <Flex 
+            id="board-header" 
+            className="board-header" 
+            direction={{ base: "column", lg: "row" }}
+            justify="space-between"
+            gap={{ base: 3, md: 4 }}
+            align={{ base: "stretch", lg: "center" }}
+          >
+            <VStack align="stretch" spacing={3} flex={1}>
+              <HStack spacing={2}>
+                <Button
+                  id="board-back-button"
+                  leftIcon={<ArrowLeftIcon />}
+                  variant="ghost"
+                  onClick={() => navigate('/projects')}
+                  size={{ base: "sm", md: "md" }}
+                >
+                  <Text display={{ base: "none", sm: "inline" }}>Back</Text>
+                </Button>
+                <HStack spacing={2} flex={1}>
+                  {project && (
+                    <Box
+                      w={{ base: 3, md: 4 }}
+                      h={{ base: 3, md: 4 }}
+                      borderRadius="full"
+                      bg={project.color}
+                      borderWidth={1}
+                      borderColor="border.primary"
+                      flexShrink={0}
+                    />
+                  )}
+                  <Heading 
+                    id="board-title" 
+                    size={{ base: "md", md: "lg" }}
+                    noOfLines={1}
+                  >
+                    {project?.title || 'Loading...'}
+                  </Heading>
+                  {project && (
+                    <Tooltip label="Edit project" placement="top">
+                      <IconButton
+                        aria-label="Edit project"
+                        icon={<EditIcon />}
+                        size="sm"
+                        variant="ghost"
+                        onClick={onProjectEditOpen}
+                      />
+                    </Tooltip>
+                  )}
+                </HStack>
+              </HStack>
               {!notebooksLoading && projectNotebooks.length > 0 && (
-                <HStack spacing={2}>
+                <HStack spacing={2} flexWrap="wrap">
                   {projectNotebooks.map((notebook: any) => (
                     <Button
                       key={notebook.id}
-                      size="sm"
+                      size="xs"
                       variant="solid"
                       colorScheme="blue"
                       leftIcon={<FaBook />}
                       onClick={() => navigate(`/app/notebooks/${notebook.id}`)}
                       borderRadius="full"
-                      px={3}
+                      px={2}
                       py={1}
-                      fontSize="sm"
+                      fontSize="xs"
                       fontWeight="medium"
                     >
                       {notebook.title}
@@ -556,69 +591,165 @@ export const Board: React.FC = () => {
                   ))}
                 </HStack>
               )}
-              {project && (
-                <Tooltip label="Edit project" placement="top">
-                  <IconButton
-                    aria-label="Edit project"
-                    icon={<EditIcon />}
-                    size="sm"
-                    variant="ghost"
-                    onClick={onProjectEditOpen}
-                  />
-                </Tooltip>
-              )}
+            </VStack>
+            <HStack spacing={2} flexShrink={0}>
+              <Tooltip label="⌘K / Ctrl+K" placement="bottom">
+                <Button 
+                  id="board-ai-command-button"
+                  leftIcon={<FaMagic />} 
+                  colorScheme="purple" 
+                  variant="outline"
+                  onClick={onNLOpen}
+                  size={{ base: "sm", md: "md" }}
+                >
+                  <Text display={{ base: "none", sm: "inline" }}>AI Command</Text>
+                  <Text display={{ base: "inline", sm: "none" }}>AI</Text>
+                </Button>
+              </Tooltip>
+              <Tooltip label="Press N" placement="bottom">
+                <Button 
+                  id="board-new-task-button" 
+                  leftIcon={<AddIcon />} 
+                  colorScheme="blue" 
+                  onClick={onOpen}
+                  size={{ base: "sm", md: "md" }}
+                >
+                  <Text display={{ base: "none", sm: "inline" }}>New Task</Text>
+                  <Text display={{ base: "inline", sm: "none" }}>New</Text>
+                </Button>
+              </Tooltip>
+              <Tooltip label="Keyboard Shortcuts" placement="bottom">
+                <IconButton
+                  id="board-help-button"
+                  aria-label="Keyboard shortcuts"
+                  icon={<Text fontSize={{ base: "sm", md: "md" }}>?</Text>}
+                  variant="ghost"
+                  onClick={() => onOpenHelp()}
+                  size={{ base: "sm", md: "md" }}
+                  color="gray.500"
+                />
+              </Tooltip>
             </HStack>
-          </HStack>
-          <HStack spacing={2}>
-            <Tooltip label="⌘K / Ctrl+K" placement="bottom">
-              <Button 
-                id="board-ai-command-button"
-                leftIcon={<FaMagic />} 
-                colorScheme="purple" 
-                variant="outline"
-                onClick={onNLOpen}
-              >
-                AI Command
-              </Button>
-            </Tooltip>
-            <Tooltip label="Press N" placement="bottom">
-              <Button id="board-new-task-button" leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
-                New Task
-              </Button>
-            </Tooltip>
-            <Tooltip label="Keyboard Shortcuts" placement="bottom">
-              <Button 
-                id="board-help-button"
-                variant="ghost"
-                onClick={() => onOpenHelp()}
-                size="sm"
-                color="gray.500"
-              >
-                ?
-              </Button>
-            </Tooltip>
-          </HStack>
-        </HStack>
+          </Flex>
+        </Box>
 
-        {/* Board Columns */}
-        <Grid
-          templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
-          gap={6}
-          h="calc(100vh - 200px)"
-          overflowX={{ base: 'auto', md: 'visible' }}
+        {/* Board Columns - Desktop Grid / Mobile List */}
+        <Box
+          w="full"
+          h={{ base: "calc(100vh - 250px)", md: "calc(100vh - 200px)" }}
+          overflowY="auto"
+          pb={{ base: 4, md: 0 }}
         >
-          {(Object.keys(columns) as Array<keyof typeof columns>).map((status) => (
-            <BoardColumn
-              key={status}
-              status={status}
-              title={COLUMN_TITLES[status]}
-              tasks={columns[status]}
-              projectId={Number(projectId)}
-              onTaskClick={handleTaskClick}
-              selectedTaskId={selectedTaskId}
-            />
-          ))}
-        </Grid>
+          {/* Mobile List View */}
+          <VStack
+            display={{ base: "flex", md: "none" }}
+            spacing={6}
+            align="stretch"
+          >
+            {(Object.keys(columns) as Array<keyof typeof columns>).map((status) => (
+              <Box key={status}>
+                <HStack 
+                  mb={3} 
+                  px={2}
+                  justify="space-between"
+                  align="center"
+                >
+                  <Heading size="sm" color="gray.600">
+                    {COLUMN_TITLES[status]}
+                  </Heading>
+                  <Badge colorScheme="gray" variant="subtle">
+                    {columns[status].length}
+                  </Badge>
+                </HStack>
+                <VStack spacing={2} align="stretch">
+                  {columns[status].length === 0 ? (
+                    <Box 
+                      p={4} 
+                      textAlign="center" 
+                      color="gray.500"
+                      bg={emptyBg}
+                      borderRadius="md"
+                    >
+                      <Text fontSize="sm">No tasks</Text>
+                    </Box>
+                  ) : (
+                    columns[status].map((task) => (
+                      <Box
+                        key={task.id}
+                        onClick={() => handleTaskClick(task)}
+                        cursor="pointer"
+                        borderWidth={selectedTaskId === task.id ? 2 : 1}
+                        borderColor={selectedTaskId === task.id ? "blue.500" : "gray.200"}
+                        borderRadius="md"
+                        p={3}
+                        bg={taskBg}
+                        _hover={{ shadow: "md" }}
+                        transition="all 0.2s"
+                      >
+                        <HStack justify="space-between" mb={1}>
+                          <Text fontWeight="medium" fontSize="sm">
+                            {task.title}
+                          </Text>
+                          <Badge 
+                            colorScheme={
+                              task.priority === 'high' ? 'red' : 
+                              task.priority === 'medium' ? 'orange' : 
+                              'green'
+                            }
+                            fontSize="xs"
+                          >
+                            {task.priority}
+                          </Badge>
+                        </HStack>
+                        {task.description && (
+                          <Text fontSize="xs" color="gray.600" noOfLines={2}>
+                            {task.description}
+                          </Text>
+                        )}
+                        {task.tags && task.tags.length > 0 && (
+                          <HStack spacing={1} mt={2} flexWrap="wrap">
+                            {task.tags.map(tag => (
+                              <Badge
+                                key={tag.id}
+                                size="sm"
+                                variant="solid"
+                                bg={tag.color}
+                                color="white"
+                                fontSize="xs"
+                              >
+                                {tag.name}
+                              </Badge>
+                            ))}
+                          </HStack>
+                        )}
+                      </Box>
+                    ))
+                  )}
+                </VStack>
+              </Box>
+            ))}
+          </VStack>
+
+          {/* Desktop Grid View */}
+          <Grid
+            display={{ base: "none", md: "grid" }}
+            templateColumns="repeat(3, 1fr)"
+            gap={6}
+            h="full"
+          >
+            {(Object.keys(columns) as Array<keyof typeof columns>).map((status) => (
+              <BoardColumn
+                key={status}
+                status={status}
+                title={COLUMN_TITLES[status]}
+                tasks={columns[status]}
+                projectId={Number(projectId)}
+                onTaskClick={handleTaskClick}
+                selectedTaskId={selectedTaskId}
+              />
+            ))}
+          </Grid>
+        </Box>
       </VStack>
 
       {/* Drag Overlay */}

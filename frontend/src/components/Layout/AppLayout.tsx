@@ -137,18 +137,70 @@ export const AppLayout: React.FC = () => {
         </Flex>
 
         {isOpen ? (
-          <Box id="mobile-menu" className="mobile-navigation" pb={4} display={{ md: 'none' }}>
-            <Stack as="nav" spacing={4}>
-              <Button id="mobile-nav-home" variant="ghost" onClick={handleHomeNavigation}>
+          <Box 
+            id="mobile-menu" 
+            className="mobile-navigation" 
+            pb={4} 
+            display={{ md: 'none' }}
+            borderTopWidth={1}
+            borderColor="border.primary"
+            mt={2}
+          >
+            <Stack as="nav" spacing={2} pt={2}>
+              <Button 
+                id="mobile-nav-home" 
+                variant="ghost" 
+                onClick={() => {
+                  handleHomeNavigation();
+                  onClose();
+                }}
+                size="lg"
+                justifyContent="flex-start"
+                w="full"
+                _active={{ bg: "bg.secondary" }}
+              >
                 Home
               </Button>
-              <Button id="mobile-nav-chat" variant="ghost" onClick={() => navigate('/app/chat')}>
+              <Button 
+                id="mobile-nav-chat" 
+                variant="ghost" 
+                onClick={() => {
+                  navigate('/app/chat');
+                  onClose();
+                }}
+                size="lg"
+                justifyContent="flex-start"
+                w="full"
+                _active={{ bg: "bg.secondary" }}
+              >
                 Chat
               </Button>
-              <Button id="mobile-nav-projects" variant="ghost" onClick={() => navigate('/app/projects')}>
+              <Button 
+                id="mobile-nav-projects" 
+                variant="ghost" 
+                onClick={() => {
+                  navigate('/app/projects');
+                  onClose();
+                }}
+                size="lg"
+                justifyContent="flex-start"
+                w="full"
+                _active={{ bg: "bg.secondary" }}
+              >
                 Projects
               </Button>
-              <Button id="mobile-nav-notebooks" variant="ghost" onClick={() => navigate('/app/notebooks')}>
+              <Button 
+                id="mobile-nav-notebooks" 
+                variant="ghost" 
+                onClick={() => {
+                  navigate('/app/notebooks');
+                  onClose();
+                }}
+                size="lg"
+                justifyContent="flex-start"
+                w="full"
+                _active={{ bg: "bg.secondary" }}
+              >
                 Notebooks
               </Button>
             </Stack>

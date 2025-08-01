@@ -155,7 +155,7 @@ export const Dashboard: React.FC = () => {
               </Button>
             </HStack>
 
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={{ base: 4, md: 6 }}>
               {recentProjects?.length > 0 ? (
                 recentProjects.map((project: Project) => (
                   <Card
@@ -254,7 +254,7 @@ export const Dashboard: React.FC = () => {
               </HStack>
             </HStack>
 
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={{ base: 4, md: 6 }}>
               {starredPages?.length > 0 ? (
                 starredPages.slice(0, 6).map((page: StarredPage) => (
                   <Card
@@ -336,7 +336,7 @@ export const Dashboard: React.FC = () => {
               </Button>
             </HStack>
 
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={{ base: 4, md: 6 }}>
               {recentNotebooks?.length > 0 ? (
                 recentNotebooks.map((notebook: Notebook) => (
                   <Card

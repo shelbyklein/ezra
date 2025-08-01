@@ -152,7 +152,13 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   };
 
   return (
-    <Modal id="create-task-modal" isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal 
+      id="create-task-modal" 
+      isOpen={isOpen} 
+      onClose={handleClose} 
+      size={{ base: "full", md: "lg" }}
+      motionPreset="slideInBottom"
+    >
       <ModalOverlay />
       <ModalContent>
         <form id="create-task-form" onSubmit={handleSubmit(onSubmit)}>

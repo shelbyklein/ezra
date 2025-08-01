@@ -13,7 +13,7 @@ import {
   Spinner,
   Center,
 } from '@chakra-ui/react';
-import { StarIcon } from '@chakra-ui/icons';
+import { StarIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
@@ -71,9 +71,10 @@ interface Page {
 interface NotebookEditorProps {
   pageId: number;
   notebookId: number;
+  onOpenSidebar?: () => void;
 }
 
-export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebookId }) => {
+export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebookId, onOpenSidebar }) => {
   const queryClient = useQueryClient();
   const [title, setTitle] = React.useState('');
   const [saveTimer, setSaveTimer] = React.useState<NodeJS.Timeout | null>(null);
@@ -234,6 +235,16 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ pageId, notebook
       <Box bg="bg.primary" borderBottomWidth={1} borderColor="border.primary">
         <VStack align="stretch" spacing={0} p={4}>
           <HStack>
+            {onOpenSidebar && (
+              <IconButton
+                aria-label="Open notebooks sidebar"
+                icon={<ChevronLeftIcon boxSize={6} />}
+                variant="ghost"
+                size="sm"
+                onClick={onOpenSidebar}
+                mr={2}
+              />
+            )}
             <Input
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}

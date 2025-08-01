@@ -340,7 +340,21 @@ MVP features are now complete! Focus on testing, performance optimization, docum
 - E2E tests needed for complete user flows
 
 ## Recent Changes
-- **Database Schema Mismatch Resolution (Latest):**
+- **Mobile Notebook UI Improvements (Latest):**
+  - Fixed overlapping hamburger menu buttons on mobile view
+  - Removed fixed position hamburger button that was conflicting with main navigation
+  - Added inline left-pointing caret icon next to notebook titles
+  - Caret icon appears on both NotebookEditor and NotebookCoverPage components
+  - Mobile sidebar drawer slides from left when caret is clicked
+  - Cleaner mobile interface without UI element conflicts
+- **Project Management UI Enhancements:**
+  - Added delete functionality to project edit modal
+  - Users can now delete projects directly from the edit dialog
+  - Implemented confirmation dialog for delete operations
+  - Added automatic redirect to home page with refresh after deletion
+  - Fixed color picker form submission bug in CreateProjectModal
+  - Added `type="button"` to prevent accidental form submissions
+- **Database Schema Mismatch Resolution:**
   - Fixed critical API errors caused by database column name mismatches
   - Updated contextSearch.ts to use `projects.title` instead of `projects.name`
   - Fixed `is_archived` column reference (was incorrectly using `archived`)

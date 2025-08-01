@@ -50,6 +50,8 @@
   - ✅ Fixed modal button overlap issues
   - ✅ Improved modal layouts
   - ✅ Added edit button to project board
+  - ✅ Fixed mobile hamburger menu conflicts
+  - ✅ Added inline caret icon for notebook sidebar access
 - ✅ User Profile Management:
   - ✅ Profile settings page with avatar upload
   - ✅ Username editing capability
@@ -306,7 +308,9 @@ Visual knowledge management:
    - [x] UI/UX improvements:
      - [x] Created animated loading indicators for chat
      - [x] Improved AI response quality and naturalness
-   - [ ] Clean up ESLint warnings (111 remaining - mostly type annotations)
+     - [x] Added delete functionality to project edit modal
+     - [x] Fixed color picker form submission issues
+   - [ ] Clean up ESLint warnings (124 remaining - mostly type annotations)
    - [ ] Continue writing unit tests for Board and Task components
    - [ ] Create onboarding flow for new users
 

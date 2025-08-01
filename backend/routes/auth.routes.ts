@@ -6,6 +6,7 @@ import { generateToken } from '../utils/jwt';
 import { authenticate } from '../middleware/auth.middleware';
 import bcrypt from 'bcrypt';
 import { sendEmail, generatePasswordResetEmail } from '../utils/email';
+import { authRateLimiter, passwordResetRateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -36,7 +37,7 @@ const resetWithTokenValidation = [
 ];
 
 // Register endpoint
-router.post('/register', registerValidation, async (req: Request, res: Response) => {
+router.post('/register', authRateLimiter, registerValidation, async (req: Request, res: Response) => {
   try {
     // Check validation errors
     const errors = validationResult(req);
@@ -108,7 +109,7 @@ router.post('/register', registerValidation, async (req: Request, res: Response)
 });
 
 // Login endpoint
-router.post('/login', loginValidation, async (req: Request, res: Response) => {
+router.post('/login', authRateLimiter, loginValidation, async (req: Request, res: Response) => {
   try {
     // Check validation errors
     const errors = validationResult(req);
@@ -221,7 +222,7 @@ router.post('/reset-password', authenticate, resetPasswordValidation, async (req
 });
 
 // Forgot password endpoint (no auth required)
-router.post('/forgot-password', forgotPasswordValidation, async (req: Request, res: Response) => {
+router.post('/forgot-password', passwordResetRateLimiter, forgotPasswordValidation, async (req: Request, res: Response) => {
   try {
     // Check validation errors
     const errors = validationResult(req);
@@ -280,7 +281,7 @@ router.post('/forgot-password', forgotPasswordValidation, async (req: Request, r
 });
 
 // Reset password with token endpoint (no auth required)
-router.post('/reset-password-token', resetWithTokenValidation, async (req: Request, res: Response) => {
+router.post('/reset-password-token', passwordResetRateLimiter, resetWithTokenValidation, async (req: Request, res: Response) => {
   try {
     // Check validation errors
     const errors = validationResult(req);

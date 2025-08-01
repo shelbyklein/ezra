@@ -218,7 +218,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
   return (
     <>
-      <Modal id={isEditing ? "edit-project-modal" : "create-project-modal"} isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal 
+        id={isEditing ? "edit-project-modal" : "create-project-modal"} 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        size={{ base: "full", md: "lg" }}
+        motionPreset="slideInBottom"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{isEditing ? 'Edit Project' : 'Create New Project'}</ModalHeader>

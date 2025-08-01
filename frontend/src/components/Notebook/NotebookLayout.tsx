@@ -152,26 +152,14 @@ export const NotebookLayout: React.FC = () => {
 
       {/* Mobile Drawer */}
       {isMobile && (
-        <>
-          <IconButton
-            id="notebook-mobile-menu-button"
-            aria-label="Open sidebar"
-            icon={<HamburgerIcon />}
-            position="absolute"
-            top={4}
-            left={4}
-            zIndex={1}
-            onClick={onOpen}
-          />
-          <Drawer id="notebook-mobile-drawer" isOpen={isOpen} placement="left" onClose={onClose}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerCloseButton />
-              <DrawerHeader id="notebook-drawer-header">Notebooks</DrawerHeader>
-              <DrawerBody id="notebook-drawer-body" className="notebook-sidebar-mobile" p={0}>{sidebarContent}</DrawerBody>
-            </DrawerContent>
-          </Drawer>
-        </>
+        <Drawer id="notebook-mobile-drawer" isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader id="notebook-drawer-header">Notebooks</DrawerHeader>
+            <DrawerBody id="notebook-drawer-body" className="notebook-sidebar-mobile" p={0}>{sidebarContent}</DrawerBody>
+          </DrawerContent>
+        </Drawer>
       )}
 
       {/* Editor Area */}
@@ -180,9 +168,13 @@ export const NotebookLayout: React.FC = () => {
           <NotebookEditor
             pageId={selectedPageId}
             notebookId={currentNotebook?.id || parseInt(notebookId || '0')}
+            onOpenSidebar={isMobile ? onOpen : undefined}
           />
         ) : currentNotebook ? (
-          <NotebookCoverPage notebook={currentNotebook} />
+          <NotebookCoverPage 
+            notebook={currentNotebook} 
+            onOpenSidebar={isMobile ? onOpen : undefined}
+          />
         ) : (
           <Center h="full">
             <VStack spacing={4}>

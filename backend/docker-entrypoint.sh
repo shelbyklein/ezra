@@ -25,6 +25,20 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS project_tags (
   UNIQUE(project_id, tag_id)
 );"
 
+# Create notebook_folders table first (before notebook_pages)
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_folders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  notebook_id INTEGER NOT NULL,
+  parent_folder_id INTEGER,
+  name VARCHAR(255) NOT NULL,
+  icon VARCHAR(50),
+  position INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_folder_id) REFERENCES notebook_folders(id) ON DELETE CASCADE
+);"
+
 # Create notebook_pages table if it doesn't exist
 sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_pages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,11 +46,13 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_pages (
   slug VARCHAR(255) NOT NULL,
   content TEXT,
   notebook_id INTEGER NOT NULL,
+  folder_id INTEGER,
   is_starred BOOLEAN DEFAULT 0,
   position INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
+  FOREIGN KEY (folder_id) REFERENCES notebook_folders(id) ON DELETE SET NULL,
   UNIQUE(notebook_id, slug)
 );"
 
@@ -77,6 +93,11 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
   UNIQUE(notebook_id, tag_id)
 );"
+
+# Create indexes for notebook_folders
+sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_folders_notebook_id ON notebook_folders(notebook_id);"
+sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_folders_parent_folder_id ON notebook_folders(parent_folder_id);"
+sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_folders_position ON notebook_folders(notebook_id, position);"
 
 echo "All required tables verified/created"
 
@@ -146,8 +167,27 @@ sqlite3 /app/data/ezra.db "
 PRAGMA table_info(chat_conversations);
 " | grep -q "started_at" || sqlite3 /app/data/ezra.db "ALTER TABLE chat_conversations ADD COLUMN started_at DATETIME DEFAULT CURRENT_TIMESTAMP;"
 
+# Add folder_id column to notebook_pages table if it doesn't exist
+sqlite3 /app/data/ezra.db "
+PRAGMA table_info(notebook_pages);
+" | grep -q "folder_id" || sqlite3 /app/data/ezra.db "ALTER TABLE notebook_pages ADD COLUMN folder_id INTEGER REFERENCES notebook_folders(id) ON DELETE SET NULL;"
+
+# Create index for notebook_pages folder_id after ensuring column exists
+sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_pages_folder_id ON notebook_pages(notebook_id, folder_id);"
+
 echo "Missing columns added successfully"
 
-echo "Starting server..."
+# Run Knex migrations to ensure any new migrations are applied
+echo "Running database migrations..."
 cd /app/backend
+if [ -f "knexfile.js" ]; then
+  echo "Applying any pending migrations..."
+  npx knex migrate:latest --knexfile knexfile.js || echo "Migration warning: Some migrations may have failed, but continuing..."
+  echo "Migration status:"
+  npx knex migrate:status --knexfile knexfile.js || true
+else
+  echo "No knexfile.js found, skipping migrations"
+fi
+
+echo "Starting server..."
 node dist/src/index.js

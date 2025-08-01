@@ -239,7 +239,12 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   };
 
   return (<>
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      size={{ base: "full", md: "lg" }}
+      motionPreset="slideInBottom"
+    >
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>

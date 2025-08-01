@@ -29,7 +29,7 @@ import {
   ModalCloseButton,
   Select,
 } from '@chakra-ui/react';
-import { EditIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { EditIcon, CheckIcon, CloseIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -64,9 +64,10 @@ interface TagData {
 
 interface NotebookCoverPageProps {
   notebook: Notebook;
+  onOpenSidebar?: () => void;
 }
 
-export const NotebookCoverPage: React.FC<NotebookCoverPageProps> = ({ notebook }) => {
+export const NotebookCoverPage: React.FC<NotebookCoverPageProps> = ({ notebook, onOpenSidebar }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(notebook.title);
   const [editedDescription, setEditedDescription] = useState(notebook.description || '');
@@ -163,19 +164,31 @@ export const NotebookCoverPage: React.FC<NotebookCoverPageProps> = ({ notebook }
         {/* Header */}
         <Flex justify="space-between" align="flex-start">
           <VStack align="start" spacing={2} flex={1}>
-            {isEditing ? (
-              <Input
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-                fontSize="3xl"
-                fontWeight="bold"
-                variant="flushed"
-                size="lg"
-                autoFocus
-              />
-            ) : (
-              <Heading size="2xl">{notebook.title}</Heading>
-            )}
+            <HStack>
+              {onOpenSidebar && (
+                <IconButton
+                  aria-label="Open notebooks sidebar"
+                  icon={<ChevronLeftIcon boxSize={6} />}
+                  variant="ghost"
+                  size="sm"
+                  onClick={onOpenSidebar}
+                  mr={2}
+                />
+              )}
+              {isEditing ? (
+                <Input
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  fontSize="3xl"
+                  fontWeight="bold"
+                  variant="flushed"
+                  size="lg"
+                  autoFocus
+                />
+              ) : (
+                <Heading size="2xl">{notebook.title}</Heading>
+              )}
+            </HStack>
             
             <HStack spacing={2} color="gray.500" fontSize="sm">
               <Text>Created {formatDate(notebook.created_at)}</Text>

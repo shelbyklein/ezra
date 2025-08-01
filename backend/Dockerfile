@@ -49,8 +49,8 @@ COPY --from=builder /app/shared/package.json ./shared/
 COPY --from=builder /app/backend/dist/knexfile.js ./backend/
 COPY backend/docker-entrypoint.sh ./
 COPY backend/init-db.sql ./backend/
-# Copy only JavaScript migration files
-COPY backend/migrations/*.js ./backend/migrations/
+# Copy compiled migration files from the build stage
+COPY --from=builder /app/backend/dist/migrations ./backend/migrations/
 
 # Create necessary directories and make entrypoint executable
 RUN mkdir -p /app/data /app/uploads/avatars /app/uploads/notebooks && \

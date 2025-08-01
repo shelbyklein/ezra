@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ========================================
 # Ezra Docker Compose Configuration
 # ========================================
@@ -123,12 +121,12 @@ services:
       # Service configuration
       - "traefik.http.services.ezra.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik-network"
-    # Temporarily disabled health check due to wget issues in Alpine
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ================================
   # FRONTEND SERVICE (Alternative Ports)

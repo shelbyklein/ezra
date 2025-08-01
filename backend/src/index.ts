@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
-      process.env.FRONTEND_URL
+      ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) : [])
     ].filter((url): url is string => Boolean(url) && typeof url === 'string'),
     credentials: true
   }
@@ -30,11 +30,12 @@ const io = new Server(httpServer, {
 // Middleware
 app.use(cors({
   origin: function(origin, callback) {
+    const frontendUrls = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) : [];
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
-      process.env.FRONTEND_URL
+      ...frontendUrls
     ].filter(Boolean);
     
     // Allow requests with no origin (like Postman or curl)

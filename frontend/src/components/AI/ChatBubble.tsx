@@ -348,8 +348,8 @@ export const ChatBubble: React.FC = () => {
         {!isOpen && (
           <MotionBox
             position="fixed"
-            bottom={6}
-            right={6}
+            bottom={{ base: 4, md: 6 }}
+            right={{ base: 4, md: 6 }}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
@@ -380,11 +380,11 @@ export const ChatBubble: React.FC = () => {
         {isOpen && (
           <MotionBox
             position="fixed"
-            bottom={6}
-            right={6}
-            width={{ base: 'calc(100% - 48px)', md: '400px' }}
-            height="600px"
-            maxHeight="calc(100vh - 100px)"
+            bottom={{ base: 0, md: 6 }}
+            right={{ base: 0, md: 6 }}
+            width={{ base: '100%', md: '400px' }}
+            height={{ base: '100vh', sm: '85vh', md: '600px' }}
+            maxHeight={{ base: '100vh', md: 'calc(100vh - 100px)' }}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -396,9 +396,10 @@ export const ChatBubble: React.FC = () => {
               className="ai-chat-window"
               height="full"
               shadow={shadowColor}
-              borderWidth={1}
+              borderWidth={{ base: 0, md: 1 }}
               borderColor={borderColor}
               overflow="hidden"
+              borderRadius={{ base: 0, md: "lg" }}
             >
               {/* Header */}
               <Flex
