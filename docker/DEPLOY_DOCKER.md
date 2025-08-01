@@ -172,14 +172,31 @@ If the frontend container shows as unhealthy in Traefik:
 - The container still works correctly despite no health check
 - To verify nginx is running: `docker exec ezra-frontend curl -I http://localhost:80`
 
+### CORS Issues
+If you get "Not allowed by CORS" errors when accessing the API:
+- Ensure `FRONTEND_URL` in `.env` includes all domains (comma-separated)
+- Example: `FRONTEND_URL=http://localhost:3005,https://ezra.yourdomain.com`
+- The backend parses comma-separated values to allow multiple origins
+- Rebuild and restart the backend after changes: `docker compose build backend && docker compose up -d backend --force-recreate`
+
 ### Database Issues
 ```bash
 # Check database file permissions
 docker-compose exec backend ls -la /app/data/
 
-# Run migrations manually
+# List database tables
+docker exec ezra-backend sqlite3 /app/data/ezra.db ".tables"
+
+# Run migrations manually (Note: Currently using docker-entrypoint.sh for table creation)
 docker-compose exec backend npx knex migrate:latest
 ```
+
+### Missing Database Tables
+If you encounter "no such table" errors:
+- The `docker-entrypoint.sh` script creates tables on startup
+- Missing tables like `notebook_folders` are automatically created
+- Check logs for table creation: `docker logs ezra-backend | grep "tables verified"`
+- Force recreate to apply schema changes: `docker compose up -d backend --force-recreate`
 
 ### Port Conflicts
 If ports 3005 or 6001 are already in use:

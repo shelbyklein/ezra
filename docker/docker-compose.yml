@@ -50,8 +50,8 @@ services:
       # Database Configuration
       DATABASE_URL: ${DATABASE_URL:-/app/data/ezra.db}
       
-      # Frontend URL for CORS
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3005}
+      # Frontend URL for CORS (comma-separated for multiple origins)
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3005,https://ezra.shelbyklein.com}
       
       # API Configuration
       API_RATE_LIMIT_WINDOW_MS: ${API_RATE_LIMIT_WINDOW_MS:-900000}

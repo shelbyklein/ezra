@@ -93,6 +93,11 @@ docker-compose --profile postgres --profile backup up -d
 2. **ANTHROPIC_API_KEY**: Required for AI features
    - Get from: https://console.anthropic.com
 
+3. **FRONTEND_URL**: CORS-allowed origins (comma-separated)
+   - Default: `http://localhost:3005`
+   - Production example: `http://localhost:3005,https://ezra.yourdomain.com`
+   - Multiple domains supported via comma separation
+
 ### Database Options
 
 #### SQLite (Default)
@@ -221,6 +226,16 @@ Docker Desktop includes Compose v2 which doesn't have this issue.
 - Health check temporarily disabled due to Alpine wget compatibility
 - Container functions normally without health check
 - For Traefik users: container will be picked up once running
+
+### CORS errors
+- Update `FRONTEND_URL` in `.env` to include all domains (comma-separated)
+- Example: `FRONTEND_URL=http://localhost:3005,https://yourdomain.com`
+- Rebuild backend after changes: `docker compose build backend && docker compose up -d backend --force-recreate`
+
+### Database table errors
+- Tables are created by `docker-entrypoint.sh` on startup
+- If tables are missing, restart the backend container
+- Check table creation: `docker exec ezra-backend sqlite3 /app/data/ezra.db ".tables"`
 
 ### Database connection issues
 - For PostgreSQL, ensure the postgres service is healthy
