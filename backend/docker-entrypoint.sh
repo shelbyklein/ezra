@@ -99,6 +99,24 @@ sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS notebook_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );"
 
+# Create attachments table if it doesn't exist
+sqlite3 /app/data/ezra.db "CREATE TABLE IF NOT EXISTS attachments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  task_id INTEGER NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  mime_type VARCHAR(100),
+  size INTEGER,
+  metadata TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);"
+
+# Create index for attachments table
+sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_attachments_task_type ON attachments(task_id, type);"
+
 # Create indexes for notebook_folders
 sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_folders_notebook_id ON notebook_folders(notebook_id);"
 sqlite3 /app/data/ezra.db "CREATE INDEX IF NOT EXISTS idx_notebook_folders_parent_folder_id ON notebook_folders(parent_folder_id);"

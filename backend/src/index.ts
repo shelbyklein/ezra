@@ -13,6 +13,9 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 6001
 
+// Import database validator
+import { DatabaseValidator } from './utils/databaseValidator'
+
 // Create HTTP server and Socket.IO instance
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
@@ -69,18 +72,13 @@ import chatHistoryRoutes from '../routes/chat-history.routes'
 import searchRoutes from '../routes/search.routes'
 import uploadRoutes from '../routes/upload.routes'
 import backupRoutes from '../routes/backup.routes'
+import healthRoutes from '../routes/health.routes'
 
 // Track backend start time for version detection
 const backendStartTime = new Date().toISOString()
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    startTime: backendStartTime
-  })
-})
+// Health check endpoints
+app.use('/api/health', healthRoutes)
 
 // Auth routes
 app.use('/api/auth', authRoutes)
@@ -185,6 +183,9 @@ if (process.env.NODE_ENV !== 'test') {
     try {
       await db.raw('SELECT 1')
       console.log('📚 Database connected successfully')
+      
+      // Validate database schema
+      await DatabaseValidator.validateOnStartup()
     } catch (error) {
       console.error('❌ Database connection failed:', error)
     }
