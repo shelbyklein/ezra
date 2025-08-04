@@ -39,7 +39,7 @@
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.5",
     "date-fns": "^4.1.0",
-    "framer-motion": "^10.18.0",
+    "framer-motion": "^12.23.12",
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",
     "react": "^18.2.0",
